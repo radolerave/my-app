@@ -2,12 +2,19 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { Camera } from '@capacitor/camera';
 import { JSONEditor } from '@json-editor/json-editor';
 import { Dexie } from 'dexie'
+import FsDb from './model.js'
+import Fs from './controller.js'
 
-const element = document.getElementById('editor_holder');
+let myFs = new Fs()
+
+myFs.initDb(FsDb, Dexie)
+console.log("version : ", myFs.getVersion())
+
+const element = document.querySelector('#editor_holder');
 
 const editor = new JSONEditor(element, {
   use_name_attributes: false,
-  theme: 'bootstrap4',
+  theme: 'bootstrap5',
   disable_edit_json: true,
   disable_properties: true,
   disable_collapse: true,
