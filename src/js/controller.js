@@ -11,6 +11,6 @@ export default class Fs {
         const intitFsDb = new Db()
         const initDexie = new Wrapper("FsDb")
         
-        let myFsDb = intitFsDb.dbStructure(initDexie)
+        let myFsDb = intitFsDb.dbStructure(initDexie, Wrapper)
     }
 }
