@@ -12,113 +12,48 @@ console.log("version : ", myFs.getVersion())
 
 const element = document.querySelector('#editor_holder');
 
-const editor = new JSONEditor(element, {
-  use_name_attributes: false,
-  theme: 'bootstrap5',
-  disable_edit_json: true,
-  disable_properties: true,
-  disable_collapse: true,
-  schema: {
-    'title': 'Person',
-    'type': 'object',
-    'required': [
-      'name',
-      'age',
-      'date',
-      'favorite_color',
-      'gender',
-      'location',
-      'pets'
-    ],
-    'properties': {
-      'name': {
-        'type': 'string',
-        'description': 'First and Last name',
-        'minLength': 4,
-        'default': 'Jeremy Dorn'
-      },
-      'age': {
-        'type': 'integer',
-        'default': 25,
-        'minimum': 18,
-        'maximum': 99
-      },
-      'favorite_color': {
-        'type': 'string',
-        'format': 'color',
-        'title': 'favorite color',
-        'default': '#ffa500'
-      },
-      'gender': {
-        'type': 'string',
-        'enum': [
-          'male',
-          'female',
-          'other'
-        ]
-      },
-      'date': {
-        'type': 'string',
-        'format': 'date',
-        'options': {
-          'flatpickr': {}
-        }
-      },
-      'location': {
+let editor = new JSONEditor(element, {
+    use_name_attributes: false,
+    theme: 'bootstrap5',
+    disable_edit_json: true,
+    disable_properties: true,
+    disable_collapse: true,
+    schema: {
+        'title': 'Find Seller',
         'type': 'object',
-        'title': 'Location',
+        'required': [
+            'country',
+            'who_what',
+            'keyword'
+        ],
         'properties': {
-          'city': {
-            'type': 'string',
-            'default': 'San Francisco'
-          },
-          'state': {
-            'type': 'string',
-            'default': 'CA'
-          },
-          'citystate': {
-            'type': 'string',
-            'description': 'This is generated automatically from the previous two fields',
-            'template': '{{city}}, {{state}}',
-            'watch': {
-              'city': 'location.city',
-              'state': 'location.state'
-            }
-          }
-        }
-      },
-      'pets': {
-        'type': 'array',
-        'format': 'table',
-        'title': 'Pets',
-        'uniqueItems': true,
-        'items': {
-          'type': 'object',
-          'title': 'Pet',
-          'properties': {
-            'type': {
-              'type': 'string',
-              'enum': [
-                'cat',
-                'dog',
-                'bird',
-                'reptile',
-                'other'
-              ],
-              'default': 'dog'
+            'country': {
+                'type': 'string',
+                'title': 'Pays',
+                'enum': [
+                    'Madagascar'
+                ]
             },
-            'name': {
-              'type': 'string'
+            'who_what': {
+                'type': 'string',
+                'title': 'Vous recherchez qui/quoi ?',
+                'enum': [
+                    'Une personne',
+                    'Une société',
+                    'Autre'
+                ]
+            },
+            'keyword': {
+                'type': 'string',
+                'title': 'Mot clé',
+                'description': 'Mot clé',
+                'minLength': 4,
+                'default': 'ordinateur'
             }
-          }
-        },
-        'default': [
-          {
-            'type': 'dog',
-            'name': 'Walter'
-          }
-        ]
-      }
+        }
     }
-  }
 });
+
+editor.on('change', () => {
+    document.querySelector('#editor_value').innerText = JSON.stringify(editor.getValue())
+})
