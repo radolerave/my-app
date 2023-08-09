@@ -18,7 +18,8 @@
     "@capacitor/core": "^5.2.2",
     "@capacitor/splash-screen": "latest",
     "@json-editor/json-editor": "^2.10.1",
-    "dexie": "^3.2.4"
+    "dexie": "^3.2.4",
+    "gridjs": "^6.0.6"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.2.2",
