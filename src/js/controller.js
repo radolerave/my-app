@@ -14,41 +14,26 @@ export default class Fs {
     }
 
     async getData(params) {
-        let data
+        let countrySearchActivated = (params.where.country.length == 0)
+        let nameSearchActivated = (params.where.name.length == 0)
+        let who_whatSearchActivated = (params.where.who_what.length == 0)
+        let keywordSearchActivated = (params.where.keyword.length == 0)
 
-        // if(params['where'] != undefined) {
-        //     data = await this.db.sellerList.where(params['where']).toArray()
-        // }
-        // else {
-        //     data = await this.db.sellerList.toArray()
-        // }
-
-        // return data
-
-        let countrySearchActivated = false
-        let nameSearchActivated = false
-        let who_whatSearchActivated = false
-        let keywordsSearchActivated = false
-
-        let searchConditions = true
-
-        
+        let doNotFilter = countrySearchActivated && nameSearchActivated && who_whatSearchActivated && keywordSearchActivated    
 
         return await this.db.sellerList.filter((d) => {
-            if(params['where'] != undefined) {
-                searchConditions = (params.where.country.toLowerCase() != 'XXX'.toLowerCase() && d.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.toLowerCase() == 'XXX'.toLowerCase())
-                    &&
-                    (params.where.name.length > 0 && d.name.length > 0 && d.name.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1 || params.where.name.length == 0)
-                    && 
-                    (parseInt(params.where.who_what) != 0 && parseInt(d.who_what) == parseInt(params.where.who_what) || parseInt(params.where.who_what) == 0)
-                    && 
-                    (params.where.keywords.length > 0 && d.keywords.length > 0 && d.keywords.toLowerCase().indexOf(params.where.keywords.toLowerCase()) > -1 || params.where.keywords.length == 0)
-                
-                return searchConditions
-            }
-            else {alert("xou")
+            if((params['where'] == undefined) || doNotFilter) {
                 return false
-            }            
+            }
+            else {                
+                return (params.where.country.length > 0 && d.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
+                    &&
+                    (params.where.name.length > 0 && d.name.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1 || params.where.name.length == 0)
+                    && 
+                    (params.where.who_what.length > 0 && d.who_what.toLowerCase() == params.where.who_what.toLowerCase() || params.where.who_what.length == 0)
+                    && 
+                    (params.where.keyword.length > 0 && d.keyword.toLowerCase().indexOf(params.where.keyword.toLowerCase()) > -1 || params.where.keyword.length == 0)
+            }         
         }).toArray()
     }
 }
