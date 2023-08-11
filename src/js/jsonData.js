@@ -4,349 +4,399 @@ const jsonData = [
         "name": "TechSolutions Ltd.",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "US"
+        "country": "US",
+        "phone": "+123-456-7890"
     },
     {
         "id": 2,
         "name": "Global Industries Inc.",
         "who_what": "notHuman",
         "keyword": "Manufacturing",
-        "country": "CN"
+        "country": "CN",
+        "phone": "+987-654-3210"
     },
     {
         "id": 3,
         "name": "FinanceTech Corp.",
         "who_what": "human",
         "keyword": "Finance",
-        "country": "GB"
+        "country": "GB",
+        "phone": "+555-123-4567"
     },
     {
         "id": 4,
         "name": "HealthWise Solutions",
         "who_what": "human",
         "keyword": "Healthcare",
-        "country": "DE"
+        "country": "DE",
+        "phone": "+333-777-9999"
     },
     {
         "id": 5,
         "name": "TransportaTech",
         "who_what": "notHuman",
         "keyword": "Transportation",
-        "country": "JP"
+        "country": "JP",
+        "phone": "+777-888-9999"
     },
     {
         "id": 6,
-        "name": "InnoVentures",
+        "name": "InnoCorp Solutions",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "FR"
+        "keyword": "Innovation",
+        "country": "FR",
+        "phone": "+111-222-3333"
     },
     {
         "id": 7,
-        "name": "GlobalTech Co.",
+        "name": "TechInnovate Ltd.",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "MG"
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 8,
-        "name": "FinanceFusion",
+        "name": "GreenEco Ventures",
         "who_what": "human",
-        "keyword": "Finance",
-        "country": "US"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 9,
-        "name": "Manufactura Group",
-        "who_what": "notHuman",
-        "keyword": "Manufacturing",
-        "country": "CN"
+        "name": "InnoTech Solutions",
+        "who_what": "human",
+        "keyword": "Technology",
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 10,
-        "name": "MediCare Innovations",
-        "who_what": "human",
-        "keyword": "Healthcare",
-        "country": "GB"
+        "name": "FinanceForward",
+        "who_what": "notHuman",
+        "keyword": "Finance",
+        "country": "FR",
+        "phone": "+333-444-5555"
     },
     {
         "id": 11,
-        "name": "InnoTech Solutions",
+        "name": "InnoWave Solutions",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "MG"
+        "keyword": "Innovation",
+        "country": "FR",
+        "phone": "+111-222-3333"
     },
     {
         "id": 12,
-        "name": "FinanceForward",
-        "who_what": "notHuman",
-        "keyword": "Finance",
-        "country": "FR"
+        "name": "TechSavvy Ltd.",
+        "who_what": "human",
+        "keyword": "Technology",
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 13,
-        "name": "HealthFirst Group",
+        "name": "EcoFriendly Ventures",
         "who_what": "human",
-        "keyword": "Healthcare",
-        "country": "DE"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 14,
-        "name": "TechSys Innovations",
+        "name": "TechWizards",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "ESP"
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 15,
-        "name": "EcoManufacturers",
+        "name": "FinanceInnovate",
         "who_what": "notHuman",
-        "keyword": "Manufacturing",
-        "country": "MG"
+        "keyword": "Finance",
+        "country": "FR",
+        "phone": "+333-444-5555"
     },
     {
         "id": 16,
-        "name": "MediTech Solutions",
+        "name": "HealthTech Solutions",
         "who_what": "human",
         "keyword": "Healthcare",
-        "country": "DE"
+        "country": "DE",
+        "phone": "+666-777-8888"
     },
     {
         "id": 17,
-        "name": "FinanceFirm Inc.",
+        "name": "InnoTrade Corp.",
         "who_what": "human",
-        "keyword": "Finance",
-        "country": "GB"
+        "keyword": "Trade",
+        "country": "JP",
+        "phone": "+555-666-7777"
     },
     {
         "id": 18,
-        "name": "TechInno Co.",
+        "name": "TechBuilders Ltd.",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "MG"
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 19,
-        "name": "InnoFusion",
-        "who_what": "notHuman",
-        "keyword": "Innovation",
-        "country": "FR"
+        "name": "GreenSolutions",
+        "who_what": "human",
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 20,
-        "name": "GlobalTrade Group",
+        "name": "InnoSystems",
         "who_what": "human",
-        "keyword": "Trade",
-        "country": "ESP"
+        "keyword": "Technology",
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 21,
-        "name": "Tech Innovators",
+        "name": "HealthCare Innovators",
         "who_what": "human",
-        "keyword": "Innovation",
-        "country": "MG"
+        "keyword": "Healthcare",
+        "country": "US",
+        "phone": "+111-222-3333"
     },
     {
         "id": 22,
-        "name": "GreenTech Ventures",
+        "name": "TradeConnect",
         "who_what": "human",
-        "keyword": "Environment",
-        "country": "ESP"
+        "keyword": "Trade",
+        "country": "JP",
+        "phone": "+444-555-6666"
     },
     {
         "id": 23,
-        "name": "Quantum Corp",
+        "name": "TechEco Solutions",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "US"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 24,
-        "name": "GlobalTrade Co",
-        "who_what": "notHuman",
-        "keyword": "Trade",
-        "country": "MG"
+        "name": "InnoCommerce",
+        "who_what": "human",
+        "keyword": "Technology",
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 25,
-        "name": "Alpha Innovations",
-        "who_what": "human",
-        "keyword": "Innovation",
-        "country": "FR"
+        "name": "FinanceGurus",
+        "who_what": "notHuman",
+        "keyword": "Finance",
+        "country": "FR",
+        "phone": "+333-444-5555"
     },
     {
         "id": 26,
-        "name": "Quantum Innovations",
+        "name": "HealthPlus",
         "who_what": "human",
-        "keyword": "Innovation",
-        "country": "MG"
+        "keyword": "Healthcare",
+        "country": "DE",
+        "phone": "+666-777-8888"
     },
     {
         "id": 27,
-        "name": "TechMasters",
+        "name": "TechAhead",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "MG"
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 28,
-        "name": "FinanceFutur",
+        "name": "EcoTech Ventures",
         "who_what": "human",
-        "keyword": "Finance",
-        "country": "ESP"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 29,
-        "name": "ManufacturaTech",
-        "who_what": "notHuman",
-        "keyword": "Manufacturing",
-        "country": "FR"
+        "name": "InnoLogic",
+        "who_what": "human",
+        "keyword": "Technology",
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 30,
-        "name": "HealthCare Systems",
-        "who_what": "human",
-        "keyword": "Healthcare",
-        "country": "ESP"
+        "name": "FinancePros",
+        "who_what": "notHuman",
+        "keyword": "Finance",
+        "country": "FR",
+        "phone": "+333-444-5555"
     },
     {
         "id": 31,
-        "name": "TechForward Solutions",
+        "name": "HealthFirst Solutions",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "MG"
+        "keyword": "Healthcare",
+        "country": "DE",
+        "phone": "+666-777-8888"
     },
     {
         "id": 32,
-        "name": "AlphaTech Innovations",
+        "name": "TradeLink",
         "who_what": "human",
-        "keyword": "Innovation",
-        "country": "FR"
+        "keyword": "Trade",
+        "country": "JP",
+        "phone": "+444-555-6666"
     },
     {
         "id": 33,
-        "name": "GlobalTrade Co",
-        "who_what": "notHuman",
-        "keyword": "Trade",
-        "country": "MG"
+        "name": "EcoInnovations",
+        "who_what": "human",
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 34,
-        "name": "GreenTech Ventures",
+        "name": "TechSolutions Now",
         "who_what": "human",
-        "keyword": "Environment",
-        "country": "ESP"
+        "keyword": "Technology",
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 35,
-        "name": "Quantum Corp",
+        "name": "GreenTech",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "US"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 36,
-        "name": "Tech Innovators",
+        "name": "InnoFuture",
         "who_what": "human",
-        "keyword": "Innovation",
-        "country": "MG"
+        "keyword": "Technology",
+        "country": "MG",
+        "phone": "+555-777-9999"
     },
     {
         "id": 37,
-        "name": "GreenEnergy Corp.",
-        "who_what": "human",
-        "keyword": "Environment",
-        "country": "DE"
+        "name": "FinanceUp",
+        "who_what": "notHuman",
+        "keyword": "Finance",
+        "country": "FR",
+        "phone": "+333-444-5555"
     },
     {
         "id": 38,
-        "name": "InnoTech Solutions",
+        "name": "HealthWave",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "MG"
+        "keyword": "Healthcare",
+        "country": "DE",
+        "phone": "+666-777-8888"
     },
     {
         "id": 39,
-        "name": "FinanceForward",
-        "who_what": "notHuman",
-        "keyword": "Finance",
-        "country": "FR"
+        "name": "TradeMaster",
+        "who_what": "human",
+        "keyword": "Trade",
+        "country": "JP",
+        "phone": "+444-555-6666"
     },
     {
         "id": 40,
-        "name": "HealthFirst Group",
+        "name": "EcoSystems",
         "who_what": "human",
-        "keyword": "Healthcare",
-        "country": "GB"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 41,
-        "name": "TechSys Innovations",
+        "name": "GreenTech Innovations",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "ESP"
+        "keyword": "Environment",
+        "country": "DE",
+        "phone": "+777-888-9999"
     },
     {
         "id": 42,
-        "name": "EcoManufacturers",
-        "who_what": "notHuman",
-        "keyword": "Manufacturing",
-        "country": "MG"
+        "name": "InfoTech Systems",
+        "who_what": "human",
+        "keyword": "Technology",
+        "country": "US",
+        "phone": "+444-555-6666"
     },
     {
         "id": 43,
-        "name": "MediTech Solutions",
+        "name": "MediCare Solutions",
         "who_what": "human",
         "keyword": "Healthcare",
-        "country": "DE"
+        "country": "DE",
+        "phone": "+666-777-8888"
     },
     {
         "id": 44,
-        "name": "FinanceFirm Inc.",
-        "who_what": "human",
-        "keyword": "Finance",
-        "country": "GB"
+        "name": "SmartLogistics",
+        "who_what": "notHuman",
+        "keyword": "Transportation",
+        "country": "JP",
+        "phone": "+777-888-9999"
     },
     {
         "id": 45,
-        "name": "TechInno Co.",
+        "name": "TechConnect Inc.",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "MG"
+        "country": "FR",
+        "phone": "+111-222-3333"
     },
     {
         "id": 46,
-        "name": "TechMasters",
+        "name": "Manufactura Innovations",
         "who_what": "human",
-        "keyword": "Technology",
-        "country": "MG"
+        "keyword": "Manufacturing",
+        "country": "MG",
+        "phone": "+444-555-6666"
     },
     {
         "id": 47,
-        "name": "FinanceFutur",
+        "name": "FinanceForward Tech",
         "who_what": "human",
         "keyword": "Finance",
-        "country": "ESP"
+        "country": "ESP",
+        "phone": "+999-888-7777"
     },
     {
         "id": 48,
-        "name": "ManufacturaTech",
+        "name": "TechGenius Corp.",
         "who_what": "notHuman",
-        "keyword": "Manufacturing",
-        "country": "FR"
+        "keyword": "Technology",
+        "country": "FR",
+        "phone": "+555-123-4567"
     },
     {
         "id": 49,
-        "name": "HealthCare Systems",
+        "name": "HealthWave Solutions",
         "who_what": "human",
         "keyword": "Healthcare",
-        "country": "ESP"
+        "country": "ESP",
+        "phone": "+777-888-9999"
     },
     {
         "id": 50,
-        "name": "TechForward Solutions",
+        "name": "InnoTech Ventures",
         "who_what": "human",
         "keyword": "Technology",
-        "country": "MG"
+        "country": "MG",
+        "phone": "+555-777-9999"
     }
 ];
