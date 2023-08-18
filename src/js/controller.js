@@ -17,9 +17,9 @@ export default class Fs {
         let countrySearchActivated = (params.where.country.length == 0)
         let nameSearchActivated = (params.where.name.length == 0)
         let who_whatSearchActivated = (params.where.who_what.length == 0)
-        let keywordSearchActivated = (params.where.keyword.length == 0)
+        let keywordsSearchActivated = (params.where.keywords.length == 0)
 
-        let doNotFilter = countrySearchActivated && nameSearchActivated && who_whatSearchActivated && keywordSearchActivated    
+        let doNotFilter = countrySearchActivated && nameSearchActivated && who_whatSearchActivated && keywordsSearchActivated    
 
         return await this.db.sellerList.filter((d) => {
             if((params['where'] == undefined) || doNotFilter) {
@@ -32,7 +32,7 @@ export default class Fs {
                     && 
                     (params.where.who_what.length > 0 && d.who_what.toLowerCase() == params.where.who_what.toLowerCase() || params.where.who_what.length == 0)
                     && 
-                    (params.where.keyword.length > 0 && d.keyword.toLowerCase().indexOf(params.where.keyword.toLowerCase()) > -1 || params.where.keyword.length == 0)
+                    (params.where.keywords.length > 0 && d.keywords.toLowerCase().indexOf(params.where.keywords.toLowerCase()) > -1 || params.where.keywords.length == 0)
             }         
         }).toArray()
     }

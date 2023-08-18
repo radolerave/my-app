@@ -14,7 +14,7 @@ console.log(myFs)
 // console.log("version : ", myFs.getVersion())
 
 const element = document.querySelector('#criteria');
-let startVal = { "country":"","name":"","who_what":"","keyword":"","combinedCriteria":"" }
+let startVal = { "country":"","name":"","who_what":"","keywords":"","combinedCriteria":"" }
 
 let editor = new JSONEditor(element, {
     use_name_attributes: false,
@@ -26,13 +26,13 @@ let editor = new JSONEditor(element, {
     // remove_button_labels: true,
     startVal: startVal,
     schema: {
-        'title': 'à vous de jouer maintenant !',
+        'title': 'Spécifiez vos critères',
         'type': 'object',
         // 'required': [
         //     'country',
         //     'name',
         //     'who_what',
-        //     'keyword'
+        //     'keywords'
         // ],
         'properties': {
             'resetCriteria': {
@@ -45,11 +45,6 @@ let editor = new JSONEditor(element, {
                         'validated': true
                     }
                 }
-            },
-            'info': {
-                "type": "info",
-                "title": "",
-                "description": "Spécifiez vos critères"
             },
             'country': {
                 'type': 'string',
@@ -83,7 +78,7 @@ let editor = new JSONEditor(element, {
                     'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas']
                 }
             },
-            'keyword': {
+            'keywords': {
                 'type': 'string',
                 'title': 'Mot clé',
                 'description': 'Mot clé',
@@ -98,7 +93,7 @@ let editor = new JSONEditor(element, {
                     "c": "country",
                     "n": "name",
                     "w": "who_what",
-                    "k": "keyword"
+                    "k": "keywords"
                 }
             },            
             'validateCriteria': {
@@ -125,7 +120,7 @@ const gridOptions = {
         // { headerName: 'Id', field: 'id' },
 		{ headerName: 'Nom', field: 'name' },
 		// { headerName: 'Qui/Quoi', field: 'who_what' },
-		// { headerName: 'Mots Clés', field: 'keyword' },
+		// { headerName: 'Mots Clés', field: 'keywords' },
 		{ headerName: 'Num Tél', field: 'phone' }
     ],
     defaultColDef: {sortable: true, filter: true, suppressMovable: true},
@@ -179,7 +174,7 @@ JSONEditor.defaults.callbacks = {
                     'country': findCriteria.country,
                     'name': findCriteria.name,
                     'who_what': findCriteria.who_what,
-                    'keyword': findCriteria.keyword
+                    'keywords': findCriteria.keywords
                 }
             }   
 
@@ -239,3 +234,9 @@ document.querySelector('#filterResults').addEventListener("ionInput", (ev) => {
 // document.querySelector('#find').addEventListener('click', () => {
 //     alert('xou')
 // })
+
+let data = await fetch("http://localhost:1337/api/sellers?populate=activities&populate=phones&populate=emails&populate=websites&populate=socialNetworks&populate=keywords&populate=localitites&populate=localities.addresses&populate=categories&filters[locale][$eq]=en")
+data = await data.json()
+data = data.data
+
+console.log(data)
