@@ -1,4 +1,5 @@
 let signIn = {
+    name: "sign-in",
     content: /*html*/`
         <ion-header>
             <ion-toolbar>

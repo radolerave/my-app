@@ -10,16 +10,21 @@ export default class FsDb {
             countriesList : `id, *attributes`
 		})
 
-        let sellersList = await fetch("https://server2.atria.local/findseller/api.php/records/sellers")
-        sellersList = await sellersList.json()
-        sellersList = sellersList.records
+        try {
+            let sellersList = await fetch("https://server2.atria.local/findseller/api.php/records/sellers")
+            sellersList = await sellersList.json()
+            sellersList = sellersList.records
 
-        console.log(sellersList)
+            console.log(sellersList)
 
-        db.sellersList.bulkPut(sellersList)
-        .catch(Wrapper.ConstraintError, () => {
-            // Record already exists
-        });
+            db.sellersList.bulkPut(sellersList)
+            .catch(Wrapper.ConstraintError, () => {
+                // Record already exists
+            });
+        }
+        catch(err) {
+            console.log(err)
+        }
 
         // let countriesList = await fetch("http://localhost:1337/api/country")
         // countriesList = await countriesList.json()

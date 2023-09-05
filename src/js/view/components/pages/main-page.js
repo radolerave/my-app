@@ -1,14 +1,11 @@
-import { JSONEditor } from '@json-editor/json-editor'
+// import { JSONEditor } from '@json-editor/json-editor'
 import { Grid } from 'ag-grid-community';
 import { Dexie } from 'dexie'
-import FsDb from './../../model/model.js'
-import FsView from './../view.js'
-import Fs from './../../controller/controller.js'
-
-let myFs = new Fs(FsDb, Dexie)
-console.log(myFs)
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
 
 let mainPage = {
+  name: "main-page",
   content: /*html*/`
     <ion-menu content-id="main-content" menu-id="menu">
       <ion-header>
@@ -179,11 +176,14 @@ let mainPage = {
       </ion-content>
     </div>
     `,
-  logic: () => {
+  logic: async () => {
+    let myFs = new Fs(FsDb, Dexie)
+    console.log(myFs)
+
     const element = document.querySelector('#criteria');
     let startVal = { "country":"","name":"","who_what":"", "activity":"","keywords":"" }
 
-    let editor = new JSONEditor(element, {
+    let criteria = new JSONEditor(element, {
         use_name_attributes: false,
         theme: 'bootstrap5',
         disable_edit_json: true,
@@ -287,7 +287,7 @@ let mainPage = {
     const grid = new Grid(results, gridOptions);
 
     let showHide = () => {
-        const findCriteria = editor.getValue()
+        const findCriteria = criteria.getValue()
 
         console.log(findCriteria)
 
@@ -317,7 +317,7 @@ let mainPage = {
         }
     }
 
-    editor.on('ready', () => {
+    criteria.on('ready', () => {
         const allInputsCriterias = document.querySelectorAll('div[data-schemaid="root"] input')
 
         // console.log(allInputsCriterias)
@@ -340,7 +340,7 @@ let mainPage = {
         });    
     })
 
-    editor.on('change', async () => {    
+    criteria.on('change', async () => {    
         showHide()
     })
 
@@ -352,7 +352,7 @@ let mainPage = {
 
 
 
-        const findCriteria = editor.getValue()
+        const findCriteria = criteria.getValue()
         // document.querySelector('#criteria_value').innerText = JSON.stringify(findCriteria)
 
         const params = {
@@ -379,7 +379,7 @@ let mainPage = {
 
         // alert(JSON.stringify(data))
 
-        //Collapse the editor
+        //Collapse the criteria
         document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()
 
         //show and enable the reset criteria button
@@ -398,7 +398,7 @@ let mainPage = {
     })
 
     resetCriteria.addEventListener('click', (ev) => {
-        editor.setValue(startVal)
+        criteria.setValue(startVal)
 
         if(!validateCriteria.classList.contains('ion-hide')) {
             validateCriteria.classList.add('ion-hide')

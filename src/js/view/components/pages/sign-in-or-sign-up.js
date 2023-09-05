@@ -1,4 +1,5 @@
 let signInOrSignUp = {
+    name: "sign-in-or-sign-up",
     content: /*html*/`
         <ion-header>
             <ion-toolbar>
@@ -16,10 +17,12 @@ let signInOrSignUp = {
             <ion-button id="signUp">S'inscrire</ion-button>    
         </ion-content>
     `,
-    logic: () => {
+    logic: async () => {
         const signIn = document.querySelector("#signIn")
         const signUp = document.querySelector("#signUp")
-        const navigation = document.querySelector("ion-nav#navigation")        
+        const navigation = document.querySelector("ion-nav#navigation")      
+        
+        await navigation.removeIndex(1)//do not display the "my-account" component anymore  
 
         signIn.addEventListener("click", () => {
             navigation.push('sign-in')

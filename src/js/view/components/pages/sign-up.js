@@ -1,4 +1,5 @@
 let signUp = {
+    name: "sign-up",
     content: /*html*/`
         <ion-header>
             <ion-toolbar>
@@ -6,7 +7,7 @@ let signUp = {
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title>Connexion</ion-title>
+                <ion-title>Inscription</ion-title>
             </ion-toolbar>
         </ion-header>
 

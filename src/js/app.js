@@ -9,13 +9,10 @@ import Fs from './controller/controller.js'
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-
-
 let myFsView = new FsView()
 window.addEventListener("load", async (event) => {
     myFsView.generateView()
     // console.log("version : ", myFs.getVersion())
-    
     // document.querySelector('ion-nav').addEventListener('ionNavWillChange', (ev) => {
     //     console.log(ev)
     // })

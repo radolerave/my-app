@@ -1,8 +1,8 @@
-import { mainPage } from './components/main-page.js'
-import { myAccount } from './components/my-account.js'
-import { signInOrSignUp } from './components/signInOrSignUp.js'
-import { signIn } from './components/signIn.js'
-import { signUp } from './components/signUp.js'
+import { mainPage } from './components/pages/main-page.js'
+import { myAccount } from './components/pages/my-account.js'
+import { signInOrSignUp } from './components/pages/sign-in-or-sign-up.js'
+import { signIn } from './components/pages/sign-in.js'
+import { signUp } from './components/pages/sign-up.js'
 
 let components = {}
 
