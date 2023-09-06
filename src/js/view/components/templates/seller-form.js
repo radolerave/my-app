@@ -30,11 +30,11 @@ let sellerForm = {
                     //     'who_what',
                     //     'keywords'
                     // ],
-                    'properties': {
+                    'properties': {    
                         'country': {
                             'type': 'string',
                             'format': 'choices',
-                            'title': 'Pays',
+                            'title': 'Localisation',
                             'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
                             'default': '',
                             'options': {
@@ -54,23 +54,29 @@ let sellerForm = {
                                     allowHTML: true
                                 }
                             }
-                        },
+                        },                    
                         'name': {
                             'type': 'string',
                             'title': 'Nom ou Raison sociale'
                         },
                         'who_what': {
                             'type': 'string',
+                            "format": "choices",
                             'title': 'Etes-vous une société ou un individu ?',
                             'enum': ['notHuman', 'human', ''],
                             'default': '',
                             'options': {
-                                'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas']
+                                'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas'],
+                                'choices': {
+                                    shouldSort: false,
+                                    allowHTML: true
+                                }
                             }
                         },
                         'activities': {
                             'type': 'array',
-                            'format': 'table',
+                            'format': 'tabs-top',
+                            "maxItems": 10,
                             'title': 'Activités',
                             'uniqueItems': true,
                             'items': {
@@ -86,7 +92,8 @@ let sellerForm = {
                         },
                         'keywords': {
                             'type': 'array',
-                            'format': 'table',
+                            'format': 'tabs-top',
+                            "maxItems": 5,
                             'title': 'Mots clés',
                             'uniqueItems': true,
                             'items': {
@@ -102,7 +109,8 @@ let sellerForm = {
                         },
                         "sectors": {
                             "type": "array",
-                            "format": "table",
+                            "format": "tabs",
+                            // "maxItems": 10,
                             "title": "Secteurs",
                             "uniqueItems": true,
                             "items": {
@@ -149,57 +157,44 @@ let sellerForm = {
                             }
                         },
                         "localities": {
-                            "type": "array",    
+                            "type": "array",   
+                            "format": "tabs-top",
                             "title": "Localités",                        
                             "uniqueItems": true,
                             "items": {
                                 "type": "object",
                                 "title": "localité",
-                                "properties": {
+                                "properties": {                                    
                                     "locality": {
                                         "type": "string",
                                         "title": "Nom de l'emplacement"
                                     },
                                     "locality_details": {
-                                        "type": "array",
-                                        // "format": "table",
+                                        "type": "object",
                                         "title": "détails",
-                                        "uniqueItems": true,
-                                        "items": {
-                                            "type": "object",
-                                            "title": "détail",
-                                            "properties": {
-                                                "city": {
-                                                    "type": "string",
-                                                    "title": "Ville"
-                                                },
-                                                "neighborhood": {
-                                                    "type": "string",
-                                                    "title": "Quartier"
-                                                },
-                                                "addresses": {
-                                                    "type": "array",
-                                                    "title": "Adresses",
-                                                    "uniqueItems": true,
-                                                    "items": {
-                                                        "type": "object",
-                                                        "title": "Adresse",
-                                                        "properties": {
-                                                            "wording": {
-                                                                "type": "string",
-                                                                "title": "libellé"
-                                                            },
-                                                            "address": {
-                                                                "type": "string",
-                                                                "title": "adresse"
-                                                            },
-                                                            "mapAddress": {
-                                                                "type": "string",
-                                                                "title": "adresse Map"
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                        "properties": {
+                                            "city": {
+                                                "type": "string",
+                                                "title": "Ville"
+                                            },
+                                            "neighborhood": {
+                                                "type": "string",
+                                                "title": "Quartier"
+                                            },
+                                            "address": {
+                                                "type": "string",
+                                                "format": "textarea",
+                                                "title": "adresse"
+                                            },
+                                            "mapAddress": {
+                                                "type": "string",
+                                                "format": "textarea",
+                                                "title": "adresse Map"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "format": "textarea",
+                                                "title": "description"
                                             }
                                         }
                                     }
@@ -207,75 +202,72 @@ let sellerForm = {
                             }
                         },
                         "contacts": {
-                            "type": "array",
+                            "type": "object",
                             "title": "Contacts",
-                            "uniqueItems": true,
-                            "items": {
-                                "type": "object",
-                                "title": "contact",
-                                "properties": {
-                                    "wording": {
-                                        "type": "string",
-                                        "title": "libellé"
-                                    },
-                                    "phones": {
-                                        "type": "array",
-                                        "title": "téléphones",
-                                        "uniqueItems": true,
-                                        "items": {
-                                            "type": "object",
-                                            "title": "téléphone",
-                                            "properties": {
-                                                "wording": {
-                                                    "type": "string",
-                                                    "title": "libellé"
-                                                },
-                                                "phone": {
-                                                    "type": "string",
-                                                    "title": "n° téléphone"
-                                                }
+                            "properties": {
+                                "phones": {
+                                    "type": "array",
+                                    "format": "tabs-top",
+                                    "maxItems": 10,
+                                    "title": "téléphones",
+                                    "uniqueItems": true,
+                                    "items": {
+                                        "type": "object",
+                                        "title": "tél",
+                                        "properties": {
+                                            "wording": {
+                                                "type": "string",
+                                                "title": "libellé"
+                                            },
+                                            "phone": {
+                                                "type": "string",
+                                                "title": "n° téléphone"
                                             }
                                         }
-                                    },
-                                    "emails": {
-                                        "type": "array",
-                                        "title": "emails",
-                                        "uniqueItems": true,
-                                        "items": {
-                                            "type": "object",
-                                            "title": "email",
-                                            "properties": {
-                                                "wording": {
-                                                    "type": "string",
-                                                    "title": "libellé"
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "title": "adresse email"
-                                                }
+                                    }
+                                },
+                                "emails": {
+                                    "type": "array",
+                                    "format": "tabs-top",
+                                    "maxItems": 10,
+                                    "title": "emails",
+                                    "uniqueItems": true,
+                                    "items": {
+                                        "type": "object",
+                                        "title": "email",
+                                        "properties": {
+                                            "wording": {
+                                                "type": "string",
+                                                "title": "libellé"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "title": "adresse email"
                                             }
                                         }
-                                    },
-                                    "links": {
-                                        "type": "array",
-                                        "title": "liens",
-                                        "uniqueItems": true,
-                                        "items": {
-                                            "type": "object",
-                                            "title": "lien",
-                                            "properties": {
-                                                "wording": {
-                                                    "type": "string",
-                                                    "title": "libellé"
-                                                },
-                                                "protocol": {
-                                                    "type": "string",
-                                                    "title": "protocole"
-                                                },
-                                                "lien": {
-                                                    "type": "string",
-                                                    "title": "lien"
-                                                }
+                                    }
+                                },
+                                "links": {
+                                    "type": "array",
+                                    "format": "tabs-top",
+                                    "maxItems": 10,
+                                    "title": "liens",
+                                    "uniqueItems": true,
+                                    "items": {
+                                        "type": "object",
+                                        "title": "lien",
+                                        "properties": {
+                                            "wording": {
+                                                "type": "string",
+                                                "title": "libellé"
+                                            },
+                                            "protocol": {
+                                                "type": "string",
+                                                "title": "protocole"
+                                            },
+                                            "lien": {
+                                                "type": "string",
+                                                "title": "lien"
                                             }
                                         }
                                     }
@@ -286,58 +278,76 @@ let sellerForm = {
                             "type": "object",
                             "title": "Mon espace",
                             "properties": {
+                                "enable_space": {
+                                    "type": "object",
+                                    "title": "activer cet espace",
+                                    "properties": {
+                                        "enabled": {
+                                            "type": "boolean",
+                                            "format": "checkbox",
+                                            "title": "activé"
+                                        }
+                                    }
+                                },
                                 "wording": {
                                     "type": "string",
-                                    "title": "libellé"
+                                    "title": "Nom de mon espace"
                                 },
                                 "medias": {
                                     "type": "array",
-                                    "title": "médias",
+                                    "format": "tabs-top",
+                                    "maxItems": 5,
                                     "uniqueItems": true,
+                                    "title": "médias",
                                     "items": {
                                         "type": "object",
-                                        "title": "Car",
+                                        "title": "média",
                                         "properties": {
-                                            "pictures": {
-                                                "type": "array",
-                                                "title": "Pictures",
-                                                "items": {
-                                                    "type": "object",
-                                                    "title": "Image",
-                                                    "format": "grid",
-                                                    "properties": {
-                                                        "file": {
-                                                            "type": "string",
-                                                            "title": "file",
-                                                            "media": {
-                                                                "binaryEncoding": "base64",
-                                                                "type": "img/png"
-                                                            },
-                                                            "options": {
-                                                                "grid_columns": 6,
-                                                                "multiple": true,
-                                                            }
-                                                        },
-                                                        "description": {
-                                                            "type": "string",
-                                                            "title": "Description",
-                                                            "options": {
-                                                                "grid_columns": 6
-                                                            }
-                                                        }
+                                            "enable_media": {
+                                                "type": "object",
+                                                "title": "activer ce media",
+                                                "properties": {
+                                                    "enabled": {
+                                                        "type": "boolean",
+                                                        "format": "checkbox",
+                                                        "title": "activé"
                                                     }
                                                 }
+                                            },
+                                            "file": {
+                                                "type": "string",
+                                                "title": "fichier",
+                                                "media": {
+                                                    "binaryEncoding": "base64",
+                                                    // "type": "image/png"
+                                                },
+                                                "options": {
+                                                    "multiple": true,
+                                                },
+                                                "links": [
+                                                    {
+                                                        "href": "{{self}}",
+                                                        "rel": "Aperçu",
+                                                        "class": "font-weight-bold"
+                                                    }
+                                                ]
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
+                    },
+                    "format": "categories",
+                    "basicCategoryTitle": "Informations",
+                    // "remove_empty_properties": true
                 }
             });
 
             // console.log(form)
+            form.on('change', async (e) => {
+                console.log(form.getValue())
+            })
         }
     }
 }
