@@ -1,5 +1,6 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
+const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
 
 let sellerForm = {
     name: "seller-form",
@@ -20,7 +21,7 @@ let sellerForm = {
                 disable_collapse: true,
                 iconlib: "bootstrap",
                 // remove_button_labels: true,
-                startVal: startVal,
+                // startVal: startVal,
                 schema: {
                     'title': 'Title : -Seller Name-',
                     'type': 'object',
@@ -324,13 +325,13 @@ let sellerForm = {
                                                 "options": {
                                                     "multiple": true,
                                                 },
-                                                "links": [
-                                                    {
-                                                        "href": "{{self}}",
-                                                        "rel": "Aperçu",
-                                                        "class": "font-weight-bold"
-                                                    }
-                                                ]
+                                                // "links": [
+                                                //     {
+                                                //         "href": "{{self}}",
+                                                //         "rel": "Aperçu",
+                                                //         "class": "font-weight-bold"
+                                                //     }
+                                                // ]
                                             }
                                         }
                                     }
@@ -342,12 +343,114 @@ let sellerForm = {
                     "basicCategoryTitle": "Informations",
                     // "remove_empty_properties": true
                 }
-            });
+            });            
 
-            // console.log(form)
-            form.on('change', async (e) => {
-                console.log(form.getValue())
-            })
+            let changeCount = 0//ignore the first fired change event
+            const editBtn = document.querySelector("#editMyAccountData")
+            const saveBtn = document.querySelector("#saveMyAccountData")       
+            let finalData = {
+                "updatedData": {},
+                "credentials": {}
+            }     
+
+            function accountInfosUpdate(url, args) {
+                // Construct the API endpoint URL for updating the item
+                const updateUrl = `${url}/${args.credentials.sellerId}`;
+                const updatedData = args.updatedData
+
+                //do a verification process before continuing*********** (credentials)
+
+                // Send a PUT request to update the item
+                fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    body: JSON.stringify(updatedData),
+                })
+                .then(response => response.json())
+                .then(updatedItem => {
+                    console.log('Updated item:', updatedItem);
+                    // Handle success or do something with the updated item data
+                })
+                .catch(error => {
+                    console.error('Error updating item:', error);
+                    // Handle error
+                });
+            }
+            
+            form.on('ready', async () => {
+                //get the seller infos
+                const sellerId = 1
+                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what`
+
+                try {
+                    let sellerInfos = await fetch(`https://server2.atria.local/findseller/api.php/records/sellers/${sellerId}?include=${columns}`)
+                    sellerInfos = await sellerInfos.json()
+                    // sellerInfos = sellerInfos.records
+        
+                    console.log(sellerInfos)
+        
+                    form.setValue(sellerInfos)
+                }
+                catch(err) {
+                    console.log(err)
+                }
+                //////////////////////////////
+
+                editBtn.classList.remove("ion-hide")
+
+                form.disable();     
+
+                console.log(form)
+                console.log(form.getValue())      
+                
+                const watcherCallback = function (path) {
+                    console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+
+                    let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
+
+                    finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
+
+                    console.log("finalData", finalData)
+                }
+    
+                for (let key in form.editors) {
+                    if (form.editors.hasOwnProperty(key) && key !== 'root') {
+                        form.watch(key, watcherCallback.bind(form, key));
+                    }
+                }
+
+                form.on('change', async (e) => {
+                    if(changeCount > 0) {                    
+                        saveBtn.classList.remove("ion-hide")
+                        console.log(form.getValue())
+                    }
+    
+                    changeCount++
+                })
+    
+                editBtn.addEventListener("click", () => {
+                    form.enable()
+                    !editBtn.classList.contains("ion-hide") ? editBtn.classList.add("ion-hide") : null
+                }) 
+
+                saveBtn.addEventListener("click", () => {
+                    //supposed been connected with: sellerId : 1 & sellerUniqueId : pim ...
+                    finalData["credentials"] = {
+                        "sellerId" : 1,
+                        "sellerUniqueId" : "pim",
+                        "email": "radolerave@gmail.com",
+                        "password": "password",
+                        "accountId": 1
+                    }                 
+
+                    // console.log(finalData)
+
+                    accountInfosUpdate(apiUrl, finalData)                    
+                })
+            })                       
         }
     }
 }

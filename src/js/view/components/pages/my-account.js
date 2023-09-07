@@ -10,6 +10,11 @@ let myAccount = {
                 </ion-buttons>
 
                 <ion-title>My account</ion-title>
+
+                <ion-buttons slot="end">
+                    <ion-button id="editMyAccountData" fill="outline" class="ion-hide">Modifier</ion-button>
+                    <ion-button id="saveMyAccountData" fill="outline" class="ion-hide">Enregistrer</ion-button>
+                </ion-buttons>
             </ion-toolbar>
         </ion-header>
 

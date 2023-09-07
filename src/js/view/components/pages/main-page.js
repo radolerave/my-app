@@ -166,8 +166,6 @@ let mainPage = {
         <ion-button id="validateCriteria" class="ion-hide" disabled="true">Allons-y !</ion-button>
         <ion-button id="resetCriteria" class="ion-hide" color="danger" disabled="true">Réinitialiser</ion-button>
 
-        <ion-button id="update" color="success">update</ion-button>
-
         <!-- <div id="criteria_value"></div> -->
         
         <ion-searchbar type="text" id="filterResults" placeholder="Plus de précision..." class="ion-hide ion-no-padding"></ion-searchbar>
@@ -425,39 +423,6 @@ let mainPage = {
         // console.log(ev.target)
         gridOptions.api.setQuickFilter(ev.target.value)
     })
-
-    document.querySelector('#update').addEventListener('click', async () => {
-        const itemIdToUpdate = 1; // Replace with the actual item ID you want to update
-        const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'; // Replace with your Strapi API URL
-
-        // New data to update
-        const updatedData = {
-            "name": "Piment de mada"
-        };
-
-        // Construct the API endpoint URL for updating the item
-        const updateUrl = `${apiUrl}/${itemIdToUpdate}`;
-
-        // Send a PUT request to update the item
-        fetch(updateUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                // Include any necessary authentication headers here
-            },
-            body: JSON.stringify(updatedData),
-        })
-        .then(response => response.json())
-        .then(updatedItem => {
-            console.log('Updated item:', updatedItem);
-            // Handle success or do something with the updated item data
-        })
-        .catch(error => {
-            console.error('Error updating item:', error);
-            // Handle error
-        });
-    })
-
   }
 }
 
