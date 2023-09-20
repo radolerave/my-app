@@ -5,9 +5,7 @@ export default class FsView {
         this.components = components
     }
 
-    generateThisComponent(component, isRoot = false) {//isRoot must be set to true if the component is the Root NavComponent
-        let attempts = 0
-
+    generateThisComponent(component) {
         //rendering the content
         customElements.define(component.name, class extends HTMLElement {
             connectedCallback() {
@@ -19,7 +17,7 @@ export default class FsView {
     }
 
     async generateView(component = undefined) {
-        this.generateThisComponent(this.components.mainPage, true)
+        this.generateThisComponent(this.components.mainPage)
         this.generateThisComponent(this.components.myAccount)  
         this.generateThisComponent(this.components.signInOrSignUp)      
         this.generateThisComponent(this.components.signIn)  

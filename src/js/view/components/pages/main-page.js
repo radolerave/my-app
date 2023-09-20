@@ -3,143 +3,14 @@ import { Grid } from 'ag-grid-community';
 import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
+import { leftMenu } from './../templates/left-menu.js'
+import { rightMenu } from './../templates/right-menu.js'
 
 let mainPage = {
   name: "main-page",
   content: /*html*/`
-    <ion-menu content-id="main-content" menu-id="menu">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title class="ion-no-padding">
-            <ion-grid>
-              <ion-row class="ion-align-items-center">
-                <ion-col size="auto">
-                  <!-- <img class="svg" id="logoBdc" alt="Logo BDC" src="./assets/imgs/logo.svg" width="25" height="25" /> -->
-                </ion-col>
-                <ion-col>
-                  Find Seller
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <ion-list>
-          <ion-item-group>
-            <ion-item-divider class="ion-no-padding">
-              <ion-label>
-                <ion-icon name="construct-outline"></ion-icon> Réglages
-              </ion-label>
-            </ion-item-divider>
-
-            <ion-item button id="settings" detail="true" class="ion-no-padding">
-              <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
-                <ion-row class="ion-align-items-center">
-                  <ion-col size="auto">
-                    <ion-icon name="settings-outline"></ion-icon>
-                  </ion-col>
-                  <ion-col class="ion-padding-start">
-                    <ion-label>Paramètres globaux</ion-label>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-
-            <ion-item button id="preferences" detail="true" class="ion-no-padding">
-              <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
-                <ion-row class="ion-align-items-center">
-                  <ion-col size="auto">
-                    <ion-icon name="color-wand-outline"></ion-icon>
-                  </ion-col>
-                  <ion-col class="ion-padding-start">
-                    <ion-label>Préférences</ion-label>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>    
-
-            <ion-nav-link router-direction="forward" component="my-account">
-              <ion-item button id="myAccount" class="ion-no-padding">
-                <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
-                  <ion-row class="ion-align-items-center">
-                    <ion-col size="auto">
-                      <ion-icon name="people-circle-outline"></ion-icon>
-                    </ion-col>
-                    <ion-col class="ion-padding-start">
-                      <ion-label class="ion-text-wrap">Mon compte</ion-label>
-                    </ion-col>
-                  </ion-row>
-                </ion-grid>
-              </ion-item>  
-            </ion-nav-link>        
-          </ion-item-group>
-          <!-- <hr> -->
-        </ion-list>
-      </ion-content>
-
-      <ion-footer>
-        <ion-toolbar>
-          <ion-text id="app-version" class="ion-padding" color="medium"></ion-text>
-        </ion-toolbar>
-      </ion-footer>
-    </ion-menu>
-
-    <ion-menu content-id="main-content" menu-id="menu2" side="end">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Plus d'options</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <ion-text class="ion-float-right" color="medium">
-          <sup id="lastSync"></sup>
-        </ion-text>
-        <br>
-        <ion-list>
-          <ion-item button id="syncBidirectional" class="ion-no-padding">     
-            <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
-              <ion-row class="ion-align-items-center">
-                <ion-col size="auto">
-                  <ion-icon name="sync-outline"></ion-icon>
-                </ion-col>
-                <ion-col class="ion-padding-start">
-                  <ion-label class="ion-text-wrap">
-                    <h2>Synchroniser</h2>
-                    <p>Synchronisez vos BDCs sur tous vos appareils</p>
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-item>
-          <ion-progress-bar id="syncProgressBidirectional"></ion-progress-bar>
-        </ion-list>          
-        
-        <ion-item-divider></ion-item-divider>
-
-        <ion-item button id="exitApp" class="ion-margin-top ion-padding ion-hide">
-          <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
-            <ion-row class="ion-align-items-center">
-              <ion-col size="auto">
-                <ion-icon name="power" color="danger"></ion-icon>
-              </ion-col>
-              <ion-col class="ion-padding-start">
-                <ion-label color="danger" class="ion-text-wrap">
-                  <h2>Quitter l'application</h2>
-                  <!-- <p>Sur Android Seulement</p> -->
-                </ion-label>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-      </ion-content>
-
-      <ion-footer>
-        <ion-toolbar class="ion-text-right">
-          <ion-button id="help" fill="clear" color="primary"><ion-icon name="help-circle-outline"></ion-icon>&nbsp;<ion-text>Aide</ion-text></ion-button>
-        </ion-toolbar>
-      </ion-footer>
-    </ion-menu>
+    ${leftMenu.content}
+    ${rightMenu.content}    
 
     <div class="ion-page" id="main-content">
       <ion-header>
@@ -179,7 +50,7 @@ let mainPage = {
     console.log(myFs)
 
     const element = document.querySelector('#criteria');
-    let startVal = { "country":"","name":"","who_what":"", "activity":"","keywords":"" }
+    let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keywords":"" }
 
     let criteria = new JSONEditor(element, {
         use_name_attributes: false,
@@ -202,6 +73,7 @@ let mainPage = {
             'properties': {
                 'country': {
                     'type': 'string',
+                    "format": "choices",
                     'title': 'Pays',
                     'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
                     'default': '',
@@ -216,7 +88,11 @@ let mainPage = {
                             "Allemagne",
                             "Japon",
                             "Je ne sais pas"
-                        ]
+                        ],
+                        'choices': {
+                            shouldSort: false,
+                            allowHTML: true
+                        }
                     }
                 },
                 'name': {
@@ -225,17 +101,60 @@ let mainPage = {
                 },
                 'who_what': {
                     'type': 'string',
+                    "format": "choices",
                     'title': 'Vous recherchez qui/quoi ?',
                     'enum': ['notHuman', 'human', ''],
                     'default': '',
                     'options': {
-                        'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas']
+                        'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas'],
+                        'choices': {
+                            shouldSort: false,
+                            allowHTML: true
+                        }
                     }
                 },
                 'activity': {
                     'type': 'string',
                     'title': 'Activité'
                 },
+                "sector": {
+                  "type": "integer",
+                  "title": "Secteur",
+                  "format": "choices",
+                  "enum": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+                  // "default": "",
+                  "options": {
+                      "enum_titles": [
+                          "Je ne sais pas",
+                          "Agriculture, Pêche et Élevage",
+                          "Alimentation et Restauration",
+                          "Art et Culture",
+                          "Automobile",
+                          "BTP (Bâtiment et Travaux Publics)",
+                          "Agroalimentaire",
+                          "Commerce",
+                          "Divertissement et Médias",
+                          "Éducation",
+                          "Énergie et Environnement",
+                          "Finance et Assurances",
+                          "Immobilier",
+                          "Industrie manufacturière",
+                          "Ingénierie",
+                          "Mode et Beauté",
+                          "Publicité et Marketing",
+                          "Santé et Pharmaceutique",
+                          "Services Financiers et Bancaires",
+                          "Services Professionnels",
+                          "Technologie, Informatique et Télécommunications",
+                          "Tourisme et Hôtellerie",
+                          "Transport et Logistique"
+                      ],
+                      'choices': {
+                          shouldSort: false,
+                          allowHTML: true
+                      }
+                  }
+              },
                 'keywords': {
                     'type': 'string',
                     'title': 'Mot clé',
@@ -294,6 +213,7 @@ let mainPage = {
             && findCriteria.name == "" 
             && findCriteria.who_what == "" 
             && findCriteria.activity == "" 
+            && findCriteria.sector == 0 
             && findCriteria.keywords == "" 
         ) {
             if(!validateCriteria.classList.contains('ion-hide')) {
@@ -423,6 +343,13 @@ let mainPage = {
         // console.log(ev.target)
         gridOptions.api.setQuickFilter(ev.target.value)
     })
+
+    leftMenu.logic()
+
+    let args = {}
+    args["myFs"] = myFs
+
+    rightMenu.logic(args)
   }
 }
 

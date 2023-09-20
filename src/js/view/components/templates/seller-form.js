@@ -1,13 +1,22 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
+import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
+import MyMap from "../templates/map.js"
+
 const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
+
+let myMap = new MyMap()
 
 let sellerForm = {
     name: "seller-form",
     content: /*html*/`
         <div id="sellerForm"></div>
+
+        ${myMap.content} 
     `,
-    logic: () => {
+    logic: () => {       
+        
+
         const element = document.querySelector('#sellerForm');        
 
         if(element != null) {
@@ -59,6 +68,10 @@ let sellerForm = {
                         'name': {
                             'type': 'string',
                             'title': 'Nom ou Raison sociale'
+                        },                    
+                        'tradeName': {
+                            'type': 'string',
+                            'title': 'Nom Commercial'
                         },
                         'who_what': {
                             'type': 'string',
@@ -71,6 +84,27 @@ let sellerForm = {
                                 'choices': {
                                     shouldSort: false,
                                     allowHTML: true
+                                }
+                            }
+                        },                    
+                        'nif': {
+                            'type': 'string',
+                            'title': 'NIF'
+                        },                    
+                        'stat': {
+                            'type': 'string',
+                            'title': 'STAT'
+                        },                    
+                        'rcs': {
+                            'type': 'string',
+                            'title': 'RCS'
+                        },                    
+                        'cin': {
+                            'type': 'string',
+                            'title': 'N° CIN',
+                            "options": {
+                                "dependencies": {
+                                    "root.who_what": "human"
                                 }
                             }
                         },
@@ -118,8 +152,9 @@ let sellerForm = {
                                 "type": "object",
                                 "title": "secteur",
                                 "properties": {
-                                    "secteur": {
+                                    "sector": {
                                         "type": "integer",
+                                        "title": "secteur",
                                         "format": "choices",
                                         "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
                                         // "default": "",
@@ -173,6 +208,7 @@ let sellerForm = {
                                     "locality_details": {
                                         "type": "object",
                                         "title": "détails",
+                                        "id": "locality_details",
                                         "properties": {
                                             "city": {
                                                 "type": "string",
@@ -190,7 +226,19 @@ let sellerForm = {
                                             "mapAddress": {
                                                 "type": "string",
                                                 "format": "textarea",
-                                                "title": "adresse Map"
+                                                "options": {
+                                                    "containerAttributes": {
+                                                        "class": "ion-hide"
+                                                    }
+                                                }
+                                            },
+                                            "mapAddressWording": {
+                                                "type": "string",
+                                                "title": "adresse Map",
+                                                "template": "{{ map }}",
+                                                "watch": {
+                                                    "map": "locality_details.mapAddress"
+                                                }
                                             },
                                             "description": {
                                                 "type": "string",
@@ -198,6 +246,56 @@ let sellerForm = {
                                                 "title": "description"
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        },
+                        "hourly": {
+                            "type": "object",
+                            "title": "Horaires d'ouverture",
+                            "properties": hourly
+                        },
+                        "calendar": {
+                            "type": "array",
+                            "format": "tabs-top",
+                            "title": "Calendrier",
+                            "items": {
+                                "type": "object",
+                                "title": "évènement",
+                                "properties": {
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "title": "date",
+                                        // "description": "Standard date field with flatpickr",
+                                        "options": {
+                                            "inputAttributes": {
+                                                "placeholder": "Entrer la date"
+                                            },
+                                            "flatpickr": {
+                                                "inlineHideInput": true,
+                                                "showClearButton": false,
+                                                "weekNumbers": true,
+                                                // "wrap": true,
+                                                "allowInput": false,
+                                                "altInput": true,
+                                                "altInputClass": "disableThisAltInputFirst",
+                                                "altFormat": "d/m/Y",
+                                                "dateFormat": "Y-m-d",
+                                                "locale": {
+                                                    "firstDayOfWeek": 1 // start week on Monday
+                                                },
+                                                // "disable": [
+                                                //     (date) => { return true }
+                                                // ],
+                                                "disableMobile": true
+                                            }
+                                        }
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "textarea",
+                                        "title": "description"
                                     }
                                 }
                             }
@@ -281,7 +379,7 @@ let sellerForm = {
                             "properties": {
                                 "enable_space": {
                                     "type": "object",
-                                    "title": "activer cet espace",
+                                    "title": "statut de cet espace",
                                     "properties": {
                                         "enabled": {
                                             "type": "boolean",
@@ -306,7 +404,7 @@ let sellerForm = {
                                         "properties": {
                                             "enable_media": {
                                                 "type": "object",
-                                                "title": "activer ce media",
+                                                "title": "statut de ce média",
                                                 "properties": {
                                                     "enabled": {
                                                         "type": "boolean",
@@ -379,14 +477,39 @@ let sellerForm = {
                     // Handle error
                 });
             }
+
+            let mapInstance
+
+            async function showMaps(jsonEditorInstance) {
+                try {
+                    if(typeof mapInstance == "undefined") {
+                        mapInstance = await myMap.logic(jsonEditorInstance).createMap()
+                    }
+                }
+                catch(err) {
+                    console.log("Error when trying to initialize map", err)
+                }
+
+                document.querySelector("#mapDescription").classList.remove("ion-hide")
+            }
+
+            function hideMaps(jsonEditorInstance) {
+                if (typeof mapInstance !== 'undefined' && mapInstance instanceof L.Map) { 
+                    myMap.logic(jsonEditorInstance).removeMap()
+                    mapInstance = undefined
+                    document.querySelector("#map").setAttribute("class", "")                    
+                }
+
+                document.querySelector("#mapDescription").classList.add("ion-hide")
+            }
             
             form.on('ready', async () => {
                 //get the seller infos
                 const sellerId = 1
-                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what`
+                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName`
 
                 try {
-                    let sellerInfos = await fetch(`https://server2.atria.local/findseller/api.php/records/sellers/${sellerId}?include=${columns}`)
+                    let sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
                     sellerInfos = await sellerInfos.json()
                     // sellerInfos = sellerInfos.records
         
@@ -401,38 +524,153 @@ let sellerForm = {
 
                 editBtn.classList.remove("ion-hide")
 
+                const disableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                disableTheseInputs.forEach((el) => {
+                    el.setAttribute("disabled", "disabled")
+                })
+
                 form.disable();     
 
                 console.log(form)
                 console.log(form.getValue())      
                 
-                const watcherCallback = function (path) {
-                    console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+                // const watcherCallback = function (path) {
+                //     console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
 
-                    let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
+                //     let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
 
-                    finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
+                //     finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
 
-                    console.log("finalData", finalData)
-                }
+                //     console.log("finalData", finalData)
+
+                //     if(fieldName == "localities") {                                                
+                //         const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
+                        
+                //         jsonEditorLocalitiesNavItems.forEach((el, index) => {
+                //             if(el.classList.contains("active")) {
+                //                 document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+
+                //                 myMap.index = index
+                //                 myMap.removeAllMarkers()
+                //                 myMap.logic(form).locateTheCurrentMapAddress()
+                //             }
+
+                //             if(!el.hasAttribute('data-click-attached')) {
+                //                 el.addEventListener("click", (event) => {
+                //                     // const clickedElement = event.target
+
+                //                     // alert(index)
+                //                     // console.log(clickedElement.closest("li"))
+                //                     // console.log(form.root.active_tab)
+
+                //                     console.log(index)
+
+                //                     document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+
+                //                     myMap.index = index
+                //                     myMap.removeAllMarkers()
+                //                     myMap.logic(form).locateTheCurrentMapAddress()
+                //                 })
+
+                //                 el.setAttribute('data-click-attached', 'true')                                
+                //             }                            
+                //         })                        
+                //     }
+                // }
     
-                for (let key in form.editors) {
-                    if (form.editors.hasOwnProperty(key) && key !== 'root') {
-                        form.watch(key, watcherCallback.bind(form, key));
-                    }
-                }
+                // for (let key in form.editors) {
+                //     if (form.editors.hasOwnProperty(key) && key !== 'root') {
+                //         form.watch(key, watcherCallback.bind(form, key));
+                //     }
+                // }
+
+                const jsonEditorNavItems = document.querySelectorAll('div[data-schemapath="root"]>div>div>div>ul>li.nav-item')
+
+                jsonEditorNavItems.forEach((el, index) => {
+                    el.addEventListener("click", (event) => {
+                        // const clickedElement = event.target
+
+                        // alert(index)
+                        // console.log(clickedElement.closest("li"))
+                        // console.log(form.root.active_tab)
+
+                        if(index == 4){//locality - then showMaps()
+                            document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", Array.prototype.indexOf.call(document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link'), document.querySelector('div[data-schemapath="root.localities"] li.nav-item a.nav-link.active')))
+                            
+                            if(form.isEnabled()) {
+                                showMaps(form)
+                            }
+                        }
+                        else {
+                            hideMaps(form)
+                        }
+                    })
+                })
 
                 form.on('change', async (e) => {
                     if(changeCount > 0) {                    
                         saveBtn.classList.remove("ion-hide")
                         console.log(form.getValue())
+
+                        try {
+                            const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
+                            
+                            jsonEditorLocalitiesNavItems.forEach((el, index) => {
+                                if(el.classList.contains("active")) {
+                                    document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+    
+                                    myMap.index = index
+                                    myMap.removeAllMarkers()
+                                    myMap.logic(form).locateTheCurrentMapAddress()
+                                }
+    
+                                if(!el.hasAttribute('data-click-attached')) {
+                                    el.addEventListener("click", (event) => {
+                                        // const clickedElement = event.target
+    
+                                        // alert(index)
+                                        // console.log(clickedElement.closest("li"))
+                                        // console.log(form.root.active_tab)
+    
+                                        console.log(index)
+    
+                                        document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+    
+                                        myMap.index = index
+                                        myMap.removeAllMarkers()
+                                        myMap.logic(form).locateTheCurrentMapAddress()
+                                    })
+    
+                                    el.setAttribute('data-click-attached', 'true')                                
+                                }                            
+                            }) 
+                        }
+                        catch(err) {
+                            console.log("map not yet initialized: ", err)
+                        }
                     }
     
-                    changeCount++
+                    changeCount++                    
                 })
     
                 editBtn.addEventListener("click", () => {
-                    form.enable()
+                    const enableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                    enableTheseInputs.forEach((el) => {
+                        el.removeAttribute("disabled")
+                    })
+
+                    if(!form.isEnabled()) {
+                        form.enable()
+                        
+                        const detectIfLocalityTabChoosen = Array.prototype.indexOf.call(document.querySelectorAll('div[data-schemapath="root"]>div>div>div>ul>li.nav-item a.nav-link'), document.querySelector('div[data-schemapath="root"]>div>div>div>ul>li.nav-item a.nav-link.active'))
+
+                        if(detectIfLocalityTabChoosen == 4) {//locality - then showMaps()
+                            showMaps(form)
+                        }
+                    }
+                    
                     !editBtn.classList.contains("ion-hide") ? editBtn.classList.add("ion-hide") : null
                 }) 
 
