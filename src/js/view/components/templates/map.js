@@ -125,7 +125,7 @@ export default class MyMap {
         this.index = document.querySelector('div[data-schemapath="root.localities"]').getAttribute("the-concerned-locality-index")
 
         if(this.index != -1) { 
-          jsonEditorInstance.getEditor(`root.localities.${this.index}.locality_details.mapAddress`).setValue(JSON.stringify(e.latlng))//mila test tsara eto
+          jsonEditorInstance.getEditor(`root.localities.${this.index}.locality_details.mapAddress`).setValue(JSON.stringify(e.latlng))
         }
       }
 

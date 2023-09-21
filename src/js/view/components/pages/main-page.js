@@ -50,7 +50,7 @@ let mainPage = {
     console.log(myFs)
 
     const element = document.querySelector('#criteria');
-    let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keywords":"" }
+    let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keyword":"" }
 
     let criteria = new JSONEditor(element, {
         use_name_attributes: false,
@@ -68,7 +68,7 @@ let mainPage = {
             //     'country',
             //     'name',
             //     'who_what',
-            //     'keywords'
+            //     'keyword'
             // ],
             'properties': {
                 'country': {
@@ -100,13 +100,13 @@ let mainPage = {
                     'title': 'Nom ou Raison sociale'
                 },
                 'who_what': {
-                    'type': 'string',
+                    'type': 'integer',
                     "format": "choices",
                     'title': 'Vous recherchez qui/quoi ?',
-                    'enum': ['notHuman', 'human', ''],
-                    'default': '',
+                    'enum': [0,1,2],
+                    'default': 0,
                     'options': {
-                        'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas'],
+                        'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
                         'choices': {
                             shouldSort: false,
                             allowHTML: true
@@ -122,7 +122,7 @@ let mainPage = {
                   "title": "Secteur",
                   "format": "choices",
                   "enum": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
-                  // "default": "",
+                  "default": 0,
                   "options": {
                       "enum_titles": [
                           "Je ne sais pas",
@@ -140,7 +140,7 @@ let mainPage = {
                           "Immobilier",
                           "Industrie manufacturière",
                           "Ingénierie",
-                          "Mode et Beauté",
+                          "Mode et Esthétique",
                           "Publicité et Marketing",
                           "Santé et Pharmaceutique",
                           "Services Financiers et Bancaires",
@@ -155,7 +155,7 @@ let mainPage = {
                       }
                   }
               },
-                'keywords': {
+                'keyword': {
                     'type': 'string',
                     'title': 'Mot clé',
                     'description': 'Mot clé',
@@ -176,7 +176,7 @@ let mainPage = {
         return /*html*/`
             <div class="full-width-row">
                 <span>${params.data.name}</span>
-                <p>${params.data.who_what}</p>
+                <p>${params.data.country}</p>
             </div>`;
     }
 
@@ -185,7 +185,7 @@ let mainPage = {
             { headerName: 'Id :', field: 'id', hide: true },
             { headerName: 'Propositions :', field: 'name' },
             { headerName: 'Qui/Quoi', field: 'who_what', hide: true },
-            // { headerName: 'Mots Clés', field: 'keywords' },
+            // { headerName: 'Mots Clés', field: 'keyword' },
             // { headerName: 'Num Tél', field: 'phone' }
         ],
         defaultColDef: {sortable: true, filter: true, suppressMovable: true},
@@ -214,7 +214,7 @@ let mainPage = {
             && findCriteria.who_what == "" 
             && findCriteria.activity == "" 
             && findCriteria.sector == 0 
-            && findCriteria.keywords == "" 
+            && findCriteria.keyword == "" 
         ) {
             if(!validateCriteria.classList.contains('ion-hide')) {
                 validateCriteria.classList.add('ion-hide')
@@ -279,7 +279,8 @@ let mainPage = {
                 'name': findCriteria.name,
                 'who_what': findCriteria.who_what,
                 'activity': findCriteria.activity,
-                'keywords': findCriteria.keywords
+                'sector': findCriteria.sector,
+                'keyword': findCriteria.keyword
             }
         }   
 

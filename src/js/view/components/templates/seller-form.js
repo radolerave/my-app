@@ -74,13 +74,13 @@ let sellerForm = {
                             'title': 'Nom Commercial'
                         },
                         'who_what': {
-                            'type': 'string',
+                            'type': 'integer',
                             "format": "choices",
-                            'title': 'Etes-vous une société ou un individu ?',
-                            'enum': ['notHuman', 'human', ''],
-                            'default': '',
+                            'title': 'Société ou individu ?',
+                            'enum': [0,1,2],
+                            'default': 0,
                             'options': {
-                                'enum_titles': ['Une société', 'Un individu', 'Je ne sais pas'],
+                                'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
                                 'choices': {
                                     shouldSort: false,
                                     allowHTML: true
@@ -174,7 +174,7 @@ let sellerForm = {
                                                 "Immobilier",
                                                 "Industrie manufacturière",
                                                 "Ingénierie",
-                                                "Mode et Beauté",
+                                                "Mode et Esthétique",
                                                 "Publicité et Marketing",
                                                 "Santé et Pharmaceutique",
                                                 "Services Financiers et Bancaires",
@@ -235,7 +235,7 @@ let sellerForm = {
                                             "mapAddressWording": {
                                                 "type": "string",
                                                 "title": "adresse Map",
-                                                "template": "{{ map }}",
+                                                "template": "callbackFunction",
                                                 "watch": {
                                                     "map": "locality_details.mapAddress"
                                                 }
@@ -441,7 +441,24 @@ let sellerForm = {
                     "basicCategoryTitle": "Informations",
                     // "remove_empty_properties": true
                 }
-            });            
+            });           
+            
+            window.JSONEditor.defaults.callbacks.template = {               
+                "callbackFunction": (jseditor,e) => {
+                    let latLng
+
+                    try {
+                        latLng = JSON.parse(e.map)
+
+                        latLng = `[${latLng.lat}, ${latLng.lng}]`
+                    }
+                    catch(err) {
+                        latLng = ""
+                    }
+                    
+                    return latLng
+                }
+            }
 
             let changeCount = 0//ignore the first fired change event
             const editBtn = document.querySelector("#editMyAccountData")
@@ -535,57 +552,57 @@ let sellerForm = {
                 console.log(form)
                 console.log(form.getValue())      
                 
-                // const watcherCallback = function (path) {
-                //     console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+                const watcherCallback = function (path) {
+                    console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
 
-                //     let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
+                    let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
 
-                //     finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
+                    finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
 
-                //     console.log("finalData", finalData)
+                    console.log("finalData", finalData)
 
-                //     if(fieldName == "localities") {                                                
-                //         const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
+                    // if(fieldName == "localities") {                                                
+                    //     const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
                         
-                //         jsonEditorLocalitiesNavItems.forEach((el, index) => {
-                //             if(el.classList.contains("active")) {
-                //                 document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+                    //     jsonEditorLocalitiesNavItems.forEach((el, index) => {
+                    //         if(el.classList.contains("active")) {
+                    //             document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
 
-                //                 myMap.index = index
-                //                 myMap.removeAllMarkers()
-                //                 myMap.logic(form).locateTheCurrentMapAddress()
-                //             }
+                    //             myMap.index = index
+                    //             myMap.removeAllMarkers()
+                    //             myMap.logic(form).locateTheCurrentMapAddress()
+                    //         }
 
-                //             if(!el.hasAttribute('data-click-attached')) {
-                //                 el.addEventListener("click", (event) => {
-                //                     // const clickedElement = event.target
+                    //         if(!el.hasAttribute('data-click-attached')) {
+                    //             el.addEventListener("click", (event) => {
+                    //                 // const clickedElement = event.target
 
-                //                     // alert(index)
-                //                     // console.log(clickedElement.closest("li"))
-                //                     // console.log(form.root.active_tab)
+                    //                 // alert(index)
+                    //                 // console.log(clickedElement.closest("li"))
+                    //                 // console.log(form.root.active_tab)
 
-                //                     console.log(index)
+                    //                 console.log(index)
 
-                //                     document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+                    //                 document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
 
-                //                     myMap.index = index
-                //                     myMap.removeAllMarkers()
-                //                     myMap.logic(form).locateTheCurrentMapAddress()
-                //                 })
+                    //                 myMap.index = index
+                    //                 myMap.removeAllMarkers()
+                    //                 myMap.logic(form).locateTheCurrentMapAddress()
+                    //             })
 
-                //                 el.setAttribute('data-click-attached', 'true')                                
-                //             }                            
-                //         })                        
-                //     }
-                // }
+                    //             el.setAttribute('data-click-attached', 'true')                                
+                    //         }                            
+                    //     })                        
+                    // }
+                }
     
-                // for (let key in form.editors) {
-                //     if (form.editors.hasOwnProperty(key) && key !== 'root') {
-                //         form.watch(key, watcherCallback.bind(form, key));
-                //     }
-                // }
+                for (let key in form.editors) {
+                    if (form.editors.hasOwnProperty(key) && key !== 'root') {
+                        form.watch(key, watcherCallback.bind(form, key));
+                    }
+                }
 
-                const jsonEditorNavItems = document.querySelectorAll('div[data-schemapath="root"]>div>div>div>ul>li.nav-item')
+                const jsonEditorNavItems = document.querySelectorAll('div[data-schemapath="root"]>div>div>div>ul>li.nav-item:not([style="display: none;"])')
 
                 jsonEditorNavItems.forEach((el, index) => {
                     el.addEventListener("click", (event) => {
@@ -596,7 +613,7 @@ let sellerForm = {
                         // console.log(form.root.active_tab)
 
                         if(index == 4){//locality - then showMaps()
-                            document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", Array.prototype.indexOf.call(document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link'), document.querySelector('div[data-schemapath="root.localities"] li.nav-item a.nav-link.active')))
+                            document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", Array.prototype.indexOf.call(document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item:not([style="display: none;"]) a.nav-link'), document.querySelector('div[data-schemapath="root.localities"] li.nav-item:not([style="display: none;"]) a.nav-link.active')))
                             
                             if(form.isEnabled()) {
                                 showMaps(form)
@@ -614,14 +631,17 @@ let sellerForm = {
                         console.log(form.getValue())
 
                         try {
-                            const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
+                            const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item:not([style="display: none;"]) a.nav-link')
                             
                             jsonEditorLocalitiesNavItems.forEach((el, index) => {
                                 if(el.classList.contains("active")) {
-                                    document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+                                    document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)                                    
     
                                     myMap.index = index
                                     myMap.removeAllMarkers()
+
+                                    console.log(myMap.index)
+
                                     myMap.logic(form).locateTheCurrentMapAddress()
                                 }
     
