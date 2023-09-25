@@ -189,7 +189,7 @@ let mainPage = {
             // { headerName: 'Num Tél', field: 'phone' }
         ],
         defaultColDef: {sortable: true, filter: true, suppressMovable: true},
-        rowSelection: 'multiple',
+        rowSelection: 'single',
         pagination: true,
         paginationPageSize: 5,
         rowData: [],
@@ -198,7 +198,13 @@ let mainPage = {
             return true;
         },
         fullWidthCellRenderer: fullWidthCellRenderer,
-        includeHiddenColumnsInQuickFilter: true
+        includeHiddenColumnsInQuickFilter: true,
+        onRowClicked: (e) => {
+          // console.log(e)
+          const navigation = document.querySelector("ion-nav#navigation")
+        
+          navigation.push('seller-details', e)  
+        }
     }
 
     const grid = new Grid(results, gridOptions);
@@ -211,7 +217,7 @@ let mainPage = {
         if(
             findCriteria.country == "" 
             && findCriteria.name == "" 
-            && findCriteria.who_what == "" 
+            && findCriteria.who_what == 0 
             && findCriteria.activity == "" 
             && findCriteria.sector == 0 
             && findCriteria.keyword == "" 
@@ -220,7 +226,7 @@ let mainPage = {
                 validateCriteria.classList.add('ion-hide')
             }        
 
-            if(validateCriteria.getAttribute('disabled') == "false") {
+            if(validateCriteria.getAttribute('disabled') == null) {
                 validateCriteria.setAttribute('disabled', 'true')
             }
         }
@@ -229,11 +235,30 @@ let mainPage = {
                 validateCriteria.classList.remove('ion-hide')
             }
 
-            if(validateCriteria.getAttribute('disabled') != "false") {
-                validateCriteria.setAttribute('disabled', 'false')
+            if(validateCriteria.getAttribute('disabled') != null) {
+                validateCriteria.removeAttribute('disabled')
             }
         }
     }
+
+    function findClosestParent(element, selector) {
+      while (element) {
+        if (element.parentElement && element.parentElement.matches(selector)) {
+          // Return the closest parent's parent (the direct parent) that matches the selector
+          return element.parentElement;
+        }
+        // Move up to the parent element
+        element = element.parentElement;
+      }
+      // If no matching parent is found, return null
+      return null;
+    }
+
+    // Create a new 'change' event
+    let changeEvent = new Event('change', {
+      bubbles: true, // Allows the event to bubble up the DOM tree
+      cancelable: true, // Allows the event to be canceled
+    });
 
     criteria.on('ready', () => {
         const allInputsCriterias = document.querySelectorAll('div[data-schemaid="root"] input')
@@ -241,19 +266,24 @@ let mainPage = {
         // console.log(allInputsCriterias)
 
         allInputsCriterias.forEach(element => {
-        // console.log(element)
-        element.addEventListener("focus", (ev) => {
-                if(validateCriteria.getAttribute('disabled') != "true") {
-                    validateCriteria.setAttribute('disabled', 'true')
-                }
+            // console.log(element)
+            // element.addEventListener("focus", (ev) => {
+            //     if(validateCriteria.getAttribute('disabled') != "true") {
+            //         validateCriteria.setAttribute('disabled', 'true')
+            //     }
 
-                if(!validateCriteria.classList.contains('ion-hide')) {
-                    validateCriteria.classList.add('ion-hide')
-                }
-            })
+            //     if(!validateCriteria.classList.contains('ion-hide')) {
+            //         validateCriteria.classList.add('ion-hide')
+            //     }
+            // })
 
-            element.addEventListener("blur", (ev) => {
-                showHide()
+            // element.addEventListener("blur", (ev) => {
+            //     showHide()
+            // })
+
+            element.addEventListener("input", (ev) => {                
+                // Dispatch the 'change' event on the element
+                ev.target.dispatchEvent(changeEvent);
             })
         });    
     })
@@ -303,7 +333,7 @@ let mainPage = {
 
         //show and enable the reset criteria button
         resetCriteria.classList.remove('ion-hide')
-        resetCriteria.setAttribute('disabled', 'false')
+        resetCriteria.removeAttribute('disabled')
 
         //disable validate criteria button
         validateCriteria.setAttribute('disabled', 'true')

@@ -1,7 +1,7 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
 import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
-import MyMap from "../templates/map.js"
+import MyMap from "../../../helpers/map.js"
 
 const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
 
@@ -364,7 +364,7 @@ let sellerForm = {
                                                 "type": "string",
                                                 "title": "protocole"
                                             },
-                                            "lien": {
+                                            "link": {
                                                 "type": "string",
                                                 "title": "lien"
                                             }

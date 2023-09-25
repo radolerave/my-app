@@ -22,6 +22,7 @@ export default class FsView {
         this.generateThisComponent(this.components.signInOrSignUp)      
         this.generateThisComponent(this.components.signIn)  
         this.generateThisComponent(this.components.signUp)  
+        this.generateThisComponent(this.components.sellerDetails) 
     }
 
     async skeleton() {
