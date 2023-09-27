@@ -7,7 +7,7 @@ import { sellerLocalitiesTemplate } from './seller-localities-template.js'
 let sellerDetailsTemplate = {
   name: "seller-details-template",
   content: /*html*/`
-    <ion-tabs>
+    <ion-tabs id="sellerDetailsTab">
       <ion-tab tab="seller-informations">
         <ion-nav id="seller-informations-nav"></ion-nav>
         <div id="seller-informations-page">      
@@ -51,24 +51,24 @@ let sellerDetailsTemplate = {
       
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="seller-informations">
-          <ion-icon name="information-circle"></ion-icon>
-          Informations
+          <ion-icon name="information-circle" size="large"></ion-icon>
+          
         </ion-tab-button>
         <ion-tab-button tab="contacts">
-          <ion-icon name="call"></ion-icon>
-          Contacts
+          <ion-icon name="call" size="large"></ion-icon>
+          
         </ion-tab-button>
         <ion-tab-button tab="events">
-          <ion-icon name="calendar"></ion-icon>
-          Events
+          <ion-icon name="calendar" size="large"></ion-icon>
+          
         </ion-tab-button>
         <ion-tab-button tab="medias">
-          <ion-icon name="images"></ion-icon>
-          Médias
+          <ion-icon name="images" size="large"></ion-icon>
+          
         </ion-tab-button>
         <ion-tab-button tab="localities">
-          <ion-icon name="map"></ion-icon>
-          Localités
+          <ion-icon name="map" size="large"></ion-icon>
+          
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
@@ -78,7 +78,7 @@ let sellerDetailsTemplate = {
 
     const data = args.params.data
 
-    document.querySelector("seller-details ion-title").innerHTML = data.name
+    document.querySelector("seller-details ion-title #title").innerHTML = data.name
 
     const sellerInformationsNav = document.querySelector('#seller-informations-nav');
     const sellerInformationsPage = document.querySelector('#seller-informations-page');
@@ -113,7 +113,32 @@ let sellerDetailsTemplate = {
     sellerMediasTemplate.logic(data)
 
     document.querySelector("#localitiesDetails").innerHTML = sellerLocalitiesTemplate.content
-    sellerLocalitiesTemplate.logic(data)
+    sellerLocalitiesTemplate.logic(data)    
+
+    const generatTabTitle = (tabName) => {
+      const tabeTitleDict = {
+        "seller-informations" : "Informations",
+        "contacts" : "Contacts",
+        "events" : "Evènements",
+        "medias" : "Médias",
+        "localities" : "Localisations"
+      }
+
+      document.querySelector("seller-details ion-title #tab-title").innerHTML = tabeTitleDict[tabName]
+    }
+
+    const tab = document.querySelector("ion-tabs#sellerDetailsTab")
+
+    const firstSelectedTab = await tab.getSelected()
+    generatTabTitle(firstSelectedTab)
+
+    tab.addEventListener('ionTabsDidChange', async () => {
+      let currentTab = await tab.getSelected()
+
+      // console.log(currentTab)
+
+      generatTabTitle(currentTab)
+    })
   }
 }
 

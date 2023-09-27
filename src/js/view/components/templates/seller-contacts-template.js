@@ -4,16 +4,12 @@ let sellerContactsTemplate = {
   name: "seller-medias-template",
   content: /*html*/`
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>Contacts</ion-card-title>
-        <!--<ion-card-subtitle>Informations sur les contacts</ion-card-subtitle>-->
-      </ion-card-header>
-
       <ion-card-content>
         <ion-list>
           ${sellerInformationsItemTemplate.logic({
             title : "Contacts",
             property : "contacts",
+            noTitle : true
           })}
         </ion-list>
       </ion-card-content>
@@ -32,15 +28,15 @@ let sellerContactsTemplate = {
     for(let i = 0; i < contactsKeys.length; i++) {
       const contactType = contactsKeys[i]
       const contactTypeData = data.contacts[contactType]
-      console.table(contactType, contactTypeData)
+      // console.table(contactType, contactTypeData)
 
       if(contactTypeData.length > 0) {
-        theSellerContacts += `<ion-item><ion-label>`
+        theSellerContacts += `<div><ion-label>`
 
         theSellerContacts += `<h2>${contactType}</h2>`
       
         contactTypeData.forEach(element => {
-          theSellerContacts += `<p>`
+          theSellerContacts += `<ion-item button="true"><ion-icon class="ion-no-padding" aria-hidden="true" name="help" slot="end" size="medium"></ion-icon><ion-label>`
 
           if(typeof element.wording != "undefined" && element.wording.length > 0) {
             theSellerContacts += `<h3>${element.wording}</h3>`
@@ -69,10 +65,10 @@ let sellerContactsTemplate = {
               break
           }          
 
-          theSellerContacts += `</p>`
+          theSellerContacts += `</ion-label></ion-item>`
         });
 
-        theSellerContacts += `</ion-label></ion-item>`
+        theSellerContacts += `</ion-label></div>`
       }            
     }
     document.querySelector(`${componentName} #contacts`).innerHTML = theSellerContacts

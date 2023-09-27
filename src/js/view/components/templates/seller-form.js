@@ -44,7 +44,7 @@ let sellerForm = {
                         'country': {
                             'type': 'string',
                             'format': 'choices',
-                            'title': 'Localisation',
+                            'title': 'Pays',
                             'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
                             'default': '',
                             'options': {
@@ -104,7 +104,7 @@ let sellerForm = {
                             'title': 'N° CIN',
                             "options": {
                                 "dependencies": {
-                                    "root.who_what": "human"
+                                    "root.who_what": 2
                                 }
                             }
                         },
@@ -212,11 +212,11 @@ let sellerForm = {
                                         "properties": {
                                             "city": {
                                                 "type": "string",
-                                                "title": "Ville"
+                                                "title": "ville"
                                             },
                                             "neighborhood": {
                                                 "type": "string",
-                                                "title": "Quartier"
+                                                "title": "quartier"
                                             },
                                             "address": {
                                                 "type": "string",
@@ -318,6 +318,20 @@ let sellerForm = {
                                                 "type": "string",
                                                 "title": "libellé"
                                             },
+                                            "phoneType": {
+                                                'type': 'integer',
+                                                "format": "choices",
+                                                'title': 'Type de tél',
+                                                'enum': [0,1,2,3,4],
+                                                'default': 0,
+                                                'options': {
+                                                    'enum_titles': ['Mobile', 'Fixe', 'WhatsApp', 'Viber', 'Skype'],
+                                                    'choices': {
+                                                        shouldSort: false,
+                                                        allowHTML: true
+                                                    }
+                                                }
+                                            },
                                             "phone": {
                                                 "type": "string",
                                                 "title": "n° téléphone"
@@ -360,9 +374,19 @@ let sellerForm = {
                                                 "type": "string",
                                                 "title": "libellé"
                                             },
-                                            "protocol": {
-                                                "type": "string",
-                                                "title": "protocole"
+                                            "linkType": {
+                                                'type': 'integer',
+                                                "format": "choices",
+                                                'title': 'Type de lien',
+                                                'enum': [0,1,2,3,4],
+                                                'default': 0,
+                                                'options': {
+                                                    'enum_titles': ['Site WEB', 'Facebook', 'Instagram', 'Linkedin', 'Twitter'],
+                                                    'choices': {
+                                                        shouldSort: false,
+                                                        allowHTML: true
+                                                    }
+                                                }
                                             },
                                             "link": {
                                                 "type": "string",

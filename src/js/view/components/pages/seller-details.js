@@ -10,7 +10,12 @@ let sellerDetails = {
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title></ion-title>            
+                <ion-title>
+                    <ion-label>
+                        <h2 id="title"></h2>
+                        <p id="tab-title"></p>
+                    </ion-label>
+                </ion-title>                      
             </ion-toolbar>
         </ion-header>
 

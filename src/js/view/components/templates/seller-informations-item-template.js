@@ -2,18 +2,23 @@ let sellerInformationsItemTemplate = {
   name: "seller-informations-item-template",
   content: /*html*/``,
   logic: (args = {}) => {
-    const ariaHidden = typeof args.ariaHidden != "undefined" ? args.ariaHidden : "true"
-    const name = typeof args.name != "undefined" ? args.name : "information-circle-outline"
-    const slot = typeof args.slot != "undefined" ? args.slot : "start"
-    const size = typeof args.size != "undefined" ? args.size : "large"
-    const title = typeof args.title != "undefined" ? args.title : ""
+    const iconAriaHidden = typeof args.iconAriaHidden != "undefined" ? args.iconAriaHidden : "true"
+    const iconName = typeof args.iconName != "undefined" ? args.iconName : ""
+    const iconSlot = typeof args.iconSlot != "undefined" ? args.iconSlot : "start"
+    const iconSize = typeof args.iconSize != "undefined" ? args.iconSize : "medium"
+    const noTitle = typeof args.noTitle != "undefined" && args.noTitle == true ? true : false
+    const title = typeof args.title != "undefined" && noTitle == false ? `<h2>${args.title}</h2>` : ""
     const property = typeof args.property != "undefined" ? args.property : ""
 
+    const icon = typeof iconName == "string" && iconName.length > 0 ? `<ion-icon class="ion-no-padding ion-margin-end" aria-hidden=${iconAriaHidden} name=${iconName} slot=${iconSlot} size=${iconSize}></ion-icon>` : ""
+
+
+
     return /*html*/`
-      <ion-item>
-        <ion-icon aria-hidden=${ariaHidden} name=${name} slot=${slot} size=${size}></ion-icon>
+      <ion-item class="ion-no-padding">
+        ${icon}
         <ion-label>
-          <h2>${title}</h2>
+          ${title}
           <p id=${property}></p>
         </ion-label>
       </ion-item>

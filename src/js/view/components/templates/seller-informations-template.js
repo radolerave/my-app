@@ -4,16 +4,12 @@ let sellerInformationsTemplate = {
   name: "seller-informations-template",
   content: /*html*/`
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>Détails</ion-card-title>
-        <!--<ion-card-subtitle>Informations détaillées</ion-card-subtitle>-->
-      </ion-card-header>
-
       <ion-card-content>
         <ion-list>
           ${sellerInformationsItemTemplate.logic({
             title : "Nom / Raison sociale",
             property : "name",
+            // iconName : "information-circle-outline"
           })}
 
           ${sellerInformationsItemTemplate.logic({
@@ -55,11 +51,6 @@ let sellerInformationsTemplate = {
     </ion-card>
 
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>Activités</ion-card-title>
-        <!--<ion-card-subtitle>Informations sur les activités</ion-card-subtitle>-->
-      </ion-card-header>
-
       <ion-card-content>
         <ion-list>
           ${sellerInformationsItemTemplate.logic({
@@ -71,11 +62,6 @@ let sellerInformationsTemplate = {
     </ion-card>
 
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>Secteurs d'activités</ion-card-title>
-        <!--<ion-card-subtitle>Informations sur les secteurs d'activités</ion-card-subtitle>-->
-      </ion-card-header>
-
       <ion-card-content>
         <ion-list>
           ${sellerInformationsItemTemplate.logic({
@@ -87,11 +73,6 @@ let sellerInformationsTemplate = {
     </ion-card>
 
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>Horaires d'ouverture</ion-card-title>
-        <!--<ion-card-subtitle>Informations sur les horaires d'ouverture</ion-card-subtitle>-->
-      </ion-card-header>
-
       <ion-card-content>
         <ion-list>
           ${sellerInformationsItemTemplate.logic({
