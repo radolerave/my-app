@@ -5,15 +5,9 @@ import { mapModalTemplate } from './map-modal-template.js'
 let sellerLocalitiesTemplate = {
   name: "seller-localities-template",
   content: /*html*/`
-      <ion-button expand="block" id="xou">Map</ion-button>
-
       <div id="localities"></div>
   `,
   logic: async (args) => {
-    document.querySelector("#xou").addEventListener("click", () => {
-      mapModalTemplate.logic().openModal()
-    })
-
     let data = args
     const navigation = document.querySelector("ion-nav#navigation")
     let currentPage = await navigation.getActive()
@@ -23,49 +17,42 @@ let sellerLocalitiesTemplate = {
 
     let localities = data.localities
 
-    const dictionary = (key, val, onClick = () => {}) => {
+    const dictionary = (key, val) => {
       let dict = {
         locality : {
           title : "Nom de l'emplacement",
           iconName : "business-outline"
         },
         city : {
-          title : "ville",
+          title : "Ville",
           iconName : "pin"
         },
         neighborhood : {
-          title : "quartier",
+          title : "Quartier",
           iconName : "footsteps"
         },
         address : {
-          title : "adresse",
+          title : "Adresse",
           iconName : "locate"
         },
         mapAddress : {
-          title : "adresse Map",
+          title : "Sur la carte",
           iconName : "map",
-          isButton : true,
-          onClick : onClick
+          iconColor : "primary",
+          itemClass : "mapButton",
+          isButton : true
         },
         mapAddressWording : {
-          title : "adresse Map",
+          title : "Adresse Map",
           iconName : "map"
         },
         description : {
-          title : "description",
+          title : "Description",
           iconName : "text"
         },
       }
 
       let ret = {}
-
-      switch(key) {
-        case "mapAddress": //put here the map link operation
-          break
-
-        default:
-          break
-      }
 
       ret[key] = dict[key]
       ret[key]["value"] = val
@@ -79,7 +66,7 @@ let sellerLocalitiesTemplate = {
       const location = localities[i]
       console.table(i, location)
 
-      theSellerLocalities += `<ion-card><ion-card-content>`
+      theSellerLocalities += `<ion-card data-id=${i}><ion-card-content>`
 
       theSellerLocalities += `<h3 class="ion-padding-top">Localité n° ${parseInt(i) + 1}</h3>`
    
@@ -96,12 +83,8 @@ let sellerLocalitiesTemplate = {
         const val = locality_details[key]
         console.table(key, val)
 
-        if(typeof val == "string" && val.length > 0 && key != "mapAddressWording" && key != "mapAddress") {
+        if(typeof val == "string" && val.length > 0 && key != "mapAddressWording") {
           theSellerLocalities += itemTemplate.logic(dictionary(key, val))
-        }
-
-        if(typeof val == "string" && val.length > 0 && key == "mapAddress") {
-          theSellerLocalities += itemTemplate.logic(dictionary(key, val, mapModalTemplate.logic().openModal))
         }
       }
 
@@ -109,6 +92,32 @@ let sellerLocalitiesTemplate = {
          
     }
     document.querySelector(`${componentName} #localities`).innerHTML = theSellerLocalities
+
+    function findClosestParent(element, selector) {
+      while (element) {
+        if (element.parentElement && element.parentElement.matches(selector)) {
+          // Return the closest parent's parent (the direct parent) that matches the selector
+          return element.parentElement;
+        }
+        // Move up to the parent element
+        element = element.parentElement;
+      }
+      // If no matching parent is found, return null
+      return null;
+    }
+
+    document.querySelectorAll("ion-item.mapButton").forEach((value, index) => {
+      const item = value
+
+      const closestIonCardParent = findClosestParent(item, 'ion-card[data-id]')
+      const dataId = parseInt(closestIonCardParent.getAttribute("data-id"))
+
+      item.addEventListener("click", async () => {
+        await mapModalTemplate.logic().openModal({
+          location : localities[dataId]
+        })
+      })
+    })
   }
 }
 
