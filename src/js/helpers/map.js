@@ -52,7 +52,7 @@ export default class MyMap {
           }
         }
         catch(err) {
-          console.log(err)
+          console.log("map error", /*err*/)
 
           this.removeAllMarkers()
           this.map.locate({setView: true, maxZoom: 16})

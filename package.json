@@ -13,17 +13,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@awesome-cordova-plugins/calendar": "^6.4.0",
     "@capacitor/android": "^5.2.2",
     "@capacitor/app": "^5.0.6",
     "@capacitor/browser": "^5.1.0",
     "@capacitor/camera": "latest",
     "@capacitor/clipboard": "^5.0.6",
     "@capacitor/core": "^5.2.2",
+    "@capacitor/geolocation": "^5.0.6",
     "@capacitor/splash-screen": "latest",
+    "@capacitor/toast": "^5.0.6",
     "@ionic/core": "^7.3.3",
     "@json-editor/json-editor": "^2.10.1",
     "ag-grid-community": "^30.0.6",
     "choices.js": "^10.2.0",
+    "cordova-plugin-calendar": "^5.1.6",
     "dexie": "^3.2.4",
     "gridjs": "^6.0.6",
     "leaflet-geosearch": "^3.8.0"

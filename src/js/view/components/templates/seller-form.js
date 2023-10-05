@@ -1,6 +1,7 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
 import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
+import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
 
 const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
@@ -235,7 +236,7 @@ let sellerForm = {
                                             "mapAddressWording": {
                                                 "type": "string",
                                                 "title": "adresse Map",
-                                                "template": "callbackFunction",
+                                                "template": "mapAddressCallbackFunction",
                                                 "watch": {
                                                     "map": "locality_details.mapAddress"
                                                 }
@@ -259,43 +260,29 @@ let sellerForm = {
                             "type": "array",
                             "format": "tabs-top",
                             "title": "Calendrier",
+                            // "id": "calendar",
                             "items": {
                                 "type": "object",
-                                "title": "évènement",
+                                "title": "Evènement",
                                 "properties": {
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "title": "date",
-                                        // "description": "Standard date field with flatpickr",
-                                        "options": {
-                                            "inputAttributes": {
-                                                "placeholder": "Entrer la date"
-                                            },
-                                            "flatpickr": {
-                                                "inlineHideInput": true,
-                                                "showClearButton": false,
-                                                "weekNumbers": true,
-                                                // "wrap": true,
-                                                "allowInput": false,
-                                                "altInput": true,
-                                                "altInputClass": "disableThisAltInputFirst",
-                                                "altFormat": "d/m/Y",
-                                                "dateFormat": "Y-m-d",
-                                                "locale": {
-                                                    "firstDayOfWeek": 1 // start week on Monday
-                                                },
-                                                // "disable": [
-                                                //     (date) => { return true }
-                                                // ],
-                                                "disableMobile": true
-                                            }
-                                        }
+                                    "allDay": {
+                                        "type": "boolean",
+                                        "format": "checkbox",
+                                        "title": "Toute la journée"
                                     },
+                                    "isRange": {
+                                        "type": "boolean",
+                                        "format": "checkbox",
+                                        "title": "Intervalle"
+                                    },
+                                    "date": eventDate.date,
+                                    "dateRange": eventDate.dateRange,
+                                    "dateTime": eventDate.dateTime,
+                                    "dateTimeRange": eventDate.dateTimeRange,
                                     "description": {
                                         "type": "string",
                                         "format": "textarea",
-                                        "title": "description"
+                                        "title": "Description"
                                     }
                                 }
                             }
@@ -468,7 +455,7 @@ let sellerForm = {
             });           
             
             window.JSONEditor.defaults.callbacks.template = {               
-                "callbackFunction": (jseditor,e) => {
+                "mapAddressCallbackFunction": (jseditor,e) => {
                     let latLng
 
                     try {
@@ -577,47 +564,43 @@ let sellerForm = {
                 console.log(form.getValue())      
                 
                 const watcherCallback = function (path) {
-                    console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+                    try {
+                        console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
 
-                    let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")
-
-                    finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
-
-                    console.log("finalData", finalData)
-
-                    // if(fieldName == "localities") {                                                
-                    //     const jsonEditorLocalitiesNavItems = document.querySelectorAll('div[data-schemapath="root.localities"] li.nav-item a.nav-link')
+                        let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")                        
                         
-                    //     jsonEditorLocalitiesNavItems.forEach((el, index) => {
-                    //         if(el.classList.contains("active")) {
-                    //             document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
+                        if(fieldName == "calendar") {
+                            let realDataInDb = []
 
-                    //             myMap.index = index
-                    //             myMap.removeAllMarkers()
-                    //             myMap.logic(form).locateTheCurrentMapAddress()
-                    //         }
+                            this.getEditor(`root.${fieldName}`).getValue().forEach((value, index) => {
+                                const obj = {//the data in the db must contains each property
+                                    "date": "",
+                                    "dateRange": "",
+                                    "dateTime": "",
+                                    "dateTimeRange": ""
+                                }
 
-                    //         if(!el.hasAttribute('data-click-attached')) {
-                    //             el.addEventListener("click", (event) => {
-                    //                 // const clickedElement = event.target
+                                if(typeof value.date == "undefined") value.date = ""
+                                if(typeof value.dateRange == "undefined") value.dateRange = ""
+                                if(typeof value.dateTime == "undefined") value.dateTime = ""
+                                if(typeof value.dateTimeRange == "undefined") value.dateTimeRange = ""
 
-                    //                 // alert(index)
-                    //                 // console.log(clickedElement.closest("li"))
-                    //                 // console.log(form.root.active_tab)
+                                let data = Object.assign(obj, value)
+                                
+                                realDataInDb.push(data)
+                            })
 
-                    //                 console.log(index)
+                            finalData["updatedData"][fieldName] = realDataInDb
+                        }
+                        else {
+                            finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
+                        }
 
-                    //                 document.querySelector('div[data-schemapath="root.localities"]').setAttribute("the-concerned-locality-index", index)
-
-                    //                 myMap.index = index
-                    //                 myMap.removeAllMarkers()
-                    //                 myMap.logic(form).locateTheCurrentMapAddress()
-                    //             })
-
-                    //             el.setAttribute('data-click-attached', 'true')                                
-                    //         }                            
-                    //     })                        
-                    // }
+                        console.log("finalData", finalData)
+                    }
+                    catch(err) {
+                        console.log("misy error fa alefa ihany aloha")
+                    }
                 }
     
                 for (let key in form.editors) {
@@ -691,7 +674,7 @@ let sellerForm = {
                             }) 
                         }
                         catch(err) {
-                            console.log("map not yet initialized: ", err)
+                            console.log("map not yet initialized: ", /*err*/)
                         }
                     }
     

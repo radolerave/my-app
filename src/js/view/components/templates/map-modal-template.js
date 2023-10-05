@@ -103,7 +103,9 @@ let mapModalTemplate = {
 
                 <ion-row class="ion-align-items-center">
                   <ion-col size="4"><b>Google Maps : </b></ion-col>
-                  <ion-col size="8"><ion-button id="open-with-google-map" style="width: 100%;">Ouvrir</ion-button></ion-col>
+                  <ion-col size="8"><ion-button id="open-with-google-map" style="width: 100%;" fill="outline">
+                    <ion-icon name="location"></ion-icon> Ouvrir</ion-button>
+                  </ion-col>
                 </ion-row>
 
                 <ion-row class="ion-align-items-center">

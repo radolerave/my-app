@@ -20,6 +20,10 @@ let mainPage = {
           </ion-buttons>
 
           <ion-buttons slot="end">
+            <ion-button id="notification">
+                <ion-icon name="notifications-outline"></ion-icon>
+                <ion-badge color="danger">7</ion-badge>
+            </ion-button> 
             <ion-menu-button menu="menu2">
               <ion-icon name="ellipsis-vertical-outline"></ion-icon>
             </ion-menu-button>              
