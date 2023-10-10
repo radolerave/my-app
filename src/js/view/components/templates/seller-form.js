@@ -265,6 +265,10 @@ let sellerForm = {
                                 "type": "object",
                                 "title": "Evènement",
                                 "properties": {
+                                    "eventTitle": {
+                                        "type": "string",
+                                        "title": "Titre de l'évènement"
+                                    },
                                     "allDay": {
                                         "type": "boolean",
                                         "format": "checkbox",
@@ -279,6 +283,10 @@ let sellerForm = {
                                     "dateRange": eventDate.dateRange,
                                     "dateTime": eventDate.dateTime,
                                     "dateTimeRange": eventDate.dateTimeRange,
+                                    "eventLocation": {
+                                        "type": "string",
+                                        "title": "Lieux"
+                                    },
                                     "description": {
                                         "type": "string",
                                         "format": "textarea",
@@ -574,16 +582,20 @@ let sellerForm = {
 
                             this.getEditor(`root.${fieldName}`).getValue().forEach((value, index) => {
                                 const obj = {//the data in the db must contains each property
+                                    "eventTitle": "",
                                     "date": "",
                                     "dateRange": "",
                                     "dateTime": "",
-                                    "dateTimeRange": ""
+                                    "dateTimeRange": "",
+                                    "eventLocation": ""
                                 }
 
+                                if(typeof value.eventTitle == "undefined") value.eventTitle = ""
                                 if(typeof value.date == "undefined") value.date = ""
                                 if(typeof value.dateRange == "undefined") value.dateRange = ""
                                 if(typeof value.dateTime == "undefined") value.dateTime = ""
                                 if(typeof value.dateTimeRange == "undefined") value.dateTimeRange = ""
+                                if(typeof value.eventLocation == "undefined") value.eventLocation = ""
 
                                 let data = Object.assign(obj, value)
                                 
