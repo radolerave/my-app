@@ -31,7 +31,8 @@
     "cordova-plugin-calendar": "^5.1.6",
     "dexie": "^3.2.4",
     "gridjs": "^6.0.6",
-    "leaflet-geosearch": "^3.8.0"
+    "leaflet-geosearch": "^3.8.0",
+    "swiper": "^10.3.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.2.2",

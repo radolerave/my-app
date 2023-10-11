@@ -6,10 +6,25 @@ import Fs from './../../../controller/controller.js'
 import { leftMenu } from './../templates/left-menu.js'
 import { rightMenu } from './../templates/right-menu.js'
 import { sellerSearch } from './../templates/seller-search-template.js'
+import { landingPage } from './../templates/landing-page-template.js'
 
 let mainPage = {
   name: "main-page",
   content: /*html*/`
+    <style>
+        #main-content ion-tabs ion-tab-button {
+            border-bottom: solid transparent 2px;
+        }
+
+        #main-content ion-tabs ion-tab-button.tab-selected {
+            border-bottom: solid var(--ion-tab-bar-color-selected, var(--ion-color-primary, #3880ff)) 2px;
+        }
+
+        #landing-page-content {
+            background-color: #C1C3CB;
+        }
+    </style>
+
     ${leftMenu.content}
     ${rightMenu.content}    
 
@@ -32,9 +47,6 @@ let mainPage = {
           </ion-buttons>
           
           <ion-title>Find Seller</ion-title>
-          <!-- <ion-searchbar placeholder="Recherche" id="search" debounce="250" color="light"></ion-searchbar>
-          <ion-button class="ion-hide" id="additionalSearchBtn" size="small">Ou</ion-button>
-          <ion-searchbar class="ion-hide" id="additionalSearch" placeholder="Recherche supplémentaire" debounce="250" color="light"></ion-searchbar> -->
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">          
@@ -43,7 +55,7 @@ let mainPage = {
                 <ion-nav id="landing-nav"></ion-nav>
                 <div id="landing-page">
                     <ion-content>
-                        <div id="landing-page-content">Landing Page</div>
+                        <div id="landing-page-content" class="">${landingPage.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>
@@ -51,17 +63,17 @@ let mainPage = {
                 <ion-nav id="seller-search-nav"></ion-nav>
                 <div id="seller-search-page">
                     <ion-content>
-                        <div id="seller-search-content">${sellerSearch.content}</div>
+                        <div id="seller-search-content" class="ion-padding">${sellerSearch.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>        
 
-            <ion-tab-bar slot="top">
+            <ion-tab-bar slot="bottom">
                 <ion-tab-button tab="landing">
-                    <ion-icon name="play-circle" size="large"></ion-icon>
+                <ion-icon name="newspaper" size="large"></ion-icon>
                 </ion-tab-button>
                 <ion-tab-button tab="seller-search">
-                    <ion-icon name="search-circle-outline" size="large"></ion-icon>
+                    <ion-icon name="search-circle" size="large"></ion-icon>
                 </ion-tab-button>
             </ion-tab-bar>
         </ion-tabs>
@@ -80,13 +92,14 @@ let mainPage = {
     rightMenu.logic(args)
 
     const landingNav = document.querySelector('#landing-nav');
-    const landingPage = document.querySelector('#landing-page');
-    landingNav.root = landingPage;
+    const landingP = document.querySelector('#landing-page');
+    landingNav.root = landingP;
 
     const sellerSearchNav = document.querySelector('#seller-search-nav');
     const sellerSearchPage = document.querySelector('#seller-search-page');
     sellerSearchNav.root = sellerSearchPage;
 
+    landingPage.logic()
     sellerSearch.logic(args)
   }
 }

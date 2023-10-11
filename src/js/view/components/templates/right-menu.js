@@ -1,7 +1,7 @@
 let rightMenu = {
   name: "right-menu",
   content: /*html*/`
-    <ion-menu content-id="main-content" menu-id="menu2" side="end">
+    <ion-menu content-id="main-content" menu-id="menu2" side="end" swipe-gesture="false">
       <ion-header>
         <ion-toolbar>
           <ion-title>Plus d'options</ion-title>

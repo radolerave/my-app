@@ -1,7 +1,7 @@
 import { Grid } from 'ag-grid-community'
 
 let sellerSearch = {
-  name: "seller-search",
+  name: "seller-search-template",
   content: /*html*/`
     <div id="criteria"></div>
 
