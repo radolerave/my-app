@@ -4,6 +4,12 @@ import Swiper from 'swiper/bundle';
 // import styles bundle
 import 'swiper/css/bundle';
 
+// Import the Cloudinary class.
+import {Cloudinary} from "@cloudinary/url-gen";
+
+// Import any actions required for transformations.
+import {fill} from "@cloudinary/url-gen/actions/resize";
+
 let landingPage = {
     name: "landing-page-template",
     content: /*html*/`
@@ -40,6 +46,8 @@ let landingPage = {
             }
         </style>
 
+<button id="upload_widget" class="cloudinary-button">Upload files</button>
+
         <div id="fs-varoboba-slide" class="fs-slide">
             <ion-grid class="ion-no-padding">
                 <ion-row class="ion-align-items-center">
@@ -51,16 +59,8 @@ let landingPage = {
             
             <!-- Swiper -->
             <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">Slide 1</div>
-                    <div class="swiper-slide">Slide 2</div>
-                    <div class="swiper-slide">Slide 3</div>
-                    <div class="swiper-slide">Slide 4</div>
-                    <div class="swiper-slide">Slide 5</div>
-                    <div class="swiper-slide">Slide 6</div>
-                    <div class="swiper-slide">Slide 7</div>
-                    <div class="swiper-slide">Slide 8</div>
-                    <div class="swiper-slide">Slide 9</div>
+                <div class="swiper-wrapper" id="swiper-wrapper-varoboba">
+                    
                 </div>
             </div>
         </div>
@@ -141,12 +141,51 @@ let landingPage = {
         </div>
     `,
     logic: () => {
+        let myWidget = window.cloudinary.createUploadWidget({
+            cloudName: 'dtu8h2u98', 
+            uploadPreset: 'ml_default'}, (error, result) => { 
+              if (!error && result && result.event === "success") { 
+                console.log('Done! Here is the media info: ', result.info); 
+              }
+            }
+          )
+          
+          document.getElementById("upload_widget").addEventListener("click", function(){
+              myWidget.open();
+            }, false);
+
+
         const swiper = new Swiper(".mySwiper", {
             slidesPerView: 3,
             spaceBetween: 5,
             freeMode: true,
         });
 
+        // Create a Cloudinary instance and set your cloud name.
+        const cld = new Cloudinary({
+            cloud: {
+                cloudName: 'dtu8h2u98'
+            }
+        });
+
+        for(let i=0; i<6; i++) {
+            // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
+            const myImage = cld.image('cld-sample-' + i); 
+
+            // Resize to 250 x 250 pixels using the 'fill' crop mode.
+            myImage.resize(fill().width(150).height(150));
+
+            // Render the image in an 'img' element.
+            const swiperSlide = document.createElement('div')
+            swiperSlide.classList.add("swiper-slide")
+
+            const imgElement = document.createElement('img');
+            swiperSlide.appendChild(imgElement);
+
+            document.querySelector("#swiper-wrapper-varoboba").appendChild(swiperSlide)
+
+            imgElement.src = myImage.toURL();
+        }
     }
 }
 

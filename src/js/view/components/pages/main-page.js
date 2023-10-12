@@ -7,17 +7,18 @@ import { leftMenu } from './../templates/left-menu.js'
 import { rightMenu } from './../templates/right-menu.js'
 import { sellerSearch } from './../templates/seller-search-template.js'
 import { landingPage } from './../templates/landing-page-template.js'
+import { advertisement } from './../templates/advertisement-template.js'
 
 let mainPage = {
   name: "main-page",
   content: /*html*/`
     <style>
         #main-content ion-tabs ion-tab-button {
-            border-bottom: solid transparent 2px;
+            border-top: solid transparent 2px;
         }
 
         #main-content ion-tabs ion-tab-button.tab-selected {
-            border-bottom: solid var(--ion-tab-bar-color-selected, var(--ion-color-primary, #3880ff)) 2px;
+            border-top: solid var(--ion-tab-bar-color-selected, var(--ion-color-primary, #3880ff)) 2px;
         }
 
         #landing-page-content {
@@ -59,6 +60,16 @@ let mainPage = {
                     </ion-content>
                 </div>
             </ion-tab>
+
+            <ion-tab tab="advertisement">
+                <ion-nav id="advertisement-nav"></ion-nav>
+                <div id="advertisement-page">
+                    <ion-content>
+                        <div id="advertisement-page-content" class="">${advertisement.content}</div>
+                    </ion-content>
+                </div>
+            </ion-tab>
+
             <ion-tab tab="seller-search">
                 <ion-nav id="seller-search-nav"></ion-nav>
                 <div id="seller-search-page">
@@ -70,10 +81,18 @@ let mainPage = {
 
             <ion-tab-bar slot="bottom">
                 <ion-tab-button tab="landing">
-                <ion-icon name="newspaper" size="large"></ion-icon>
+                    <ion-icon name="newspaper" size="large"></ion-icon>
+                    Quoi de neuf ?
                 </ion-tab-button>
+
+                <ion-tab-button tab="advertisement">
+                    <ion-icon name="megaphone" size="large"></ion-icon>
+                    Annonces
+                </ion-tab-button>
+
                 <ion-tab-button tab="seller-search">
                     <ion-icon name="search-circle" size="large"></ion-icon>
+                    Recherche
                 </ion-tab-button>
             </ion-tab-bar>
         </ion-tabs>
@@ -94,6 +113,10 @@ let mainPage = {
     const landingNav = document.querySelector('#landing-nav');
     const landingP = document.querySelector('#landing-page');
     landingNav.root = landingP;
+    
+    const advertisementNav = document.querySelector('#advertisement-nav');
+    const advertisementPage = document.querySelector('#advertisement-page');
+    advertisementNav.root = advertisementPage;
 
     const sellerSearchNav = document.querySelector('#seller-search-nav');
     const sellerSearchPage = document.querySelector('#seller-search-page');
