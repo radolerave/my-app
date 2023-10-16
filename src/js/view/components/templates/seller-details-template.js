@@ -141,7 +141,9 @@ let sellerDetailsTemplate = {
 
       /*It is especially for cloudinary product gallery widget which doesn't work when the container of the element or the element is display: none*/
       if(currentTab == "medias") {
-        sellerMediasTemplate.logic().showMediaGallery()
+        if(document.querySelector("#my-gallery").innerHTML == "") {
+          sellerMediasTemplate.logic().showMediaGallery()
+        }
       }
     })
   }

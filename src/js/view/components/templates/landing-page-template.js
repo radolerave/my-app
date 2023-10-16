@@ -15,8 +15,8 @@ let landingPage = {
     content: /*html*/`
         <style>
             #main-content .swiper {
-                width: 100%;
-                height: 25vh;
+                /*width: 100%;*/
+                /*height: 25vh;*/
                 /*border: solid green 1px;*/
             }
 
@@ -26,16 +26,16 @@ let landingPage = {
                 background: #fff;
                 display: flex;
                 justify-content: center;
-                align-items: center;
-                border: solid grey 1px;
-                border-radius: 5px;
+                align-items: center;   
+                height: 25vh;             
             }
 
             #main-content .swiper-slide img {
                 display: block;
-                width: 100%;
-                height: 100%;
                 object-fit: cover;
+                border: solid grey 1px;
+                border-radius: 5px;
+                height: 100%;
             }
 
             #main-content .fs-slide {  
