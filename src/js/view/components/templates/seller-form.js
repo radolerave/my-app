@@ -412,43 +412,23 @@ let sellerForm = {
                                     "title": "Nom de mon espace"
                                 },
                                 "medias": {
-                                    "type": "array",
-                                    "format": "tabs-top",
-                                    "maxItems": 5,
-                                    "uniqueItems": true,
-                                    "title": "médias",
-                                    "items": {
-                                        "type": "object",
-                                        "title": "média",
-                                        "properties": {
-                                            "enable_media": {
-                                                "type": "object",
-                                                "title": "statut de ce média",
-                                                "properties": {
-                                                    "enabled": {
-                                                        "type": "boolean",
-                                                        "format": "checkbox",
-                                                        "title": "activé"
-                                                    }
+                                    "type": "object",
+                                    "title": "Médias",
+                                    "properties": {
+                                        "information": {
+                                            "type": "info",
+                                            "title": "Information",
+                                            "description": "Pour gérer vos médias, veuillez cliquer sur le bouton ci-après."
+                                        },
+                                        "mediaButton": {
+                                            "type": "button",
+                                            "title": "Gérer",
+                                            "options": {
+                                                "button": {
+                                                    "icon": "collection-play-fill",
+                                                    "action": "manageSellerMedia",
+                                                    "validated": "manageSellerMedia"
                                                 }
-                                            },
-                                            "file": {
-                                                "type": "string",
-                                                "title": "fichier",
-                                                "media": {
-                                                    "binaryEncoding": "base64",
-                                                    // "type": "image/png"
-                                                },
-                                                "options": {
-                                                    "multiple": true,
-                                                },
-                                                // "links": [
-                                                //     {
-                                                //         "href": "{{self}}",
-                                                //         "rel": "Aperçu",
-                                                //         "class": "font-weight-bold"
-                                                //     }
-                                                // ]
                                             }
                                         }
                                     }
@@ -476,6 +456,15 @@ let sellerForm = {
                     }
                     
                     return latLng
+                }
+            }
+
+            JSONEditor.defaults.callbacks = {
+                "button" : {
+                    "manageSellerMedia" : function (jseditor, e) {
+                        const navigation = document.querySelector("ion-nav#navigation") 
+                        navigation.push("seller-media-management")
+                    }
                 }
             }
 

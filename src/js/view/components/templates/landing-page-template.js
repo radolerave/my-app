@@ -35,6 +35,7 @@ let landingPage = {
                 object-fit: cover;
                 border: solid grey 1px;
                 border-radius: 5px;
+                width: 100%;
                 height: 100%;
             }
 
@@ -46,7 +47,7 @@ let landingPage = {
             }
         </style>
 
-<button id="upload_widget" class="cloudinary-button">Upload files</button>
+<!-- <button id="upload_widget" class="cloudinary-button">Upload files</button> -->
 
         <div id="fs-varoboba-slide" class="fs-slide">
             <ion-grid class="ion-no-padding">
@@ -129,30 +130,30 @@ let landingPage = {
         </div>
     `,
     logic: async () => {
-        let myWidget = window.cloudinary.createUploadWidget({
-            cloudName: 'dtu8h2u98', 
-            uploadPreset: 'ml_default',
-            prepareUploadParams: (cb, params) => {
-                params = { tags : ["fs"] }
+        // let myWidget = window.cloudinary.openUploadWidget({
+        //     cloudName: 'dtu8h2u98', 
+        //     uploadPreset: 'ml_default',
+        //     prepareUploadParams: (cb, params) => {
+        //         params = { tags : ["fs"] }
 
-                cb(params)
-            }
-            // cropping: true
-        }, 
-            (error, result) => { 
-              if (!error && result && result.event === "success") { 
-                console.log('Done! Here is the media info: ', result.info); 
-              }
-            }
-        )
+        //         cb(params)
+        //     }
+        //     // cropping: true
+        // }, 
+        //     (error, result) => { 
+        //       if (!error && result && result.event === "success") { 
+        //         console.log('Done! Here is the media info: ', result.info); 
+        //       }
+        //     }
+        // )
           
-          document.getElementById("upload_widget").addEventListener("click", function(){
-              myWidget.open();
-            }, false);
+        //   document.getElementById("upload_widget").addEventListener("click", function(){
+        //     myWidget.open();
+        //     }, false);
 
 
         const swiper = new Swiper(".mySwiper", {
-            slidesPerView: 3,
+            slidesPerView: (document.querySelector("#main-content").offsetWidth/150),
             spaceBetween: 5,
             freeMode: true,
         });
@@ -169,7 +170,7 @@ let landingPage = {
             const myImage = cld.image('cld-sample-' + i); 
 
             // Resize to 250 x 250 pixels using the 'fill' crop mode.
-            myImage.resize(fill().width(150).height(150));
+            myImage.resize(fill().width(150).height(267));
 
             // Render the image in an 'img' element.
             const swiperSlide = document.createElement('div')
@@ -196,7 +197,7 @@ let landingPage = {
             const myImage = cld.image(mediaList[i].public_id); 
 
             // Resize to 250 x 250 pixels using the 'fill' crop mode.
-            myImage.resize(fill().width(150).height(150));
+            myImage.resize(fill().width(150).height(267));
 
             // Render the image in an 'img' element.
             const swiperSlide = document.createElement('div')

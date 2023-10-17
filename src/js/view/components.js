@@ -4,6 +4,7 @@ import { signInOrSignUp } from './components/pages/sign-in-or-sign-up.js'
 import { signIn } from './components/pages/sign-in.js'
 import { signUp } from './components/pages/sign-up.js'
 import { sellerDetails } from './components/pages/seller-details.js'
+import { sellerMediaManagement } from './components/pages/seller-media-management.js'
 
 let components = {}
 
@@ -13,5 +14,6 @@ components.signInOrSignUp = signInOrSignUp
 components.signIn = signIn
 components.signUp = signUp
 components.sellerDetails = sellerDetails
+components.sellerMediaManagement = sellerMediaManagement
 
 export { components }
