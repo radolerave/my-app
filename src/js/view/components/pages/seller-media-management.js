@@ -17,22 +17,23 @@ let sellerMediaManagement = {
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="ion-padding ion-text-center">
-      <button id="upload_widget" class="cloudinary-button">Upload files</button>
+    <ion-content class="ion-text-center">
+      <button id="upload_widget" class="cloudinary-button ion-margin">Upload files</button>
       <div id="sellerMediaManagementContent">This is the content for my Seller media management.</div>
     </ion-content>
 
     <style>
       #sellerMediaManagementContent {
-        margin-top: 15px;
+        /* margin-top: 15px; */
         /*border: solid red 1px;*/
         text-align: center;
       }
 
       #sellerMediaManagementContent img {
-        margin: 10px;
+        margin: 2.5%;
         border: solid grey 1px;
         border-radius: 5px;
+        max-width: 45%;
       }
     </style>
   `,
@@ -81,7 +82,7 @@ let sellerMediaManagement = {
         const myImage = cld.image(mediaList[i].public_id); 
 
         // Resize to 250 x 250 pixels using the 'fill' crop mode.
-        myImage.resize(fill().width(150).height(267));
+        myImage.resize(fill().width(250).height(250));
 
         // Render the image in an 'img' element.
         const imgElement = document.createElement('img');

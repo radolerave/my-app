@@ -33,6 +33,7 @@
     "dexie": "^3.2.4",
     "gridjs": "^6.0.6",
     "leaflet-geosearch": "^3.8.0",
+    "lightgallery": "^2.7.2",
     "swiper": "^10.3.1"
   },
   "devDependencies": {

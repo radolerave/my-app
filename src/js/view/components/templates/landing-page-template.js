@@ -10,6 +10,15 @@ import {Cloudinary} from "@cloudinary/url-gen";
 // Import any actions required for transformations.
 import {fill} from "@cloudinary/url-gen/actions/resize";
 
+import "lightgallery/css/lightGallery-bundle.css"
+
+import lightGallery from 'lightgallery';
+
+// Plugins
+import lgThumbnail from 'lightgallery/plugins/thumbnail'
+import lgZoom from 'lightgallery/plugins/zoom'
+
+
 let landingPage = {
     name: "landing-page-template",
     content: /*html*/`
@@ -46,8 +55,6 @@ let landingPage = {
                 background-color: white;
             }
         </style>
-
-<!-- <button id="upload_widget" class="cloudinary-button">Upload files</button> -->
 
         <div id="fs-varoboba-slide" class="fs-slide">
             <ion-grid class="ion-no-padding">
@@ -129,7 +136,7 @@ let landingPage = {
             </div>
         </div>
     `,
-    logic: async () => {
+    logic: async () => {        
         // let myWidget = window.cloudinary.openUploadWidget({
         //     cloudName: 'dtu8h2u98', 
         //     uploadPreset: 'ml_default',
@@ -163,18 +170,19 @@ let landingPage = {
             cloud: {
                 cloudName: 'dtu8h2u98'
             }
-        });
+        });        
 
         for(let i=0; i<6; i++) {
             // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
-            const myImage = cld.image('cld-sample-' + i); 
+            const myImage = cld.image('cld-sample-' + i);             
+
+            // Render the image in an 'img' element.
+            const swiperSlide = document.createElement('a')
+            swiperSlide.classList.add("swiper-slide")
+            swiperSlide.setAttribute("href", myImage.toURL())
 
             // Resize to 250 x 250 pixels using the 'fill' crop mode.
             myImage.resize(fill().width(150).height(267));
-
-            // Render the image in an 'img' element.
-            const swiperSlide = document.createElement('div')
-            swiperSlide.classList.add("swiper-slide")
 
             const imgElement = document.createElement('img');
             swiperSlide.appendChild(imgElement);
@@ -182,7 +190,12 @@ let landingPage = {
             document.querySelector("#swiper-wrapper-varoboba").appendChild(swiperSlide)
 
             imgElement.src = myImage.toURL();
-        }       
+        }      
+        
+        lightGallery(document.getElementById('swiper-wrapper-varoboba'), {
+            plugins: [lgZoom, lgThumbnail],
+            speed: 500
+        });
         
         let data = await fetch("https://res.cloudinary.com/dtu8h2u98/image/list/fs.json")
         data = await data.json()
@@ -196,12 +209,13 @@ let landingPage = {
             // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
             const myImage = cld.image(mediaList[i].public_id); 
 
+            // Render the image in an 'img' element.
+            const swiperSlide = document.createElement('a')
+            swiperSlide.classList.add("swiper-slide")
+            swiperSlide.setAttribute("href", myImage.toURL())
+
             // Resize to 250 x 250 pixels using the 'fill' crop mode.
             myImage.resize(fill().width(150).height(267));
-
-            // Render the image in an 'img' element.
-            const swiperSlide = document.createElement('div')
-            swiperSlide.classList.add("swiper-slide")
 
             const imgElement = document.createElement('img');
             swiperSlide.appendChild(imgElement);
@@ -209,7 +223,12 @@ let landingPage = {
             document.querySelector("#swiper-wrapper-envogue").appendChild(swiperSlide)
 
             imgElement.src = myImage.toURL();
-        }    
+        }      
+        
+        lightGallery(document.getElementById('swiper-wrapper-envogue'), {
+            plugins: [lgZoom, lgThumbnail],
+            speed: 500
+        }); 
     }
 }
 
