@@ -194,6 +194,7 @@ let landingPage = {
         
         lightGallery(document.getElementById('swiper-wrapper-varoboba'), {
             plugins: [lgZoom, lgThumbnail],
+            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
             speed: 500
         });
         
@@ -227,6 +228,7 @@ let landingPage = {
         
         lightGallery(document.getElementById('swiper-wrapper-envogue'), {
             plugins: [lgZoom, lgThumbnail],
+            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
             speed: 500
         }); 
     }
