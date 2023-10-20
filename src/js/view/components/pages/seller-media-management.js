@@ -1,3 +1,5 @@
+import { mediaActionsTemplate } from './../templates/media-actions-template.js'
+
 // Import the Cloudinary class.
 import {Cloudinary} from "@cloudinary/url-gen";
 
@@ -27,42 +29,44 @@ let sellerMediaManagement = {
     </ion-header>
 
     <ion-content class="ion-text-center">
-      <button id="upload_widget" class="cloudinary-button ion-margin">Upload files</button>
+      ${mediaActionsTemplate.content}
+
       <div id="sellerMediaManagementContent">This is the content for my Seller media management.</div>
     </ion-content>
 
     <style>
-      
+      #sellerMediaManagementContent {
+        /*border: solid red 1px;*/
+        text-align: center;
+        margin-top: 70px;
+      }
+
+      #sellerMediaManagementContent media {
+        display: inline-block;
+        margin: 2.5%;
+        border: solid grey 1px;
+        border-radius: 5px;
+        max-width: 45%;
+      }
+
+      #sellerMediaManagementContent media img {
+        border: solid transparent 1px;
+        border-radius: 5px;
+      }
+
+      #sellerMediaManagementContent media video {
+        border: solid transparent 1px;
+        width: 100%;
+        border-radius: 5px;
+      }
     </style>
   `,
   logic: async (args) => {
     const myCloudName = "dtu8h2u98"
     const theTagName = "fs"
-    const myUploadPreset = "ml_default"
+    const myUploadPreset = "ml_default"    
 
-    let myWidget = window.cloudinary.createUploadWidget({
-        cloudName: myCloudName, 
-        uploadPreset: myUploadPreset,
-        prepareUploadParams: (cb, params) => {
-            params = { tags : [theTagName] }
-
-            cb(params)
-        },
-        cropping: true
-    }, 
-        async (error, result) => { 
-          if (!error && result && result.event === "success") { 
-            console.log('Done! Here is the media info: ', result.info);
-            setTimeout(async () => {
-              await renderMedia(myCloudName, theTagName) 
-            }, 3000);
-          }
-        }
-    )
-      
-    document.getElementById("upload_widget").addEventListener("click", function(){
-      myWidget.open();
-    }, false);
+    let lightGalleryForImages, lightGalleryForVideos
 
     let renderMedia = async (myCloudName, theTagName) => {
       let imageList, videoList
@@ -138,7 +142,7 @@ let sellerMediaManagement = {
         document.querySelector("#sellerMediaManagementContent").appendChild(document.createElement("br"))
       }
 
-      lightGallery(document.getElementById('images-container'), {
+      lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
         plugins: [lgZoom, lgThumbnail],
         licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
         speed: 500
@@ -165,12 +169,13 @@ let sellerMediaManagement = {
             {
               "source": [{
                 "src": myVideo.toURL(),
-                "type": `video/${format}`,
-                "attributes": {
-                  "preload": false,
-                  "controls": true
-                }
-              }]
+                "type": `video/${format}`
+              }],
+              "attributes": {
+                "preload": false,
+                "playsinline": true,
+                "controls": true
+              }              
             }
           ))
 
@@ -203,12 +208,12 @@ let sellerMediaManagement = {
         document.querySelector("#sellerMediaManagementContent").appendChild(plusVideos)
       }
 
-      lightGallery(document.getElementById('videos-container'), {
+      lightGalleryForVideos = lightGallery(document.getElementById('videos-container'), {
         plugins: [lgVideo],
         licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
         videojs: true,
         videojsOptions: {
-            muted: true,
+            muted: false,
         },
       })
 
@@ -280,7 +285,12 @@ let sellerMediaManagement = {
 
     await renderMedia(myCloudName, theTagName)
 
-    
+    mediaActionsTemplate.logic({
+      myCloudName: myCloudName,
+      theTagName: theTagName,
+      myUploadPreset: myUploadPreset,
+      allMylightGalleries: [lightGalleryForImages, lightGalleryForVideos]
+    })
   }
 }
 

@@ -34,7 +34,8 @@
     "gridjs": "^6.0.6",
     "leaflet-geosearch": "^3.8.0",
     "lightgallery": "^2.7.2",
-    "swiper": "^10.3.1"
+    "swiper": "^10.3.1",
+    "video.js": "^8.6.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.2.2",

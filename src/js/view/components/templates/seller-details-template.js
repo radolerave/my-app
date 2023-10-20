@@ -52,23 +52,23 @@ let sellerDetailsTemplate = {
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="seller-informations">
           <ion-icon name="information-circle" size="large"></ion-icon>
-          
+          Infos
         </ion-tab-button>
         <ion-tab-button tab="contacts">
           <ion-icon name="call" size="large"></ion-icon>
-          
+          Contacts
         </ion-tab-button>
         <ion-tab-button tab="events">
           <ion-icon name="calendar" size="large"></ion-icon>
-          
+          Events
         </ion-tab-button>
         <ion-tab-button tab="medias">
           <ion-icon name="images" size="large"></ion-icon>
-          
+          Médias
         </ion-tab-button>
         <ion-tab-button tab="localities">
           <ion-icon name="map" size="large"></ion-icon>
-          
+          Localisations
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
