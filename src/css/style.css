@@ -29,7 +29,3 @@ html, body {
   /* padding: 5px 10px; */
   cursor: pointer;
 }
-
-#sellerMediaManagementContent media.media-selected {
-  border: solid blue 5px;
-}

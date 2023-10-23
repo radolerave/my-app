@@ -39,7 +39,7 @@ let myAccount = {
 
         console.log(myAccountContent.innerHTML)
 
-        const navigation = document.querySelector("ion-nav#navigation")
+        const navigation = document.querySelector("ion-app ion-nav#navigation")
         
         const connected = await promesse()
 
