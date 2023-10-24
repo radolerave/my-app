@@ -235,6 +235,7 @@ let sellerForm = {
                                             },
                                             "mapAddressWording": {
                                                 "type": "string",
+                                                "format": "textarea",
                                                 "title": "adresse Map",
                                                 "template": "mapAddressCallbackFunction",
                                                 "watch": {
@@ -441,8 +442,17 @@ let sellerForm = {
                     // "remove_empty_properties": true
                 }
             });           
+
+            JSONEditor.defaults.callbacks = {
+                "button" : {
+                    "manageSellerMedia" : function (jseditor, e) {
+                        const navigation = document.querySelector("ion-nav#navigation") 
+                        navigation.push("seller-media-management")
+                    }
+                }
+            }
             
-            window.JSONEditor.defaults.callbacks.template = {               
+            JSONEditor.defaults.callbacks.template = {               
                 "mapAddressCallbackFunction": (jseditor,e) => {
                     let latLng
 
@@ -457,16 +467,7 @@ let sellerForm = {
                     
                     return latLng
                 }
-            }
-
-            JSONEditor.defaults.callbacks = {
-                "button" : {
-                    "manageSellerMedia" : function (jseditor, e) {
-                        const navigation = document.querySelector("ion-nav#navigation") 
-                        navigation.push("seller-media-management")
-                    }
-                }
-            }
+            }            
 
             let changeCount = 0//ignore the first fired change event
             const editBtn = document.querySelector("#editMyAccountData")

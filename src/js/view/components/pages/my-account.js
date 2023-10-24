@@ -23,7 +23,7 @@ let myAccount = {
         </ion-content>
     `,
     logic: async () => {
-        let hasSignedIn = true
+        let hasSignedIn = false
         const myAccountContent = document.querySelector("#myAccountContent")
 
         const promesse = () => {
