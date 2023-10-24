@@ -1,6 +1,6 @@
 import { Grid } from 'ag-grid-community'
 
-let sellerSearch = {
+let sellerSearchTemplate = {
   name: "seller-search-template",
   content: /*html*/`
     <div id="criteria"></div>
@@ -344,4 +344,4 @@ let sellerSearch = {
   }
 }
 
-  export { sellerSearch }
+  export { sellerSearchTemplate }

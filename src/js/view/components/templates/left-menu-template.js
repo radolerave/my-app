@@ -1,5 +1,5 @@
-let leftMenu = {
-    name: "left-menu",
+let leftMenuTemplate = {
+    name: "left-menu-template",
     content: /*html*/`
         <ion-menu content-id="main-content" menu-id="menu" swipe-gesture="false">
             <ion-header>
@@ -84,4 +84,4 @@ let leftMenu = {
     }
 }
 
-export { leftMenu }
+export { leftMenuTemplate }

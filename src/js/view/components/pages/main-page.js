@@ -3,11 +3,12 @@ import { Grid } from 'ag-grid-community';
 import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
-import { leftMenu } from './../templates/left-menu.js'
-import { rightMenu } from './../templates/right-menu.js'
-import { sellerSearch } from './../templates/seller-search-template.js'
-import { landingPage } from './../templates/landing-page-template.js'
-import { advertisement } from './../templates/advertisement-template.js'
+import { leftMenuTemplate } from './../templates/left-menu-template.js'
+import { rightMenuTemplate } from './../templates/right-menu-template.js'
+import { sellerSearchTemplate } from './../templates/seller-search-template.js'
+import { landingPageTemplate } from './../templates/landing-page-template.js'
+import { advertisementTemplate } from './../templates/advertisement-template.js'
+import { myAccountTemplate } from './../templates/my-account-template.js';
 
 let mainPage = {
   name: "main-page",
@@ -23,11 +24,19 @@ let mainPage = {
 
         #landing-page-content {
             background-color: #C1C3CB;
+        }        
+
+        #my-account-content {
+            /* border: solid green 1px; */
+            /*display: flex;
+            justify-content: center;
+            align-items: center; */
+            height: 100%;
         }
     </style>
 
-    ${leftMenu.content}
-    ${rightMenu.content}    
+    ${leftMenuTemplate.content}
+    ${rightMenuTemplate.content}    
 
     <div class="ion-page" id="main-content">
       <ion-header>
@@ -51,12 +60,12 @@ let mainPage = {
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">          
-        <ion-tabs>
+        <ion-tabs id="main-page-tab">
             <ion-tab tab="landing">
                 <ion-nav id="landing-nav"></ion-nav>
                 <div id="landing-page">
                     <ion-content>
-                        <div id="landing-page-content" class="">${landingPage.content}</div>
+                        <div id="landing-page-content" class="">${landingPageTemplate.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>
@@ -65,7 +74,7 @@ let mainPage = {
                 <ion-nav id="advertisement-nav"></ion-nav>
                 <div id="advertisement-page">
                     <ion-content>
-                        <div id="advertisement-page-content" class="">${advertisement.content}</div>
+                        <div id="advertisement-page-content" class="">${advertisementTemplate.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>
@@ -74,25 +83,39 @@ let mainPage = {
                 <ion-nav id="seller-search-nav"></ion-nav>
                 <div id="seller-search-page">
                     <ion-content>
-                        <div id="seller-search-content" class="ion-padding">${sellerSearch.content}</div>
+                        <div id="seller-search-content" class="ion-padding">${sellerSearchTemplate.content}</div>
                     </ion-content>
                 </div>
-            </ion-tab>        
+            </ion-tab> 
+
+            <ion-tab tab="my-account">
+                <ion-nav id="my-account-nav"></ion-nav>
+                <div id="my-account-page">
+                    <ion-content>
+                        <div id="my-account-content" class="">${myAccountTemplate.content}</div>
+                    </ion-content>
+                </div>
+            </ion-tab>                     
 
             <ion-tab-bar slot="bottom">
                 <ion-tab-button tab="landing">
-                    <ion-icon name="newspaper" size="large"></ion-icon>
+                    <ion-icon name="newspaper"></ion-icon>
                     Quoi de neuf ?
-                </ion-tab-button>
+                </ion-tab-button>                
 
                 <ion-tab-button tab="advertisement">
-                    <ion-icon name="megaphone" size="large"></ion-icon>
+                    <ion-icon name="megaphone"></ion-icon>
                     Annonces
                 </ion-tab-button>
 
                 <ion-tab-button tab="seller-search">
-                    <ion-icon name="search-circle" size="large"></ion-icon>
+                    <ion-icon name="search-circle"></ion-icon>
                     Recherche
+                </ion-tab-button>
+
+                <ion-tab-button tab="my-account">
+                    <ion-icon name="people-circle-outline"></ion-icon>
+                    Mon compte
                 </ion-tab-button>
             </ion-tab-bar>
         </ion-tabs>
@@ -106,9 +129,9 @@ let mainPage = {
     let args = {}
     args["myFs"] = myFs
 
-    leftMenu.logic()    
+    leftMenuTemplate.logic()    
 
-    rightMenu.logic(args)
+    rightMenuTemplate.logic(args)
 
     const landingNav = document.querySelector('#landing-nav');
     const landingP = document.querySelector('#landing-page');
@@ -122,8 +145,22 @@ let mainPage = {
     const sellerSearchPage = document.querySelector('#seller-search-page');
     sellerSearchNav.root = sellerSearchPage;
 
-    landingPage.logic()
-    sellerSearch.logic(args)
+    const myAccountNav = document.querySelector('#my-account-nav');
+    const myAccountPage = document.querySelector('#my-account-page');
+    myAccountNav.root = myAccountPage;
+
+    landingPageTemplate.logic()
+    sellerSearchTemplate.logic(args)
+
+    const tab = document.querySelector("main-page ion-tabs#main-page-tab")
+
+    tab.addEventListener('ionTabsDidChange', async () => {
+      let currentTab = await tab.getSelected()
+
+      if(currentTab == "my-account") {
+        await myAccountTemplate.logic()
+      }
+    })
   }
 }
 

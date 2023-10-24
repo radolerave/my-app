@@ -72,7 +72,7 @@ let mediaActionsTemplate = {
         const mediaDeselectAllBtn = document.querySelector("#media_deselect_all")
         const mediaReduceBtn = document.querySelector("#media_reduce")
         const mediaHelpBtn = document.querySelector("#media_help")
-        const mediaManipilationInstructions = document.querySelector("#media_manipulation_instructions")        
+        const mediaManipulationInstructions = document.querySelector("#media_manipulation_instructions")        
         let myMedias = document.querySelectorAll("seller-media-management #sellerMediaManagementContent media")
         let longPressActivated = false
         let numberOfSelectedMedias = 0
@@ -158,7 +158,7 @@ let mediaActionsTemplate = {
           myWidget.open();
         }, false);                
 
-        mediaManipilationInstructions.addEventListener("click", () => {
+        mediaManipulationInstructions.addEventListener("click", () => {
             mediaHelpBtn.click()
         })
 
@@ -211,11 +211,11 @@ let mediaActionsTemplate = {
         })
 
         mediaHelpBtn.addEventListener("click", () => {
-            mediaManipilationInstructions.classList.toggle("ion-hide")
+            mediaManipulationInstructions.classList.toggle("ion-hide")
 
-            if(!mediaManipilationInstructions.classList.contains("ion-hide")) {
+            if(!mediaManipulationInstructions.classList.contains("ion-hide")) {
                 setTimeout(() => {
-                    mediaManipilationInstructions.classList.add("ion-hide")
+                    mediaManipulationInstructions.classList.add("ion-hide")
                 }, 5000);
             }
         })

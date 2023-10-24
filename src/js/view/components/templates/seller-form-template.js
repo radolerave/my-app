@@ -3,22 +3,50 @@
 import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
 import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
+import { sellerFormActionsTemplate } from './seller-form-actions-template.js';
 
 const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
 
 let myMap = new MyMap()
 
-let sellerForm = {
-    name: "seller-form",
+let sellerFormTemplate = {
+    name: "seller-form-template",
     content: /*html*/`
+        ${sellerFormActionsTemplate.content}
+
         <div id="sellerForm"></div>
 
         ${myMap.content} 
+
+        <style>
+            #my-account-template-content.notConnected {
+                text-align: center;
+                border: solid red 1px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                /* width: 100%; */
+                height: 100%;
+            }
+
+            #seller-form-actions {
+                border-bottom: solid grey 1px;
+                box-shadow: 0 0 0.5em grey;
+                border-width: 0;
+                padding: 10px 0 10px 0;
+                position: fixed;
+                float: inline-end;
+                width: 100%;
+                background-color: white;
+                z-index: 2;
+            }
+        </style>
     `,
     logic: () => {       
-        
+        sellerFormActionsTemplate.logic()
 
-        const element = document.querySelector('#sellerForm');        
+        const element = document.querySelector('#sellerForm');   
+        let sellerInfos     
 
         if(element != null) {
             let startVal = { "country":"","name":"","who_what":"", "activity":"","keywords":"" }
@@ -33,7 +61,7 @@ let sellerForm = {
                 // remove_button_labels: true,
                 // startVal: startVal,
                 schema: {
-                    'title': 'Title : -Seller Name-',
+                    'title': 'Mon compte',
                     'type': 'object',
                     // 'required': [
                     //     'country',
@@ -471,37 +499,40 @@ let sellerForm = {
 
             let changeCount = 0//ignore the first fired change event
             const editBtn = document.querySelector("#editMyAccountData")
-            const saveBtn = document.querySelector("#saveMyAccountData")       
+            const undoBtn = document.querySelector("#undoMyAccountData")
+            const saveBtn = document.querySelector("#saveMyAccountData")  
+            const lockBtn = document.querySelector("#lockMyAccountData")     
             let finalData = {
                 "updatedData": {},
                 "credentials": {}
             }     
 
-            function accountInfosUpdate(url, args) {
-                // Construct the API endpoint URL for updating the item
-                const updateUrl = `${url}/${args.credentials.sellerId}`;
-                const updatedData = args.updatedData
+            async function accountInfosUpdate(url, args) {
+                try {
+                    // Construct the API endpoint URL for updating the item
+                    const updateUrl = `${url}/${args.credentials.sellerId}`;
+                    const updatedData = args.updatedData
 
-                //do a verification process before continuing*********** (credentials)
+                    //do a verification process before continuing*********** (credentials)
 
-                // Send a PUT request to update the item
-                fetch(updateUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Include any necessary authentication headers here
-                    },
-                    body: JSON.stringify(updatedData),
-                })
-                .then(response => response.json())
-                .then(updatedItem => {
+                    // Send a PUT request to update the item
+                    let response = await fetch(updateUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include any necessary authentication headers here
+                        },
+                        body: JSON.stringify(updatedData),
+                    })
+
+                    let updatedItem = await response.json()
+
                     console.log('Updated item:', updatedItem);
-                    // Handle success or do something with the updated item data
-                })
-                .catch(error => {
+                }
+                catch(error) {
                     console.error('Error updating item:', error);
                     // Handle error
-                });
+                }
             }
 
             let mapInstance
@@ -535,7 +566,7 @@ let sellerForm = {
                 const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName`
 
                 try {
-                    let sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
+                    sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
                     sellerInfos = await sellerInfos.json()
                     // sellerInfos = sellerInfos.records
         
@@ -563,7 +594,7 @@ let sellerForm = {
                 
                 const watcherCallback = function (path) {
                     try {
-                        console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+                        // console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
 
                         let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")                        
                         
@@ -598,7 +629,7 @@ let sellerForm = {
                             finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
                         }
 
-                        console.log("finalData", finalData)
+                        // console.log("finalData", finalData)
                     }
                     catch(err) {
                         console.log("misy error fa alefa ihany aloha")
@@ -637,6 +668,7 @@ let sellerForm = {
                 form.on('change', async (e) => {
                     if(changeCount > 0) {                    
                         saveBtn.classList.remove("ion-hide")
+                        undoBtn.classList.remove("ion-hide")
                         console.log(form.getValue())
 
                         try {
@@ -677,10 +709,10 @@ let sellerForm = {
                         }
                         catch(err) {
                             console.log("map not yet initialized: ", /*err*/)
-                        }
+                        }                        
                     }
     
-                    changeCount++                    
+                    changeCount++                                  
                 })
     
                 editBtn.addEventListener("click", () => {
@@ -701,9 +733,25 @@ let sellerForm = {
                     }
                     
                     !editBtn.classList.contains("ion-hide") ? editBtn.classList.add("ion-hide") : null
+                    lockBtn.classList.remove("ion-hide")
                 }) 
 
-                saveBtn.addEventListener("click", () => {
+                undoBtn.addEventListener("click", () => {
+                    changeCount = 0//important!!!
+
+                    console.log(sellerInfos)
+        
+                    form.setValue(sellerInfos)
+
+                    if(form.isEnabled()) form.disable()
+
+                    editBtn.classList.remove("ion-hide")
+                    undoBtn.classList.add("ion-hide")
+                    saveBtn.classList.add("ion-hide")
+                    lockBtn.classList.add("ion-hide")
+                })
+
+                saveBtn.addEventListener("click", async () => {
                     //supposed been connected with: sellerId : 1 & sellerUniqueId : pim ...
                     finalData["credentials"] = {
                         "sellerId" : 1,
@@ -715,11 +763,26 @@ let sellerForm = {
 
                     // console.log(finalData)
 
-                    accountInfosUpdate(apiUrl, finalData)                    
+                    await accountInfosUpdate(apiUrl, finalData) 
+                    
+                    sellerInfos = form.getValue()
+
+                    if(form.isEnabled()) form.disable()
+                    
+                    editBtn.classList.remove("ion-hide")
+                    undoBtn.classList.add("ion-hide")
+                    saveBtn.classList.add("ion-hide")
+                    lockBtn.classList.add("ion-hide")
+                })
+
+                lockBtn.addEventListener("click", async () => {
+                    if(form.isEnabled()) form.disable()
+                    lockBtn.classList.add("ion-hide")
+                    editBtn.classList.remove("ion-hide")
                 })
             })                       
         }
     }
 }
 
-export { sellerForm }
+export { sellerFormTemplate }

@@ -1,6 +1,6 @@
 
 
-let advertisement = {
+let advertisementTemplate = {
     name: "advertisement-template",
     content: /*html*/`
     xou
@@ -10,4 +10,4 @@ let advertisement = {
     }
 }
 
-export { advertisement }
+export { advertisementTemplate }

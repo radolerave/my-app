@@ -18,11 +18,11 @@ let signInOrSignUp = {
         </ion-content>
     `,
     logic: async () => {
-        const signIn = document.querySelector("#signIn")
-        const signUp = document.querySelector("#signUp")
+        const signIn = document.querySelector("sign-in-or-sign-up #signIn")
+        const signUp = document.querySelector("sign-in-or-sign-up #signUp")
         const navigation = document.querySelector("ion-nav#navigation")      
         
-        await navigation.removeIndex(1)//do not display the "my-account" component anymore  
+        // await navigation.removeIndex(1)//do not display the "my-account" component anymore  
 
         signIn.addEventListener("click", () => {
             navigation.push('sign-in')

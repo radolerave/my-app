@@ -18,7 +18,7 @@ export default class FsView {
 
     async generateView(component = undefined) {
         this.generateThisComponent(this.components.mainPage)
-        this.generateThisComponent(this.components.myAccount)  
+        // this.generateThisComponent(this.components.myAccount)  
         this.generateThisComponent(this.components.signInOrSignUp)      
         this.generateThisComponent(this.components.signIn)  
         this.generateThisComponent(this.components.signUp)  

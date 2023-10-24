@@ -19,7 +19,7 @@ import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
 
 
-let landingPage = {
+let landingPageTemplate = {
     name: "landing-page-template",
     content: /*html*/`
         <style>
@@ -234,4 +234,4 @@ let landingPage = {
     }
 }
 
-export { landingPage }
+export { landingPageTemplate }
