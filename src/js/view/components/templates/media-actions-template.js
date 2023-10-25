@@ -13,7 +13,7 @@ let mediaActionsTemplate = {
     name: "media-actions-template",
     content: /*html*/`
         <div id="media-actions">
-            <ion-button id="upload_widget" size="small" color="dark" fill="outline"><ion-icon name="images-outline"></ion-icon></ion-button>
+            <ion-button id="upload_widget" size="small" color="dark" fill="outline">+<ion-icon name="images-outline"></ion-icon></ion-button>
 
             <ion-button id="publish" size="small" color="tertiary" fill="outline" disabled="true"><ion-icon name="share-outline"></ion-icon><ion-badge slot="end" id="number-of-selected-media"></ion-badge></ion-button>
 
@@ -25,7 +25,14 @@ let mediaActionsTemplate = {
 
             <ion-button id="media_help" size="small" color="secondary" fill="outline"><ion-icon name="help-outline"></ion-icon></ion-button>
 
-            <ion-text id="media_manipulation_instructions" class="ion-hide">Sélectionnez le(s) média(s) en appuyant dessus de manière prolongée avant de relacher.<ion-icon name="caret-up-outline"></ion-icon></ion-text>
+            <ion-text id="media_manipulation_instructions" class="ion-hide">
+                Sélectionnez le(s) média(s) en appuyant dessus de manière prolongée avant de relâcher.<hr>
+                <ion-icon name="images-outline"></ion-icon> pour ajouter un média.<br>
+                <ion-icon name="share-outline"></ion-icon> pour publier les médias sélectionnés.<br>
+                <ion-icon name="trash-outline"></ion-icon> pour supprimer les médias sélectionnés.<br>
+                <ion-icon name="remove-outline"></ion-icon> pour annuler la sélection.<br>
+                <ion-icon name="chevron-expand-outline"></ion-icon> pour développer et réduire la liste des médias.<ion-icon name="caret-up-outline"></ion-icon>
+            </ion-text>
         </div>
 
         <style>
@@ -46,6 +53,7 @@ let mediaActionsTemplate = {
                 border: solid blue 1px;
                 border-width: 0;
                 box-shadow: 0 0 0.5em grey;
+                text-align: justify;
             }
 
             #sellerMediaManagementContent media.media-selected {
@@ -213,11 +221,11 @@ let mediaActionsTemplate = {
         mediaHelpBtn.addEventListener("click", () => {
             mediaManipulationInstructions.classList.toggle("ion-hide")
 
-            if(!mediaManipulationInstructions.classList.contains("ion-hide")) {
-                setTimeout(() => {
-                    mediaManipulationInstructions.classList.add("ion-hide")
-                }, 5000);
-            }
+            // if(!mediaManipulationInstructions.classList.contains("ion-hide")) {
+            //     setTimeout(() => {
+            //         mediaManipulationInstructions.classList.add("ion-hide")
+            //     }, 10000);
+            // }
         })
 
         myMedias.forEach((element, key) => {

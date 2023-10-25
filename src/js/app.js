@@ -28,22 +28,26 @@ window.addEventListener("load", async (event) => {
     // console.log(await document.querySelector('ion-nav').canGoBack())
 })
 
-document.addEventListener('ionBackButton', (ev) => {
+document.addEventListener('ionBackButton', async (ev) => {
     let timer = (Date.now() - lastBackButonTimerMs)
     const navigation = document.querySelector("ion-nav#navigation")
+    const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
     
     if(timer < 500)
     {
         // if(this.appConf.doubleTapHardwareBackButtonToQuit)
         App.exitApp();	
     } 
-    else if(navigation.canGoBack()) {
-        navigation.pop()
+    else if(await navigation.canGoBack()) {
+        await navigation.pop()
+    }
+    else if(await navigation.getActive() == "main-page" && await mainPageTab.getSelected() != "landing") {
+        await mainPageTab.select("landing")
     }
     else 
     {
         window.history.back();
-    }
+    }    
 
     lastBackButonTimerMs = Date.now()
 })

@@ -9,7 +9,12 @@ let sellerFormActionsTemplate = {
             <ion-button id="lockMyAccountData" fill="outline" color="primary" class="ion-hide" size="small"><ion-icon name="lock-closed-outline"></ion-icon></ion-button>
             <ion-button id="helpMyAccountData" fill="outline" color="secondary" class="" size="small"><ion-icon name="help-outline"></ion-icon></ion-button>
 
-            <ion-text id="my_account_manipulation_instructions" class="ion-hide">Appuyez sur le bouton edit pour activer la modification.<br>Appuyez sur le bouton save pour enregistrer les modifications.<br>Appuyez sur le bouton undo pour annuler toutes les modifications.<ion-icon name="caret-up-outline"></ion-icon></ion-text>
+            <ion-text id="my_account_manipulation_instructions" class="ion-hide">
+                <ion-icon name="create-outline"></ion-icon> pour activer la modification.<br>
+                <ion-icon name="save-outline"></ion-icon> pour enregistrer les modifications.<br>
+                <ion-icon name="arrow-undo-outline"></ion-icon> pour annuler toutes les modifications.<br>
+                <ion-icon name="lock-closed-outline"></ion-icon> pour vérouiller la modification.<ion-icon name="caret-up-outline"></ion-icon>
+            </ion-text>
         </div>
 
         <style>
@@ -19,6 +24,7 @@ let sellerFormActionsTemplate = {
                 border: solid blue 1px;
                 border-width: 0;
                 box-shadow: 0 0 0.5em grey;
+                text-align: justify;
             }
         </style>
     `,  
@@ -33,11 +39,11 @@ let sellerFormActionsTemplate = {
         mediaHelpBtn.addEventListener("click", () => {
             myAccountManipulationInstructions.classList.toggle("ion-hide")
 
-            if(!myAccountManipulationInstructions.classList.contains("ion-hide")) {
-                setTimeout(() => {
-                    myAccountManipulationInstructions.classList.add("ion-hide")
-                }, 5000);
-            }
+            // if(!myAccountManipulationInstructions.classList.contains("ion-hide")) {
+            //     setTimeout(() => {
+            //         myAccountManipulationInstructions.classList.add("ion-hide")
+            //     }, 10000);
+            // }
         })
     }
 }

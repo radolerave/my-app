@@ -158,7 +158,7 @@ let mainPage = {
       let currentTab = await tab.getSelected()
 
       if(currentTab == "my-account") {
-        await myAccountTemplate.logic()
+        await myAccountTemplate.logic(false)
       }
     })
   }

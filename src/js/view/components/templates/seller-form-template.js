@@ -18,17 +18,7 @@ let sellerFormTemplate = {
 
         ${myMap.content} 
 
-        <style>
-            #my-account-template-content.notConnected {
-                text-align: center;
-                border: solid red 1px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                /* width: 100%; */
-                height: 100%;
-            }
-
+        <style>                        
             #seller-form-actions {
                 border-bottom: solid grey 1px;
                 box-shadow: 0 0 0.5em grey;
@@ -72,7 +62,8 @@ let sellerFormTemplate = {
                     'properties': {    
                         'country': {
                             'type': 'string',
-                            'format': 'choices',
+                            // 'format': 'choices',
+                            'format': 'select',
                             'title': 'Pays',
                             'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
                             'default': '',
@@ -88,10 +79,10 @@ let sellerFormTemplate = {
                                     "Japon",
                                     "Je ne sais pas"
                                 ],
-                                'choices': {
-                                    shouldSort: false,
-                                    allowHTML: true
-                                }
+                                // 'choices': {
+                                //     shouldSort: false,
+                                //     allowHTML: true
+                                // }
                             }
                         },                    
                         'name': {
@@ -104,16 +95,17 @@ let sellerFormTemplate = {
                         },
                         'who_what': {
                             'type': 'integer',
-                            "format": "choices",
+                            // 'format': 'choices',
+                            'format': 'select',
                             'title': 'Société ou individu ?',
                             'enum': [0,1,2],
                             'default': 0,
                             'options': {
                                 'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
-                                'choices': {
-                                    shouldSort: false,
-                                    allowHTML: true
-                                }
+                                // 'choices': {
+                                //     shouldSort: false,
+                                //     allowHTML: true
+                                // }
                             }
                         },                    
                         'nif': {
@@ -173,7 +165,7 @@ let sellerFormTemplate = {
                         },
                         "sectors": {
                             "type": "array",
-                            "format": "tabs",
+                            "format": "tabs-top",
                             // "maxItems": 10,
                             "title": "Secteurs",
                             "uniqueItems": true,
@@ -184,7 +176,8 @@ let sellerFormTemplate = {
                                     "sector": {
                                         "type": "integer",
                                         "title": "secteur",
-                                        "format": "choices",
+                                        // 'format': 'choices',
+                                        'format': 'select',
                                         "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
                                         // "default": "",
                                         "options": {
@@ -212,10 +205,10 @@ let sellerFormTemplate = {
                                                 "Tourisme et Hôtellerie",
                                                 "Transport et Logistique"
                                             ],
-                                            'choices': {
-                                                shouldSort: false,
-                                                allowHTML: true
-                                            }
+                                            // 'choices': {
+                                            //     shouldSort: false,
+                                            //     allowHTML: true
+                                            // }
                                         }
                                     }
                                 }
@@ -344,16 +337,17 @@ let sellerFormTemplate = {
                                             },
                                             "phoneType": {
                                                 'type': 'integer',
-                                                "format": "choices",
+                                                // 'format': 'choices',
+                                                'format': 'select',
                                                 'title': 'Type de tél',
                                                 'enum': [0,1,2,3,4],
                                                 'default': 0,
                                                 'options': {
                                                     'enum_titles': ['Mobile', 'Fixe', 'WhatsApp', 'Viber', 'Skype'],
-                                                    'choices': {
-                                                        shouldSort: false,
-                                                        allowHTML: true
-                                                    }
+                                                    // 'choices': {
+                                                    //     shouldSort: false,
+                                                    //     allowHTML: true
+                                                    // }
                                                 }
                                             },
                                             "phone": {
@@ -400,16 +394,17 @@ let sellerFormTemplate = {
                                             },
                                             "linkType": {
                                                 'type': 'integer',
-                                                "format": "choices",
+                                                // 'format': 'choices',
+                                                'format': 'select',
                                                 'title': 'Type de lien',
                                                 'enum': [0,1,2,3,4],
                                                 'default': 0,
                                                 'options': {
                                                     'enum_titles': ['Site WEB', 'Facebook', 'Instagram', 'Linkedin', 'Twitter'],
-                                                    'choices': {
-                                                        shouldSort: false,
-                                                        allowHTML: true
-                                                    }
+                                                    // 'choices': {
+                                                    //     shouldSort: false,
+                                                    //     allowHTML: true
+                                                    // }
                                                 }
                                             },
                                             "link": {
@@ -743,7 +738,15 @@ let sellerFormTemplate = {
         
                     form.setValue(sellerInfos)
 
-                    if(form.isEnabled()) form.disable()
+                    form.disable()
+                    hideMaps(form)
+
+                    const enableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                    enableTheseInputs.forEach((el) => {
+                        el.setAttribute("disabled", "true")
+                    })
+
 
                     editBtn.classList.remove("ion-hide")
                     undoBtn.classList.add("ion-hide")
@@ -768,6 +771,7 @@ let sellerFormTemplate = {
                     sellerInfos = form.getValue()
 
                     if(form.isEnabled()) form.disable()
+                    hideMaps(form)
                     
                     editBtn.classList.remove("ion-hide")
                     undoBtn.classList.add("ion-hide")
@@ -777,6 +781,14 @@ let sellerFormTemplate = {
 
                 lockBtn.addEventListener("click", async () => {
                     if(form.isEnabled()) form.disable()
+                    hideMaps(form)
+
+                    const enableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                    enableTheseInputs.forEach((el) => {
+                        el.setAttribute("disabled", "true")
+                    })
+
                     lockBtn.classList.add("ion-hide")
                     editBtn.classList.remove("ion-hide")
                 })
