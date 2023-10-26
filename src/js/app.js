@@ -28,7 +28,7 @@ window.addEventListener("load", async (event) => {
     // console.log(await document.querySelector('ion-nav').canGoBack())
 })
 
-document.addEventListener('ionBackButton', async (ev) => {
+document.addEventListener('ionBackButton', async (ev) => {alert('xou')
     let timer = (Date.now() - lastBackButonTimerMs)
     const navigation = document.querySelector("ion-nav#navigation")
     const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")

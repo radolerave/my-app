@@ -1,3 +1,6 @@
+import { Toast } from '@capacitor/toast'
+import { myAccountTemplate } from './my-account-template.js';
+
 let rightMenuTemplate = {
   name: "right-menu-template",
   content: /*html*/`
@@ -33,16 +36,15 @@ let rightMenuTemplate = {
         
         <ion-item-divider></ion-item-divider>
 
-        <ion-item button id="exitApp" class="ion-margin-top ion-padding ion-hide">
+        <ion-item button id="signOut" class="ion-margin-top ion-padding">
           <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
             <ion-row class="ion-align-items-center">
               <ion-col size="auto">
-                <ion-icon name="power" color="danger"></ion-icon>
+                <ion-icon name="log-out-outline"></ion-icon>
               </ion-col>
               <ion-col class="ion-padding-start">
-                <ion-label color="danger" class="ion-text-wrap">
-                  <h2>Quitter l'application</h2>
-                  <!-- <p>Sur Android Seulement</p> -->
+                <ion-label class="ion-text-wrap">
+                  <h2>Se déconnecter</h2>
                 </ion-label>
               </ion-col>
             </ion-row>
@@ -58,11 +60,32 @@ let rightMenuTemplate = {
     </ion-menu>
   `,
   logic: async (args) => {
-    document.querySelector("#updateLocalDatabase").addEventListener("click", async () => {
-        let myFs = args.myFs
+    const navigation = document.querySelector("ion-app ion-nav#navigation")
 
-        await myFs.populateData()
+    document.querySelector("#updateLocalDatabase").addEventListener("click", async () => {
+      let myFs = args.myFs
+
+      await myFs.populateData()
     })
+
+    document.querySelector("#signOut").addEventListener("click", async () => {
+      let myFs = args.myFs
+
+      if(await myFs.signOut()) {
+        await Toast.show({
+          text: "Déconnecté(e) avec succès",
+          position: "bottom"
+        })
+
+        // await navigation.popToRoot()
+
+        const testSignedIn = await myFs.silentSignIn()
+        await myAccountTemplate.logic(testSignedIn)
+      }
+      else {
+        alert("Erreur lors de la déconnexion!")
+      }
+  })
   }
 }
 

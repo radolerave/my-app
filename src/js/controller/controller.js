@@ -15,6 +15,24 @@ export default class Fs {
         return this.version
     }
 
+    async silentSignIn() {
+        const response = await this.fsDb.silentSignIn()
+
+        return response
+    }
+
+    async signIn(credentials) {
+        const response = await this.fsDb.signIn(credentials)
+
+        return response
+    }
+
+    async signOut() {
+        const response = await this.fsDb.signOut()
+
+        return response
+    }
+
     async populateData() {
         await this.fsDb.populateData()
     }

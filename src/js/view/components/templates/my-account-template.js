@@ -19,32 +19,34 @@ let myAccountTemplate = {
         </style>
     `,
     logic: async (signedIn) => {
-        let hasSignedIn = signedIn
         const myAccountContent = document.querySelector("#my-account-template-content")
 
-        const promesse = () => {
-            return new Promise((resolve, reject) => {
-                if(!hasSignedIn) {
-                    myAccountContent.innerHTML = "You are not logged in, you will be redirected to the sign in page."
+        // const promesse = () => {
+        //     return new Promise((resolve, reject) => {
+        //         if(!signedIn) {
+        //             if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
+        //             myAccountContent.innerHTML = `Vous n'êtes pas connecté(e), vous allez être redirigé(e) vers une autre page où vous pourrez choisir entre connexion ou inscription.`
 
-                    setTimeout(() => {
-                        myAccountContent.innerHTML = ""   
-                        resolve(hasSignedIn)                     
-                    }, 2000);
-                }    
-                else {
-                    resolve(hasSignedIn)
-                }                                         
-            })
-        }
+        //             setTimeout(() => {
+        //                 myAccountContent.innerHTML = ""   
+        //                 resolve(signedIn)                     
+        //             }, 2000);
+        //         }    
+        //         else {
+        //             resolve(signedIn)
+        //         }                                         
+        //     })
+        // }
 
         // console.log(myAccountContent.innerHTML)
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
         
-        const connected = await promesse()
+        // const connected = await promesse()
 
-        if(connected) {
+        const connected = signedIn
+
+        if(connected) {           
             if(myAccountContent.classList.contains("notConnected")) {//first load
                 myAccountContent.classList.remove("notConnected") 
 
@@ -52,11 +54,15 @@ let myAccountTemplate = {
 
                 sellerFormTemplate.logic()
             }
+
+            await navigation.popToRoot()//important!!!
         }
         else {
+            await navigation.popToRoot()//important!!!
+
             if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
             
-            await navigation.push('sign-in-or-sign-up')                     
+            // await navigation.push('sign-in-or-sign-up')                     
 
             myAccountContent.innerHTML = /*html*/`
                 <div>
@@ -70,8 +76,8 @@ let myAccountTemplate = {
             const signUpBis = document.querySelector("#signUpBis")
 
             signInBis.addEventListener("click", async () => {
-                // navigation.push('sign-in')
-                await self.logic(true)
+                navigation.push('sign-in')
+                // await self.logic(true)
             })
 
             signUpBis.addEventListener("click", () => {

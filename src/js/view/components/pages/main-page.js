@@ -158,7 +158,8 @@ let mainPage = {
       let currentTab = await tab.getSelected()
 
       if(currentTab == "my-account") {
-        await myAccountTemplate.logic(false)
+        const testSignedIn = await myFs.silentSignIn()
+        await myAccountTemplate.logic(testSignedIn)
       }
     })
   }
