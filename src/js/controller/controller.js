@@ -15,6 +15,12 @@ export default class Fs {
         return this.version
     }
 
+    async testIfLocalCredentialsExist() {
+        const response = await this.fsDb.testIfLocalCredentialsExist()
+
+        return response
+    }
+
     async silentSignIn() {
         const response = await this.fsDb.silentSignIn()
 
@@ -34,7 +40,15 @@ export default class Fs {
     }
 
     async populateData() {
-        await this.fsDb.populateData()
+        const response = await this.fsDb.populateData()
+
+        return response
+    }
+
+    async getSellersListLastSyncDate() {
+        const response = await this.fsDb.getSellersListLastSyncDate()
+
+        return response
     }
 
     async getData(params) {

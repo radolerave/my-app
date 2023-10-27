@@ -152,13 +152,16 @@ let mainPage = {
     landingPageTemplate.logic()
     sellerSearchTemplate.logic(args)
 
+    const testSignedIn = await myFs.silentSignIn()//signIn mode : localDb <=> server db
+    await myAccountTemplate.logic(testSignedIn)
+
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")
 
     tab.addEventListener('ionTabsDidChange', async () => {
       let currentTab = await tab.getSelected()
 
       if(currentTab == "my-account") {
-        const testSignedIn = await myFs.silentSignIn()
+        const testSignedIn = await myFs.testIfLocalCredentialsExist()//signIn mode : device <=> localDb
         await myAccountTemplate.logic(testSignedIn)
       }
     })

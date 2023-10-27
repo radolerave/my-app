@@ -1,4 +1,5 @@
 import { Toast } from '@capacitor/toast'
+import { Dialog } from '@capacitor/dialog';
 import { myAccountTemplate } from './my-account-template.js';
 
 let rightMenuTemplate = {
@@ -61,31 +62,98 @@ let rightMenuTemplate = {
   `,
   logic: async (args) => {
     const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const menu = document.querySelector('ion-menu[menu-id="menu2"]')
+    let myFs = args.myFs
+
+    const sellersListLastSyncDate = await myFs.getSellersListLastSyncDate()
+    let text = ""
+
+    try {
+      if(typeof sellersListLastSyncDate != "undefined") {
+        text = `<ion-icon name="sync-outline"></ion-icon> ${String(sellersListLastSyncDate.getDate()).padStart(2, '0')}/${String(sellersListLastSyncDate.getMonth() + 1).padStart(2, '0')}/${sellersListLastSyncDate.getFullYear()} ${String(sellersListLastSyncDate.getHours()).padStart(2, '0')}:${String(sellersListLastSyncDate.getMinutes()).padStart(2, '0')}:${String(sellersListLastSyncDate.getSeconds()).padStart(2, '0')}`
+      }
+    }
+    catch(err) {
+      console.log(err)
+    }
+
+    document.querySelector("#lastSync").innerHTML = text
 
     document.querySelector("#updateLocalDatabase").addEventListener("click", async () => {
-      let myFs = args.myFs
+      const result = await Dialog.confirm({
+        title: 'Confirm',
+        message: `Votre base de données locale va être mise à jour. Voulez-vous continuer ?`,
+        okButtonTitle: "oui",
+        cancelButtonTitle: "non"
+      })
 
-      await myFs.populateData()
+      console.log(result)
+
+      if(result.value) {
+        let response = await myFs.populateData()
+
+        if(response.ok) {
+          console.log(response)
+
+          const lastSync = response.date
+
+          document.querySelector("#lastSync").innerHTML = `<ion-icon name="sync-outline"></ion-icon> ${String(lastSync.getDate()).padStart(2, '0')}/${String(lastSync.getMonth() + 1).padStart(2, '0')}/${lastSync.getFullYear()} ${String(lastSync.getHours()).padStart(2, '0')}:${String(lastSync.getMinutes()).padStart(2, '0')}:${String(lastSync.getSeconds()).padStart(2, '0')}`
+
+          await Toast.show({
+            text: "Base de données téléchargée avec succès sur votre appareil.",
+            duration: "short",
+            position: "bottom"
+          })
+        }
+        else {
+          await Toast.show({
+            text: "Erreur lors du téléchargement des données.",
+            duration: "long",
+            position: "bottom"
+          })
+        }
+      }
     })
 
     document.querySelector("#signOut").addEventListener("click", async () => {
-      let myFs = args.myFs
+      const result = await Dialog.confirm({
+        title: 'Confirm',
+        message: `Déconnexion ?`,
+        okButtonTitle: "oui",
+        cancelButtonTitle: "non"
+      })
 
-      if(await myFs.signOut()) {
-        await Toast.show({
-          text: "Déconnecté(e) avec succès",
-          position: "bottom"
-        })
+      console.log(result)
 
-        // await navigation.popToRoot()
+      if(result.value) {
+        if(await myFs.signOut()) {
+          await Toast.show({
+            text: "Déconnecté(e) avec succès",
+            position: "bottom"
+          })
 
-        const testSignedIn = await myFs.silentSignIn()
-        await myAccountTemplate.logic(testSignedIn)
+          await menu.close()
+
+          // await navigation.popToRoot()          
+        }
+        else {
+          await Toast.show({
+            text: "Erreur lors de la déconnexion!",
+            position: "bottom"
+          })
+        }
       }
-      else {
-        alert("Erreur lors de la déconnexion!")
-      }
-  })
+    })
+
+    menu.addEventListener("ionWillOpen", async () => {//important!!!
+      const testSignedIn = await myFs.testIfLocalCredentialsExist()
+      await myAccountTemplate.logic(testSignedIn)
+    })
+
+    menu.addEventListener("ionWillClose", async () => {//important!!!
+      const testSignedIn = await myFs.testIfLocalCredentialsExist()
+      await myAccountTemplate.logic(testSignedIn)
+    })
   }
 }
 

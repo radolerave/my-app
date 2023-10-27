@@ -20,6 +20,7 @@ let myAccountTemplate = {
     `,
     logic: async (signedIn) => {
         const myAccountContent = document.querySelector("#my-account-template-content")
+        const signOutBtn = document.querySelector("#signOut")
 
         // const promesse = () => {
         //     return new Promise((resolve, reject) => {
@@ -56,9 +57,13 @@ let myAccountTemplate = {
             }
 
             await navigation.popToRoot()//important!!!
+
+            if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
         }
         else {
             await navigation.popToRoot()//important!!!
+
+            if(!signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.add("ion-hide") 
 
             if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
             

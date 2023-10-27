@@ -9,13 +9,37 @@ export default class FsDb {
         initDb.version(1).stores({
             session: `&email, password, sellerId, sellerUniqueId, name`,
 			sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, uniqueId, verified, who_what`,
+            sellersListLastSyncDate : `id, date`,
             countriesList : `id, *attributes`
 		})        
         
         return initDb
-    }    
+    }  
+    
+    async testIfLocalCredentialsExist() {//signIn mode : device <=> localDb
+        //if it returns true, it is supposed that the user has signed in
+        try {
+            let localCredentials = await this.db.session.toArray()
 
-    async silentSignIn() {        
+            // console.log(localCredentials)
+            
+            let email, password
+
+            if(localCredentials.length == 1) {/*This is to limit the frequency of the testSignedIn request from the client to the server - do it locally; never use this method if neither (connection mode: localDb <=> server database) nor (connection mode: user input <=> server database) have been called before*/
+                return true
+            }
+            else {
+                return false
+            }            
+        }
+        catch(err) {
+            console.log(err)
+
+            return false
+        }
+    }
+
+    async silentSignIn() {//signIn mode : localDb <=> server db
         try {            
             let localCredentials = await this.db.session.toArray()
 
@@ -74,7 +98,7 @@ export default class FsDb {
         }
     }
 
-    async signIn(credentials) {
+    async signIn(credentials) {//signIn mode : user input <=> server db
         try {            
             let email = credentials.email
             let password = credentials.password
@@ -108,7 +132,7 @@ export default class FsDb {
             }
 
             if(mustBeTrue()) {
-                this.db.session.put(serverSideCredentials[0])
+                await this.db.session.put(serverSideCredentials[0])
                 return true
             }
             else {
@@ -136,8 +160,14 @@ export default class FsDb {
     }
 
     async populateData() {
+        let ret = {}
+        let lastSync 
+
         try {
             let sellersList = await fetch("https://server2.atria.local/findseller/api.php/records/sellers")
+
+            lastSync = new Date(sellersList.headers.get("date"))
+            
             sellersList = await sellersList.json()
             sellersList = sellersList.records
 
@@ -146,14 +176,42 @@ export default class FsDb {
 
             await this.db.sellersList.clear()//clear previous data
 
-            this.db.sellersList.bulkPut(sellersList)
+            const arrayOfPks = await this.db.sellersList.bulkPut(sellersList, {allKeys: true})
             .catch(this.wrapper.ConstraintError, () => {
                 // Record already exists
                 console.log("Record already exists")
             });
+
+            await this.db.sellersListLastSyncDate.put({"id": 1, "date": lastSync})//normally always the first data
+
+            ret.ok = true
+            ret.date = lastSync
+            ret.arrayOfPks = arrayOfPks
+            // console.log(arrayOfPks)
+        }
+        catch(err) {
+            console.log(err)
+
+            ret.ok = false
+            ret.date = undefined
+            ret.arrayOfPks = []
+        }
+
+        return ret
+    }
+
+    async getSellersListLastSyncDate() {
+        let date = undefined
+
+        try {
+            let result = await this.db.sellersListLastSyncDate.toArray()
+            result = result[0]//normally always the first data
+            date = result.date
         }
         catch(err) {
             console.log(err)
         }
+
+        return date
     }
 }
