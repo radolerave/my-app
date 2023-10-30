@@ -39,6 +39,12 @@ export default class Fs {
         return response
     }
 
+    async accountInfosUpdate(url, args) {
+        const response = await this.fsDb.accountInfosUpdate(url, args)
+
+        return response
+    }
+
     async populateData() {
         const response = await this.fsDb.populateData()
 

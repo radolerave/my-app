@@ -31,6 +31,8 @@ let signIn = {
             </ion-list>        
 
             <ion-button id="goSignIn" disabled="true">Se connecter</ion-button>
+            <br>
+            <ion-text id="error-text" color="danger"></ion-text>
         </ion-content>
     `,
     logic: () => {
@@ -41,6 +43,7 @@ let signIn = {
         const goSignInBtn = document.querySelector("#goSignIn")
         const goSignInEmail = document.querySelector("#goSignInEmail")
         const goSignInPassword = document.querySelector("#goSignInPassword")
+        const errorText = document.querySelector("#error-text")
         const credentials = {}
         
         goSignInBtn.addEventListener("click", async () => {
@@ -72,9 +75,11 @@ let signIn = {
 
             if(validEmail && validPwd) {
                 goSignInBtn.removeAttribute("disabled")
+                errorText.textContent = ``
             }
             else {
                 goSignInBtn.setAttribute("disabled", "true")
+                errorText.textContent = `Email ou mot de passe invalid`
             }
         })
 
@@ -84,9 +89,11 @@ let signIn = {
 
             if(validEmail && validPwd) {
                 goSignInBtn.removeAttribute("disabled")
+                errorText.textContent = ``
             }
             else {
                 goSignInBtn.setAttribute("disabled", "true")
+                errorText.textContent = `Email ou mot de passe invalid`
             }
         })
     }

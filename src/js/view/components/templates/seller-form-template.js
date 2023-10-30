@@ -4,6 +4,11 @@ import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
 import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
 import { sellerFormActionsTemplate } from './seller-form-actions-template.js';
+import Formater from "../../../helpers/formater.js"
+
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
+import { Dexie } from 'dexie'
 
 const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
 
@@ -33,6 +38,9 @@ let sellerFormTemplate = {
         </style>
     `,
     logic: () => {       
+        let myFs = new Fs(FsDb, Dexie)
+        let myFormater = new Formater()
+
         sellerFormActionsTemplate.logic()
 
         const element = document.querySelector('#sellerForm');   
@@ -500,35 +508,7 @@ let sellerFormTemplate = {
             let finalData = {
                 "updatedData": {},
                 "credentials": {}
-            }     
-
-            async function accountInfosUpdate(url, args) {
-                try {
-                    // Construct the API endpoint URL for updating the item
-                    const updateUrl = `${url}/${args.credentials.sellerId}`;
-                    const updatedData = args.updatedData
-
-                    //do a verification process before continuing*********** (credentials)
-
-                    // Send a PUT request to update the item
-                    let response = await fetch(updateUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // Include any necessary authentication headers here
-                        },
-                        body: JSON.stringify(updatedData),
-                    })
-
-                    let updatedItem = await response.json()
-
-                    console.log('Updated item:', updatedItem);
-                }
-                catch(error) {
-                    console.error('Error updating item:', error);
-                    // Handle error
-                }
-            }
+            }                 
 
             let mapInstance
 
@@ -558,7 +538,7 @@ let sellerFormTemplate = {
             form.on('ready', async () => {
                 //get the seller infos
                 const sellerId = 1
-                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName`
+                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName,date_add,last_edit`
 
                 try {
                     sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
@@ -566,8 +546,20 @@ let sellerFormTemplate = {
                     // sellerInfos = sellerInfos.records
         
                     console.log(sellerInfos)
+
+                    const lastEdit = sellerInfos.last_edit
+                    const dateAdd = sellerInfos.date_add
+
+                    delete sellerInfos.last_edit
+                    delete sellerInfos.date_add
         
                     form.setValue(sellerInfos)
+
+                    const lastModificationDate = myFormater.dateFormater(lastEdit.replace(" ", "T"), true)
+
+                    console.log(lastModificationDate)
+
+                    document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
                 }
                 catch(err) {
                     console.log(err)
@@ -766,9 +758,13 @@ let sellerFormTemplate = {
 
                     // console.log(finalData)
 
-                    await accountInfosUpdate(apiUrl, finalData) 
+                    const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
                     
                     sellerInfos = form.getValue()
+
+                    const lastModificationDate = myFormater.dateFormater(response.date, true)
+
+                    document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
 
                     if(form.isEnabled()) form.disable()
                     hideMaps(form)

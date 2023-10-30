@@ -1,6 +1,7 @@
 import { Toast } from '@capacitor/toast'
 import { Dialog } from '@capacitor/dialog';
 import { myAccountTemplate } from './my-account-template.js';
+import Formater from "../../../helpers/formater.js"
 
 let rightMenuTemplate = {
   name: "right-menu-template",
@@ -64,13 +65,14 @@ let rightMenuTemplate = {
     const navigation = document.querySelector("ion-app ion-nav#navigation")
     const menu = document.querySelector('ion-menu[menu-id="menu2"]')
     let myFs = args.myFs
+    let myFormater = new Formater()
 
-    const sellersListLastSyncDate = await myFs.getSellersListLastSyncDate()
     let text = ""
 
     try {
+      const sellersListLastSyncDate = myFormater.dateFormater(await myFs.getSellersListLastSyncDate(), true)
       if(typeof sellersListLastSyncDate != "undefined") {
-        text = `<ion-icon name="sync-outline"></ion-icon> ${String(sellersListLastSyncDate.getDate()).padStart(2, '0')}/${String(sellersListLastSyncDate.getMonth() + 1).padStart(2, '0')}/${sellersListLastSyncDate.getFullYear()} ${String(sellersListLastSyncDate.getHours()).padStart(2, '0')}:${String(sellersListLastSyncDate.getMinutes()).padStart(2, '0')}:${String(sellersListLastSyncDate.getSeconds()).padStart(2, '0')}`
+        text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate}`
       }
     }
     catch(err) {

@@ -10,6 +10,8 @@ let sellerFormActionsTemplate = {
             <ion-button id="helpMyAccountData" fill="outline" color="secondary" class="" size="small"><ion-icon name="help-outline"></ion-icon></ion-button>
 
             <ion-text id="my_account_manipulation_instructions" class="ion-hide">
+                <ion-text>Date de dernière modification : <span id="last_edit"></span></ion-text>
+                <hr>
                 <ion-icon name="create-outline"></ion-icon> pour activer la modification.<br>
                 <ion-icon name="save-outline"></ion-icon> pour enregistrer les modifications.<br>
                 <ion-icon name="arrow-undo-outline"></ion-icon> pour annuler toutes les modifications.<br>

@@ -45,6 +45,8 @@ let mainPage = {
             <ion-menu-button menu="menu"></ion-menu-button>
           </ion-buttons>
 
+          <ion-text id="network-status" slot="end"></ion-text>
+
           <ion-buttons slot="end">
             <ion-button id="notification">
                 <ion-icon name="notifications-outline"></ion-icon>

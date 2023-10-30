@@ -1,5 +1,6 @@
 import { SplashScreen } from '@capacitor/splash-screen'
 import { Camera } from '@capacitor/camera'
+import { Network } from '@capacitor/network';
 import { App } from '@capacitor/app';
 
 import { Dexie } from 'dexie'
@@ -16,16 +17,33 @@ let lastBackButonTimerMs = Date.now()
 let myFsView = new FsView()
 window.addEventListener("load", async (event) => {
     myFsView.generateView()
-    // console.log("version : ", myFs.getVersion())
-    // document.querySelector('ion-nav').addEventListener('ionNavWillChange', (ev) => {
-    //     console.log(ev)
-    // })
 
-    // document.querySelector('ion-nav').addEventListener('ionNavDidChange', (ev) => {
-    //     console.log(ev)
-    // })
+    function toggleConnectionStatus(connected) {
+        const networkStatus = document.querySelector("main-page #network-status")
 
-    // console.log(await document.querySelector('ion-nav').canGoBack())
+        if(connected) {
+            networkStatus.classList.add("connected")
+            networkStatus.classList.remove("disconnected")
+        }
+        else {
+            networkStatus.classList.add("disconnected")
+            networkStatus.classList.remove("connected")
+        }
+    }
+
+    Network.addListener('networkStatusChange', status => {
+        console.log('Network status changed', status);
+        toggleConnectionStatus(status.connected)
+    });
+
+    const logCurrentNetworkStatus = async () => {
+        const status = await Network.getStatus();
+      
+        console.log('Network status:', status);
+        toggleConnectionStatus(status.connected)
+    };
+
+    await logCurrentNetworkStatus()
 })
 
 document.addEventListener('ionBackButton', async (ev) => {
@@ -47,7 +65,7 @@ document.addEventListener('ionBackButton', async (ev) => {
         }
         else 
         {
-            window.history.back();
+            navigation.pop()
         }    
     }
 

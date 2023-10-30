@@ -159,6 +159,53 @@ export default class FsDb {
         }
     }
 
+    async accountInfosUpdate(url, args) {
+        let ret = {}
+        let lastEdit = null
+
+        try {
+            // Construct the API endpoint URL for updating the item
+            const updateUrl = `${url}/${args.credentials.sellerId}`;
+            const updatedData = args.updatedData
+
+            //do a verification process before continuing*********** (credentials)
+
+            // Send a PUT request to update the item
+            let updateOperation = await fetch(updateUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include any necessary authentication headers here
+                },
+                body: JSON.stringify(updatedData),
+            })
+
+            lastEdit = new Date(updateOperation.headers.get("date"))
+
+            let updatedItem = await updateOperation.json()
+
+            console.log('Updated item:', updatedItem);
+
+            ret = {
+                ok: true,
+                date: lastEdit,
+                pk : updatedItem
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                pk : null
+            }
+        }
+
+        return ret
+    }
+
     async populateData() {
         let ret = {}
         let lastSync 
