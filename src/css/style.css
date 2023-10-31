@@ -30,20 +30,8 @@ html, body {
   cursor: pointer;
 }
 
-main-page #network-status {
-  width: 0.6em;
-  height: 0.6em;
-  border-radius: 50%;
-}
-
-main-page #network-status.disconnected {
+.full-width-row {
+  color: red;
+  /* height: 150px !important; */
   border: solid red 1px;
-  border-width: 0;
-  background-color: red;
-}
-
-main-page #network-status.connected {
-  border: solid rgb(12, 180, 12) 1px;
-  border-width: 0;
-  background-color: rgb(12, 180, 12);
 }

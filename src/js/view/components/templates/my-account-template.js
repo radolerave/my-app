@@ -1,3 +1,4 @@
+import { Network } from '@capacitor/network';
 import { sellerFormTemplate } from './seller-form-template.js'
 import { myAccountTemplate as self } from './my-account-template.js';
 
@@ -22,32 +23,25 @@ let myAccountTemplate = {
         const myAccountContent = document.querySelector("#my-account-template-content")
         const signOutBtn = document.querySelector("#signOut")
 
-        // const promesse = () => {
-        //     return new Promise((resolve, reject) => {
-        //         if(!signedIn) {
-        //             if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
-        //             myAccountContent.innerHTML = `Vous n'êtes pas connecté(e), vous allez être redirigé(e) vers une autre page où vous pourrez choisir entre connexion ou inscription.`
 
-        //             setTimeout(() => {
-        //                 myAccountContent.innerHTML = ""   
-        //                 resolve(signedIn)                     
-        //             }, 2000);
-        //         }    
-        //         else {
-        //             resolve(signedIn)
-        //         }                                         
-        //     })
-        // }
-
-        // console.log(myAccountContent.innerHTML)
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
         
         // const connected = await promesse()
 
-        const connected = signedIn
+        const connected = signedIn    
 
-        if(connected) {           
+        const networkStatus = await Network.getStatus();
+
+        if(!networkStatus.connected) {//test if network is NOT connected
+            myAccountContent.innerHTML = /*html*/`
+                <div>
+                    <ion-icon name="cloud-offline-outline" color="medium" style="font-size: 128px;"></ion-icon>
+                    <div>Vous n'êtes pas connecté(e) à Internet!</div>
+                </div>
+            `
+        }
+        else if(connected) {//test if user is connected      
             if(myAccountContent.classList.contains("notConnected")) {//first load
                 myAccountContent.classList.remove("notConnected") 
 
@@ -72,7 +66,7 @@ let myAccountTemplate = {
             myAccountContent.innerHTML = /*html*/`
                 <div>
                     <ion-button id="signInBis" expand="full">Se connecter</ion-button>    
-                    <ion-text>ou</ion-text>
+                    <ion-text>-</ion-text>
                     <ion-button id="signUpBis" expand="full">S'inscrire</ion-button>
                 </div>
             `

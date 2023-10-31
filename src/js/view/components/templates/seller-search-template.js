@@ -144,6 +144,7 @@ let sellerSearchTemplate = {
             <div class="full-width-row">
                 <span>${params.data.name}</span>
                 <p>${params.data.country}</p>
+                <p>${params.data.last_edit}</p>
             </div>`;
     }
 
@@ -160,6 +161,7 @@ let sellerSearchTemplate = {
         pagination: true,
         paginationPageSize: 5,
         rowData: [],
+        getRowHeight: (params) => {return 100},//100px
         isFullWidthRow: function (rowNode) {
             // Return true for rows that should be full-width
             return true;

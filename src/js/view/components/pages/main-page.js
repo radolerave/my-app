@@ -33,6 +33,24 @@ let mainPage = {
             align-items: center; */
             height: 100%;
         }
+
+        main-page #network-status {
+          width: 0.6em;
+          height: 0.6em;
+          border-radius: 50%;
+        }
+
+        main-page #network-status.disconnected {
+          border: solid red 1px;
+          border-width: 0;
+          background-color: red;
+        }
+
+        main-page #network-status.connected {
+          border: solid rgb(12, 180, 12) 1px;
+          border-width: 0;
+          background-color: rgb(12, 180, 12);
+        }
     </style>
 
     ${leftMenuTemplate.content}
@@ -124,21 +142,21 @@ let mainPage = {
       </ion-content>
     </div>
     `,
-  logic: async () => {    
+  logic: async () => {
     let myFs = new Fs(FsDb, Dexie)
     console.log(myFs)
 
     let args = {}
     args["myFs"] = myFs
 
-    leftMenuTemplate.logic()    
+    leftMenuTemplate.logic()
 
     rightMenuTemplate.logic(args)
 
     const landingNav = document.querySelector('#landing-nav');
     const landingP = document.querySelector('#landing-page');
     landingNav.root = landingP;
-    
+
     const advertisementNav = document.querySelector('#advertisement-nav');
     const advertisementPage = document.querySelector('#advertisement-page');
     advertisementNav.root = advertisementPage;
@@ -162,7 +180,7 @@ let mainPage = {
     tab.addEventListener('ionTabsDidChange', async () => {
       let currentTab = await tab.getSelected()
 
-      if(currentTab == "my-account") {
+      if (currentTab == "my-account") {
         const testSignedIn = await myFs.testIfLocalCredentialsExist()//signIn mode : device <=> localDb
         await myAccountTemplate.logic(testSignedIn)
       }
@@ -170,4 +188,4 @@ let mainPage = {
   }
 }
 
-  export { mainPage }
+export { mainPage }

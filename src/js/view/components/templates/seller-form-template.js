@@ -1,5 +1,6 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
+import { Dialog } from '@capacitor/dialog'
 import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
 import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
@@ -760,19 +761,27 @@ let sellerFormTemplate = {
 
                     const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
                     
-                    sellerInfos = form.getValue()
+                    if(response.ok) {
+                        sellerInfos = form.getValue()
 
-                    const lastModificationDate = myFormater.dateFormater(response.date, true)
+                        const lastModificationDate = myFormater.dateFormater(response.date, true)
 
-                    document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
+                        document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
 
-                    if(form.isEnabled()) form.disable()
-                    hideMaps(form)
-                    
-                    editBtn.classList.remove("ion-hide")
-                    undoBtn.classList.add("ion-hide")
-                    saveBtn.classList.add("ion-hide")
-                    lockBtn.classList.add("ion-hide")
+                        if(form.isEnabled()) form.disable()
+                        hideMaps(form)
+                        
+                        editBtn.classList.remove("ion-hide")
+                        undoBtn.classList.add("ion-hide")
+                        saveBtn.classList.add("ion-hide")
+                        lockBtn.classList.add("ion-hide")
+                    }
+                    else {
+                        await Dialog.alert({
+                            "title": `<ion-icon name="warning-outline"></ion-icon>`,
+                            "message": `${response.errorText}`
+                        })
+                    }
                 })
 
                 lockBtn.addEventListener("click", async () => {

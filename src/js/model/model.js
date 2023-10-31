@@ -83,13 +83,15 @@ export default class FsDb {
                 }
             }
 
-            if(mustBeTrue()) {
-                this.db.session.put(serverSideCredentials[0])
-                return true
-            }
-            else {
-                return false
-            }
+            // if(mustBeTrue()) {
+            //     this.db.session.put(serverSideCredentials[0])
+            //     return true
+            // }
+            // else {
+            //     return false
+            // }
+
+            return mustBeTrue()
         }
         catch(err) {
             console.log(err)
@@ -164,32 +166,42 @@ export default class FsDb {
         let lastEdit = null
 
         try {
-            // Construct the API endpoint URL for updating the item
-            const updateUrl = `${url}/${args.credentials.sellerId}`;
-            const updatedData = args.updatedData
+            if(await this.silentSignIn()) {//credentials must be verified to be able to update anything
+                // Construct the API endpoint URL for updating the item
+                const updateUrl = `${url}/${args.credentials.sellerId}`;
+                const updatedData = args.updatedData
 
-            //do a verification process before continuing*********** (credentials)
+                //do a verification process before continuing*********** (credentials)
 
-            // Send a PUT request to update the item
-            let updateOperation = await fetch(updateUrl, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include any necessary authentication headers here
-                },
-                body: JSON.stringify(updatedData),
-            })
+                // Send a PUT request to update the item
+                let updateOperation = await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    body: JSON.stringify(updatedData),
+                })
 
-            lastEdit = new Date(updateOperation.headers.get("date"))
+                lastEdit = new Date(updateOperation.headers.get("date"))
 
-            let updatedItem = await updateOperation.json()
+                let updatedItem = await updateOperation.json()
 
-            console.log('Updated item:', updatedItem);
+                console.log('Updated item:', updatedItem);
 
-            ret = {
-                ok: true,
-                date: lastEdit,
-                pk : updatedItem
+                ret = {
+                    ok: true,
+                    date: lastEdit,
+                    pk : updatedItem
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: null,
+                    pk: null,
+                    errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
+                }
             }
         }
         catch(error) {
@@ -199,7 +211,8 @@ export default class FsDb {
             ret = {
                 ok: false,
                 date: null,
-                pk : null
+                pk : null,
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
             }
         }
 
