@@ -4,6 +4,9 @@ import {Cloudinary} from "@cloudinary/url-gen";
 // Import any actions required for transformations.
 import {fill} from "@cloudinary/url-gen/actions/resize";
 
+import { mediaPublicationTemplate } from "./../templates/media-publication-template.js";
+import { fsConfig } from './../../../config/fsConfig.js';
+
 let mediaPublication = {
   name: "media-publication",
   content: /*html*/`
@@ -17,14 +20,14 @@ let mediaPublication = {
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="ion-text-center"></ion-content>
+    <ion-content id="media-publication-content" class="ion-text-center">${mediaPublicationTemplate.content}</ion-content>
   `,
-  logic: async (args) => {
-    const myCloudName = "dtu8h2u98"
-    const theTagName = "fs"
-    const myUploadPreset = "ml_default"    
+  logic: async () => {
+    const myCloudName = fsConfig.cloudinary.cloudName
+    const theTagName = fsConfig.cloudinary.defaultTag
+    const myUploadPreset = fsConfig.cloudinary.uploadPreset   
 
-    
+    mediaPublicationTemplate.logic()
   }
 }
 

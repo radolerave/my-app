@@ -5,13 +5,12 @@ import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
 import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
 import { sellerFormActionsTemplate } from './seller-form-actions-template.js';
-import Formater from "../../../helpers/formater.js"
+import Formatter from "../../../helpers/formatter.js"
 
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { Dexie } from 'dexie'
-
-const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
+import { fsConfig } from './../../../config/fsConfig.js';
 
 let myMap = new MyMap()
 
@@ -38,9 +37,10 @@ let sellerFormTemplate = {
             }
         </style>
     `,
-    logic: () => {       
+    logic: (session) => {     
+        const apiUrl = fsConfig.apiUrl  
         let myFs = new Fs(FsDb, Dexie)
-        let myFormater = new Formater()
+        let myFormatter = new Formatter()
 
         sellerFormActionsTemplate.logic()
 
@@ -537,14 +537,11 @@ let sellerFormTemplate = {
             }
             
             form.on('ready', async () => {
-                //get the seller infos
-                const sellerId = 1
-                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName,date_add,last_edit`
+                //get the seller infos  
+                const response = await myFs.getSellerInfos(apiUrl, session.sellerId)
 
-                try {
-                    sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
-                    sellerInfos = await sellerInfos.json()
-                    // sellerInfos = sellerInfos.records
+                if(response.ok) {                    
+                    sellerInfos = response.sellerInfos
         
                     console.log(sellerInfos)
 
@@ -556,14 +553,26 @@ let sellerFormTemplate = {
         
                     form.setValue(sellerInfos)
 
-                    const lastModificationDate = myFormater.dateFormater(lastEdit.replace(" ", "T"), true)
+                    const lastModificationDate = myFormatter.dateFormatter(lastEdit.replace(" ", "T"), true)
 
                     console.log(lastModificationDate)
 
                     document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
                 }
-                catch(err) {
-                    console.log(err)
+                else 
+                {
+                    console.log(response.error)
+
+                    const myAccountContent = document.querySelector("#my-account-template-content")
+
+                    if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
+
+                    myAccountContent.innerHTML = /*html*/`
+                        <div>
+                            <ion-icon name="cloud-offline-outline" color="medium" style="font-size: 128px;"></ion-icon>
+                            <div>Vérifiez votre connexion!</div>
+                        </div>
+                    `
                 }
                 //////////////////////////////
 
@@ -748,13 +757,12 @@ let sellerFormTemplate = {
                 })
 
                 saveBtn.addEventListener("click", async () => {
-                    //supposed been connected with: sellerId : 1 & sellerUniqueId : pim ...
                     finalData["credentials"] = {
-                        "sellerId" : 1,
-                        "sellerUniqueId" : "pim",
-                        "email": "radolerave@gmail.com",
-                        "password": "password",
-                        "accountId": 1
+                        "sellerId" : session.sellerId,
+                        "sellerUniqueId" : session.sellerUniqueId,
+                        "email": session.email,
+                        "password": session.password,
+                        "accountId": session.id
                     }                 
 
                     // console.log(finalData)
@@ -764,7 +772,7 @@ let sellerFormTemplate = {
                     if(response.ok) {
                         sellerInfos = form.getValue()
 
-                        const lastModificationDate = myFormater.dateFormater(response.date, true)
+                        const lastModificationDate = myFormatter.dateFormatter(response.date, true)
 
                         document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
 

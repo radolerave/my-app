@@ -8,6 +8,7 @@ import { sellerMediaManagement } from './components/pages/seller-media-managemen
 import { mediaPublication } from './components/pages/media-publication.js'
 import { sellerSettings } from './components/pages/seller-settings.js'
 import { sellerPreferences } from './components/pages/seller-preferences.js'
+import { sellerSearch } from './components/pages/seller-search.js'
 
 let components = {}
 
@@ -21,5 +22,6 @@ components.sellerMediaManagement = sellerMediaManagement
 components.mediaPublication = mediaPublication
 components.sellerSettings = sellerSettings
 components.sellerPreferences = sellerPreferences
+components.sellerSearch = sellerSearch
 
 export { components }

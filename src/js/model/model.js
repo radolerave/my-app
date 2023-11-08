@@ -39,6 +39,21 @@ export default class FsDb {
         }
     }
 
+    async getLocalCredentials() {//device <=> localDb
+        let localCredentials = {}
+        try {
+            const resp = await this.db.session.toArray()
+            localCredentials = resp[0]
+
+            // console.log(localCredentials)                                 
+        }
+        catch(err) {
+            console.log(err)
+        }
+
+        return localCredentials
+    }
+
     async silentSignIn() {//signIn mode : localDb <=> server db
         try {            
             let localCredentials = await this.db.session.toArray()
@@ -255,6 +270,7 @@ export default class FsDb {
             ret.ok = false
             ret.date = undefined
             ret.arrayOfPks = []
+            ret.error = err
         }
 
         return ret
@@ -273,5 +289,57 @@ export default class FsDb {
         }
 
         return date
+    }
+
+    async getSellerInfos(apiUrl, sellerId, columns) {
+        let ret = {}
+        let sellerInfos, date
+
+        try {
+            sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
+
+            date = new Date(sellerInfos.headers.get("date"))
+
+            sellerInfos = await sellerInfos.json()
+            // sellerInfos = sellerInfos.records
+
+            // console.log(sellerInfos)
+
+            ret.ok = true
+            ret.date = date
+            ret.sellerInfos = sellerInfos
+        }
+        catch(err) {
+            ret.ok = false
+            ret.date = undefined
+            ret.sellerInfos = undefined
+            ret.error = err
+        }
+
+        return ret
+    }
+
+    async updateLocalSellerInfos(data, sellerId) {
+        let ret = {}
+        
+        data.id = sellerId
+        console.log(data)
+
+        try {
+            const pk = await this.db.sellersList.put(data)
+
+            ret.ok = true
+            ret.pk = pk
+            // console.log(pk)
+        }
+        catch(err) {
+            console.log(err)
+
+            ret.ok = false
+            ret.pk = undefined
+            ret.error = err
+        }
+
+        return ret
     }
 }

@@ -1,7 +1,7 @@
 import { Toast } from '@capacitor/toast'
 import { Dialog } from '@capacitor/dialog';
 import { myAccountTemplate } from './my-account-template.js';
-import Formater from "../../../helpers/formater.js"
+import Formatter from "../../../helpers/formatter.js"
 
 let rightMenuTemplate = {
   name: "right-menu-template",
@@ -65,12 +65,12 @@ let rightMenuTemplate = {
     const navigation = document.querySelector("ion-app ion-nav#navigation")
     const menu = document.querySelector('ion-menu[menu-id="menu2"]')
     let myFs = args.myFs
-    let myFormater = new Formater()
+    let myFormatter = new Formatter()
 
     let text = ""
 
     try {
-      const sellersListLastSyncDate = myFormater.dateFormater(await myFs.getSellersListLastSyncDate(), true)
+      const sellersListLastSyncDate = myFormatter.dateFormatter(await myFs.getSellersListLastSyncDate(), true)
       if(typeof sellersListLastSyncDate != "undefined") {
         text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate}`
       }
@@ -148,13 +148,13 @@ let rightMenuTemplate = {
     })
 
     menu.addEventListener("ionWillOpen", async () => {//important!!!
-      const testSignedIn = await myFs.testIfLocalCredentialsExist()
-      await myAccountTemplate.logic(testSignedIn)
+      const session = await myFs.getLocalCredentials()
+      await myAccountTemplate.logic(session)
     })
 
     menu.addEventListener("ionWillClose", async () => {//important!!!
-      const testSignedIn = await myFs.testIfLocalCredentialsExist()
-      await myAccountTemplate.logic(testSignedIn)
+      const session = await myFs.getLocalCredentials()
+      await myAccountTemplate.logic(session)
     })
   }
 }

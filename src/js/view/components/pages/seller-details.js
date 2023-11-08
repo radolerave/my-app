@@ -14,14 +14,25 @@ let sellerDetails = {
                     <ion-label>
                         <h2 id="title"></h2>
                         <p id="tab-title"></p>
+                        
                     </ion-label>
-                </ion-title>                      
+                </ion-title>
+
+                <ion-text id="seller-details-last-edit" slot="end" class="ion-margin"></ion-text>              
             </ion-toolbar>
         </ion-header>
 
         <ion-content class="ion-padding">
-            <div id="sellerDetailsContent">This is the content for seller details.</div>
+            <div id="sellerDetailsContent">This is the content for seller details.</div>                    
         </ion-content>
+
+        <style>
+            seller-details #seller-details-last-edit {
+                /* border: solid red 1px; */
+                font-size: 0.6em;
+                /* position: absolute; */
+            }
+        </style>
     `,
     logic: async () => {
         const navigation = document.querySelector("ion-app ion-nav#navigation")
@@ -29,15 +40,17 @@ let sellerDetails = {
 
         sellerDetailsContent.innerHTML = sellerDetailsTemplate.content
 
-        navigation.addEventListener('ionNavDidChange', async () => {
+        const listener = async () => {
             let currentPage = await navigation.getActive()
 
             // console.log(currentPage)
 
             if(currentPage.component == "seller-details") {
-                sellerDetailsTemplate.logic(currentPage)
+                sellerDetailsTemplate.logic({currentPage, listener})
             }
-        })
+        }        
+
+        navigation.addEventListener('ionNavDidChange', listener)
     }
 }
 

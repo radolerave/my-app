@@ -170,8 +170,8 @@ let mediaActionsTemplate = {
             mediaHelpBtn.click()
         })
 
-        mediaPublishBtn.addEventListener("click", () => {
-            navigation.push('media-publication')
+        mediaPublishBtn.addEventListener("click", async () => {
+            await navigation.push('media-publication')
         })    
 
         mediaDeleteBtn.addEventListener("click", () => {

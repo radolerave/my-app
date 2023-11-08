@@ -19,10 +19,10 @@ let myAccountTemplate = {
             }
         </style>
     `,
-    logic: async (signedIn) => {
+    logic: async (session) => {
         const myAccountContent = document.querySelector("#my-account-template-content")
         const signOutBtn = document.querySelector("#signOut")
-
+        const signedIn = (typeof session == "object" && typeof session.email != "undefined") ? true : false
 
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
@@ -47,7 +47,7 @@ let myAccountTemplate = {
 
                 myAccountContent.innerHTML = sellerFormTemplate.content
 
-                sellerFormTemplate.logic()
+                sellerFormTemplate.logic(session)
             }
 
             await navigation.popToRoot()//important!!!

@@ -8,15 +8,15 @@ export default class FsView {
     generateThisComponent(component) {
         //rendering the content
         customElements.define(component.name, class extends HTMLElement {
-            connectedCallback() {
+            async connectedCallback() {
                 this.innerHTML = component.content
 
-                component.logic()
+                await component.logic()
             }
         })        
     }
 
-    generateView(component = undefined) {
+    generateView() {
         this.generateThisComponent(this.components.mainPage)
         // this.generateThisComponent(this.components.myAccount)  
         this.generateThisComponent(this.components.signInOrSignUp)      
@@ -27,6 +27,7 @@ export default class FsView {
         this.generateThisComponent(this.components.mediaPublication) 
         this.generateThisComponent(this.components.sellerSettings) 
         this.generateThisComponent(this.components.sellerPreferences) 
+        this.generateThisComponent(this.components.sellerSearch) 
     }
 
     async skeleton() {

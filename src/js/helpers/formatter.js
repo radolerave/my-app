@@ -1,9 +1,9 @@
-export default class Formater {
+export default class Formatter {
     constructor() {
 
     }
 
-    dateFormater(theDate, preformatted = false) {
+    dateFormatter(theDate, preformatted = false) {
         const dateObj = (theDate.constructor.toString().indexOf("Date") > -1) ? 
             theDate
             :

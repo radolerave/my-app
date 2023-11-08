@@ -19,6 +19,8 @@ let sellerSearchTemplate = {
     const element = document.querySelector('#criteria');
     let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keyword":"" }
 
+    // element.innerHTML = ``
+
     let criteria = new JSONEditor(element, {
         use_name_attributes: false,
         theme: 'bootstrap5',
@@ -137,6 +139,8 @@ let sellerSearchTemplate = {
     const validateCriteria = document.querySelector('#validateCriteria')
     const resetCriteria = document.querySelector('#resetCriteria')
     const filterResults = document.querySelector('#filterResults')
+
+    results.innerHTML = ``
 
     // Define the custom full-width cell renderer
     function fullWidthCellRenderer(params) {

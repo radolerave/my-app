@@ -35,3 +35,8 @@ html, body {
   /* height: 150px !important; */
   border: solid red 1px;
 }
+
+#text-editor {
+  border: solid red 1px;
+  height: 50vh;
+}

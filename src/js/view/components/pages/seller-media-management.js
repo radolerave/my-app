@@ -1,4 +1,5 @@
 import { mediaActionsTemplate } from './../templates/media-actions-template.js'
+import { fsConfig } from './../../../config/fsConfig.js';
 
 // Import the Cloudinary class.
 import {Cloudinary} from "@cloudinary/url-gen";
@@ -61,10 +62,10 @@ let sellerMediaManagement = {
       }
     </style>
   `,
-  logic: async (args) => {
-    const myCloudName = "dtu8h2u98"
-    const theTagName = "fs"
-    const myUploadPreset = "ml_default"    
+  logic: async () => {
+    const myCloudName = fsConfig.cloudinary.cloudName
+    const theTagName = fsConfig.cloudinary.defaultTag
+    const myUploadPreset = fsConfig.cloudinary.uploadPreset
 
     let lightGalleryForImages, lightGalleryForVideos
 
@@ -144,7 +145,7 @@ let sellerMediaManagement = {
 
       lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
         plugins: [lgZoom, lgThumbnail],
-        licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+        licenseKey: fsConfig.cloudinary.licenseKey,
         speed: 500
       })
 

@@ -38,6 +38,10 @@ let mainPage = {
           width: 0.6em;
           height: 0.6em;
           border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 5%;
+          transform: translate(-50%, -50%);
         }
 
         main-page #network-status.disconnected {
@@ -61,11 +65,13 @@ let mainPage = {
         <ion-toolbar>
           <ion-buttons slot="start">
             <ion-menu-button menu="menu"></ion-menu-button>
-          </ion-buttons>
-
-          <ion-text id="network-status" slot="end"></ion-text>
+          </ion-buttons>          
 
           <ion-buttons slot="end">
+            <ion-button id="search-seller">
+              <ion-icon name="search-circle" size="large" color="primary"></ion-icon>
+            </ion-button>
+
             <ion-button id="notification">
                 <ion-icon name="notifications-outline"></ion-icon>
                 <ion-badge color="danger">7</ion-badge>
@@ -76,8 +82,8 @@ let mainPage = {
             </ion-menu-button>              
           </ion-buttons>
           
-          <ion-title>Find Seller</ion-title>
-        </ion-toolbar>
+          <ion-title>Find Seller<ion-text id="network-status"></ion-text></ion-title>
+        </ion-toolbar>        
       </ion-header>
       <ion-content class="ion-padding">          
         <ion-tabs id="main-page-tab">
@@ -99,14 +105,14 @@ let mainPage = {
                 </div>
             </ion-tab>
 
-            <ion-tab tab="seller-search">
-                <ion-nav id="seller-search-nav"></ion-nav>
-                <div id="seller-search-page">
+            <ion-tab tab="news">
+                <ion-nav id="news-nav"></ion-nav>
+                <div id="news-page">
                     <ion-content>
-                        <div id="seller-search-content" class="ion-padding">${sellerSearchTemplate.content}</div>
+                        <div id="news-page-content" class="">xou b</div>
                     </ion-content>
                 </div>
-            </ion-tab> 
+            </ion-tab>
 
             <ion-tab tab="my-account">
                 <ion-nav id="my-account-nav"></ion-nav>
@@ -119,8 +125,8 @@ let mainPage = {
 
             <ion-tab-bar slot="bottom">
                 <ion-tab-button tab="landing">
-                    <ion-icon name="newspaper"></ion-icon>
-                    Quoi de neuf ?
+                    <ion-icon name="home"></ion-icon>
+                    Accueil
                 </ion-tab-button>                
 
                 <ion-tab-button tab="advertisement">
@@ -128,9 +134,9 @@ let mainPage = {
                     Annonces
                 </ion-tab-button>
 
-                <ion-tab-button tab="seller-search">
-                    <ion-icon name="search-circle"></ion-icon>
-                    Recherche
+                <ion-tab-button tab="news">
+                    <ion-icon name="newspaper"></ion-icon>
+                    Actualités
                 </ion-tab-button>
 
                 <ion-tab-button tab="my-account">
@@ -149,6 +155,8 @@ let mainPage = {
     let args = {}
     args["myFs"] = myFs
 
+    const navigation = document.querySelector("ion-app ion-nav#navigation")
+
     leftMenuTemplate.logic()
 
     rightMenuTemplate.logic(args)
@@ -161,16 +169,16 @@ let mainPage = {
     const advertisementPage = document.querySelector('#advertisement-page');
     advertisementNav.root = advertisementPage;
 
-    const sellerSearchNav = document.querySelector('#seller-search-nav');
-    const sellerSearchPage = document.querySelector('#seller-search-page');
-    sellerSearchNav.root = sellerSearchPage;
+    const newsNav = document.querySelector('#news-nav');
+    const newsPage = document.querySelector('#news-page');
+    newsNav.root = newsPage;
 
     const myAccountNav = document.querySelector('#my-account-nav');
     const myAccountPage = document.querySelector('#my-account-page');
     myAccountNav.root = myAccountPage;
 
     landingPageTemplate.logic()
-    sellerSearchTemplate.logic(args)
+    // sellerSearchTemplate.logic(args)
 
     const testSignedIn = await myFs.silentSignIn()//signIn mode : localDb <=> server db
     await myAccountTemplate.logic(testSignedIn)
@@ -181,9 +189,13 @@ let mainPage = {
       let currentTab = await tab.getSelected()
 
       if (currentTab == "my-account") {
-        const testSignedIn = await myFs.testIfLocalCredentialsExist()//signIn mode : device <=> localDb
-        await myAccountTemplate.logic(testSignedIn)
+        const session = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+        await myAccountTemplate.logic(session)
       }
+    })
+
+    document.querySelector("#search-seller").addEventListener("click", async () => {
+      await navigation.push("seller-search", args)
     })
   }
 }

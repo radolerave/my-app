@@ -15,6 +15,12 @@ export default class Fs {
         return this.version
     }
 
+    async getLocalCredentials() {
+        const response = await this.fsDb.getLocalCredentials()
+
+        return response
+    }
+
     async testIfLocalCredentialsExist() {
         const response = await this.fsDb.testIfLocalCredentialsExist()
 
@@ -54,6 +60,20 @@ export default class Fs {
     async getSellersListLastSyncDate() {
         const response = await this.fsDb.getSellersListLastSyncDate()
 
+        return response
+    }
+
+    async getSellerInfos(apiUrl, sellerId) {
+        const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName,date_add,last_edit`
+
+        const response = await this.fsDb.getSellerInfos(apiUrl, sellerId, columns)
+        
+        return response
+    }
+
+    async updateLocalSellerInfos(data, sellerId) {
+        const response = await this.fsDb.updateLocalSellerInfos(data, sellerId)
+        
         return response
     }
 
