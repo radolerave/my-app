@@ -4,6 +4,8 @@ import "lightgallery/css/lightGallery-bundle.css"
 
 import lightGallery from 'lightgallery';
 
+import { fsConfig } from './../../../config/fsConfig.js';
+
 // Plugins
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
@@ -15,7 +17,7 @@ let mediaActionsTemplate = {
         <div id="media-actions">
             <ion-button id="upload_widget" size="small" color="dark" fill="outline">+<ion-icon name="images-outline"></ion-icon></ion-button>
 
-            <ion-button id="publish" size="small" color="tertiary" fill="outline" disabled="true"><ion-icon name="share-outline"></ion-icon><ion-badge slot="end" id="number-of-selected-media"></ion-badge></ion-button>
+            <ion-button id="prePublish" size="small" color="tertiary" fill="outline"><ion-icon name="share-outline"></ion-icon><ion-badge slot="end" id="number-of-selected-media"></ion-badge></ion-button>
 
             <ion-button id="media_delete" size="small" color="danger" fill="outline" disabled="true"><ion-icon name="trash-outline"></ion-icon></ion-button>
 
@@ -75,7 +77,7 @@ let mediaActionsTemplate = {
         let lightGalleryForImages, lightGalleryForVideos
 
         const mediaUploadWidgetBtn = document.querySelector("#upload_widget")
-        const mediaPublishBtn = document.querySelector("#publish")
+        const mediaPublishBtn = document.querySelector("#prePublish")
         const mediaDeleteBtn = document.querySelector("#media_delete")
         const mediaDeselectAllBtn = document.querySelector("#media_deselect_all")
         const mediaReduceBtn = document.querySelector("#media_reduce")
@@ -84,21 +86,27 @@ let mediaActionsTemplate = {
         let myMedias = document.querySelectorAll("seller-media-management #sellerMediaManagementContent media")
         let longPressActivated = false
         let numberOfSelectedMedias = 0
-        let previousNumberOfSelectedMedias = 0
+        let previousNumberOfSelectedMedias = 0        
+
+        let selectedMediasDetails = () => {
+            return document.querySelectorAll("seller-media-management #sellerMediaManagementContent media.media-selected")
+        }
 
         let countSelectedMedias = () => {
-            const nbr = document.querySelectorAll("seller-media-management #sellerMediaManagementContent media.media-selected").length
+            const selectedMedias = selectedMediasDetails()
+
+            const nbr = selectedMedias.length
 
             document.querySelector("#number-of-selected-media").textContent = nbr == 0 ? "" : nbr
 
             return nbr
-        }
+        }        
 
         let disableOrEnableTheseBtns = (nbr, prevNbr) => {
             if(nbr <= 0) {
                 longPressActivated = false
 
-                mediaPublishBtn.setAttribute("disabled", "true")
+                // mediaPublishBtn.setAttribute("disabled", "true")
                 mediaDeleteBtn.setAttribute("disabled", "true")
                 mediaDeselectAllBtn.setAttribute("disabled", "true")
                 
@@ -115,13 +123,13 @@ let mediaActionsTemplate = {
                     if(prevNbr == 0) {
                         lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
                             plugins: [lgZoom, lgThumbnail],
-                            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+                            licenseKey: fsConfig.lightGallery.licenseKey,
                             speed: 500
                         })
 
                         lightGalleryForVideos = lightGallery(document.getElementById('videos-container'), {
                             plugins: [lgVideo],
-                            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+                            licenseKey: fsConfig.lightGallery.licenseKey,
                             videojs: true,
                             videojsOptions: {
                                 muted: false,
@@ -136,7 +144,7 @@ let mediaActionsTemplate = {
                 }
             }
             else {
-                mediaPublishBtn.setAttribute("disabled", "false")
+                // mediaPublishBtn.setAttribute("disabled", "false")
                 mediaDeleteBtn.setAttribute("disabled", "false")
                 mediaDeselectAllBtn.setAttribute("disabled", "false")
             }
@@ -171,7 +179,7 @@ let mediaActionsTemplate = {
         })
 
         mediaPublishBtn.addEventListener("click", async () => {
-            await navigation.push('media-publication')
+            await navigation.push('media-publication', { selectedMedias: selectedMediasDetails() })        
         })    
 
         mediaDeleteBtn.addEventListener("click", () => {

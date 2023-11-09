@@ -446,12 +446,12 @@ let sellerFormTemplate = {
                                 },
                                 "medias": {
                                     "type": "object",
-                                    "title": "Médias",
+                                    "title": "Médias & publications",
                                     "properties": {
                                         "information": {
                                             "type": "info",
                                             "title": "Information",
-                                            "description": "Pour gérer vos médias, veuillez cliquer sur le bouton ci-après."
+                                            "description": "Pour gérer vos médias et vos publications, veuillez appuyer sur le bouton ci-après."
                                         },
                                         "mediaButton": {
                                             "type": "button",
@@ -786,7 +786,7 @@ let sellerFormTemplate = {
                     }
                     else {
                         await Dialog.alert({
-                            "title": `<ion-icon name="warning-outline"></ion-icon>`,
+                            "title": `Erreur`,
                             "message": `${response.errorText}`
                         })
                     }

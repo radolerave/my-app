@@ -145,7 +145,7 @@ let sellerMediaManagement = {
 
       lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
         plugins: [lgZoom, lgThumbnail],
-        licenseKey: fsConfig.cloudinary.licenseKey,
+        licenseKey: fsConfig.lightGallery.licenseKey,
         speed: 500
       })
 
@@ -211,7 +211,7 @@ let sellerMediaManagement = {
 
       lightGalleryForVideos = lightGallery(document.getElementById('videos-container'), {
         plugins: [lgVideo],
-        licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+        licenseKey: fsConfig.lightGallery.licenseKey,
         videojs: true,
         videojsOptions: {
             muted: false,

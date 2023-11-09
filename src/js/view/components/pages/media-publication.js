@@ -17,6 +17,10 @@ let mediaPublication = {
           </ion-buttons>
 
           <ion-title>Publication</ion-title>
+
+          <ion-buttons slot="end">
+              <ion-button id="publish" fill="outline" color="primary" class="ion-hide"><ion-icon name="share-outline"></ion-icon> Publier</ion-button>
+          </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -27,7 +31,19 @@ let mediaPublication = {
     const theTagName = fsConfig.cloudinary.defaultTag
     const myUploadPreset = fsConfig.cloudinary.uploadPreset   
 
-    mediaPublicationTemplate.logic()
+    const navigation = document.querySelector("ion-app ion-nav#navigation")
+
+    const listener = async () => {
+      let currentPage = await navigation.getActive()
+
+      // console.log(currentPage)
+
+      if(currentPage.component == "media-publication") {
+        mediaPublicationTemplate.logic({"currentPage": currentPage, "listener": listener})
+      }
+    }        
+
+    navigation.addEventListener('ionNavDidChange', listener)
   }
 }
 

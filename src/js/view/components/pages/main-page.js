@@ -37,11 +37,13 @@ let mainPage = {
         main-page #network-status {
           width: 0.6em;
           height: 0.6em;
+          border-width: 0;
           border-radius: 50%;
           position: absolute;
           top: 50%;
           left: 5%;
           transform: translate(-50%, -50%);
+          background-color: grey;
         }
 
         main-page #network-status.disconnected {

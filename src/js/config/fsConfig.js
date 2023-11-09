@@ -3,7 +3,9 @@ let fsConfig = {
     cloudinary: {
         cloudName: "dtu8h2u98",
         uploadPreset: "ml_default",
-        defaultTag: "fs",
+        defaultTag: "fs",        
+    },
+    lightGallery: {
         licenseKey: "ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A"
     }
 }

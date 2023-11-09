@@ -46,7 +46,7 @@ let sellerDetails = {
             // console.log(currentPage)
 
             if(currentPage.component == "seller-details") {
-                sellerDetailsTemplate.logic({currentPage, listener})
+                sellerDetailsTemplate.logic({"currentPage": currentPage, "listener": listener})
             }
         }        
 
