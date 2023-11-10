@@ -6,8 +6,14 @@ let mediaPublicationTemplate = {
     name: "media-publication-template",
     content: /*html*/`
         <div id="text-editor"></div>
+
+        <div id="addMedias">
+            <ion-button id="addMediasBtn" expand="block">
+                <ion-icon name="add-outline"></ion-icon> Ajouter médias
+            </ion-button>
+        </div>
         
-        <div id="media-list"></div>
+        <div id="media-list"></div>        
 
         <style>
 
@@ -43,6 +49,11 @@ let mediaPublicationTemplate = {
             },
             theme: 'snow'
         })
+
+        if(typeof args.currentPage.params == "undefined") {
+            args.currentPage.params = {}
+            args.currentPage.params.selectedMedias = []
+        }
 
         const selectedMedias = args.currentPage.params.selectedMedias
 
@@ -84,7 +95,22 @@ let mediaPublicationTemplate = {
                     publish.classList.remove("ion-hide")
                 }
             }
-        });
+        })
+
+        const addMediasBtn = document.querySelector("#addMediasBtn")
+
+        addMediasBtn.addEventListener("click", async () => {
+            const previousPage = await navigation.getPrevious()
+
+            console.log(previousPage)
+
+            if(previousPage.component == "seller-medias-management") {
+                await navigation.pop()
+            }
+            else {
+                await navigation.push("seller-medias-management")
+            }            
+        })
     }
 }
 

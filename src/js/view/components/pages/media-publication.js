@@ -36,7 +36,7 @@ let mediaPublication = {
     const listener = async () => {
       let currentPage = await navigation.getActive()
 
-      // console.log(currentPage)
+      console.log(currentPage)
 
       if(currentPage.component == "media-publication") {
         mediaPublicationTemplate.logic({"currentPage": currentPage, "listener": listener})

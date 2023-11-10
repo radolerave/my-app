@@ -479,7 +479,7 @@ let sellerFormTemplate = {
                 "button" : {
                     "manageSellerMedia" : function (jseditor, e) {
                         const navigation = document.querySelector("ion-nav#navigation") 
-                        navigation.push("seller-media-management")
+                        navigation.push("medias-or-publications-choice")
                     }
                 }
             }

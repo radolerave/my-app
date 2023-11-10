@@ -38,7 +38,7 @@ let mediaActionsTemplate = {
         </div>
 
         <style>
-            seller-media-management #media-actions {
+            seller-medias-management #media-actions {
                 border-bottom: solid grey 1px;
                 box-shadow: 0 0 0.5em grey;
                 border-width: 0;
@@ -49,7 +49,7 @@ let mediaActionsTemplate = {
                 background-color: white;
             }
 
-            seller-media-management #media_manipulation_instructions {
+            seller-medias-management #media_manipulation_instructions {
                 margin-top: 5px;
                 display: block;
                 border: solid blue 1px;
@@ -62,7 +62,7 @@ let mediaActionsTemplate = {
                 border: solid blue 5px;
             }
 
-            seller-media-management #media-actions ion-badge {
+            seller-medias-management #media-actions ion-badge {
                 font-size: 0.8em;
             }
         </style>
@@ -83,13 +83,13 @@ let mediaActionsTemplate = {
         const mediaReduceBtn = document.querySelector("#media_reduce")
         const mediaHelpBtn = document.querySelector("#media_help")
         const mediaManipulationInstructions = document.querySelector("#media_manipulation_instructions")        
-        let myMedias = document.querySelectorAll("seller-media-management #sellerMediaManagementContent media")
+        let myMedias = document.querySelectorAll("seller-medias-management #sellerMediaManagementContent media")
         let longPressActivated = false
         let numberOfSelectedMedias = 0
         let previousNumberOfSelectedMedias = 0        
 
         let selectedMediasDetails = () => {
-            return document.querySelectorAll("seller-media-management #sellerMediaManagementContent media.media-selected")
+            return document.querySelectorAll("seller-medias-management #sellerMediaManagementContent media.media-selected")
         }
 
         let countSelectedMedias = () => {
@@ -178,8 +178,19 @@ let mediaActionsTemplate = {
             mediaHelpBtn.click()
         })
 
-        mediaPublishBtn.addEventListener("click", async () => {
-            await navigation.push('media-publication', { selectedMedias: selectedMediasDetails() })        
+        mediaPublishBtn.addEventListener("click", async () => {                        
+            const previousPage = await navigation.getPrevious()
+
+            console.log(previousPage)
+
+            if(previousPage.component == "media-publication") {
+                await navigation.pop()
+            }
+            else {
+                await navigation.push('media-publication', { 
+                    selectedMedias: selectedMediasDetails() 
+                })    
+            } 
         })    
 
         mediaDeleteBtn.addEventListener("click", () => {
@@ -188,7 +199,7 @@ let mediaActionsTemplate = {
         })
         
         mediaDeselectAllBtn.addEventListener("click", () => {
-            const selectedMedias = document.querySelectorAll("seller-media-management #sellerMediaManagementContent media.media-selected")
+            const selectedMedias = document.querySelectorAll("seller-medias-management #sellerMediaManagementContent media.media-selected")
 
             selectedMedias.forEach((el, key) => {
                 el.classList.remove("media-selected")

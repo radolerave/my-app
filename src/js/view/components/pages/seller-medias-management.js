@@ -16,8 +16,8 @@ import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
 import lgVideo from 'lightgallery/plugins/video'
 
-let sellerMediaManagement = {
-  name: "seller-media-management",
+let sellerMediasManagement = {
+  name: "seller-medias-management",
   content: /*html*/`
     <ion-header>
       <ion-toolbar>
@@ -25,7 +25,7 @@ let sellerMediaManagement = {
               <ion-back-button></ion-back-button>
           </ion-buttons>
 
-          <ion-title>Seller media management</ion-title>
+          <ion-title>Medias management</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -295,4 +295,4 @@ let sellerMediaManagement = {
   }
 }
 
-  export { sellerMediaManagement }
+  export { sellerMediasManagement }
