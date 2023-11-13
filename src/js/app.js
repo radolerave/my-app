@@ -13,21 +13,30 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import 'leaflet-geosearch/dist/geosearch.css';
 
+window.fsGlobalVariable = {}
+
 let lastBackButonTimerMs = Date.now()
 let myFsView = new FsView()
 window.addEventListener("load", async (event) => {
     myFsView.generateView()
 
     function toggleConnectionStatus(connected) {
-        const networkStatus = document.querySelector("main-page #network-status")
+        try {
+            const networkStatus = document.querySelector("main-page #network-status")
 
-        if(connected) {
-            networkStatus.classList.add("connected")
-            networkStatus.classList.remove("disconnected")
+            if(connected) {
+                networkStatus.classList.add("connected")
+                networkStatus.classList.remove("disconnected")
+            }
+            else {
+                networkStatus.classList.add("disconnected")
+                networkStatus.classList.remove("connected")
+            }
         }
-        else {
-            networkStatus.classList.add("disconnected")
-            networkStatus.classList.remove("connected")
+        catch(err) {
+            setTimeout(() => {
+                toggleConnectionStatus(connected)
+            }, 3000);            
         }
     }
 

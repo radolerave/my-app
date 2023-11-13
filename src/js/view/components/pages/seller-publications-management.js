@@ -48,6 +48,7 @@ let sellerPublicationsManagement = {
     const navigation = document.querySelector("ion-app ion-nav#navigation")
 
     newPublicationBtn.addEventListener("click", async () => {
+      fsGlobalVariable.textToPublish = [{ insert: '\n' }]
       await navigation.push("media-publication")
     })
   }

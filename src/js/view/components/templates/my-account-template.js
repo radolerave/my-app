@@ -33,15 +33,15 @@ let myAccountTemplate = {
 
         const networkStatus = await Network.getStatus();
 
-        if(!networkStatus.connected) {//test if network is NOT connected
-            myAccountContent.innerHTML = /*html*/`
+        /*if(!networkStatus.connected) {//test if network is NOT connected
+            myAccountContent.innerHTML = `
                 <div>
                     <ion-icon name="cloud-offline-outline" color="medium" style="font-size: 128px;"></ion-icon>
                     <div>Vous n'êtes pas connecté(e) à Internet!</div>
                 </div>
             `
         }
-        else if(connected) {//test if user is connected      
+        else */if(connected) {//test if user is connected      
             if(myAccountContent.classList.contains("notConnected")) {//first load
                 myAccountContent.classList.remove("notConnected") 
 

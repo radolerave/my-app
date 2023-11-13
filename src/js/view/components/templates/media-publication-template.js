@@ -9,7 +9,7 @@ let mediaPublicationTemplate = {
 
         <div id="addMedias">
             <ion-button id="addMediasBtn" expand="block">
-                <ion-icon name="add-outline"></ion-icon> Ajouter médias
+                [<ion-icon name="add-circle-outline"></ion-icon> Ajouter | <ion-icon name="close-circle-outline"></ion-icon> enlever] médias
             </ion-button>
         </div>
         
@@ -56,11 +56,25 @@ let mediaPublicationTemplate = {
         }
 
         const selectedMedias = args.currentPage.params.selectedMedias
+        let nbrOfSelectedMedias = selectedMedias.length
 
         selectedMedias.forEach((element, key) => {
             const copyOfTheElement = document.importNode(element, true)
+
+            const deleteBtn = document.createElement("ion-button")
+            deleteBtn.innerHTML = `<ion-icon name="close-outline"></ion-icon> enlever`
+            deleteBtn.setAttribute("color", "warning")
+            copyOfTheElement.appendChild(deleteBtn)
+
+            deleteBtn.addEventListener("click", () => {
+                document.querySelector(`seller-medias-management #sellerMediaManagementContent media[uid="${copyOfTheElement.getAttribute("uid")}"]`).classList.remove("media-selected")
+                nbrOfSelectedMedias -= 1
+                document.querySelector("#number-of-selected-media").textContent = nbrOfSelectedMedias
+                deleteBtn.parentElement.remove()
+            })
+
             document.querySelector("#media-list").appendChild(copyOfTheElement)
-        });
+        })
 
         const publish = document.querySelector("media-publication #publish")
 
@@ -74,6 +88,8 @@ let mediaPublicationTemplate = {
             alert('xou')
         })
 
+        quill.setContents(fsGlobalVariable.textToPublish)
+
         quill.on('editor-change', function(eventName, ...args) {
             // if (eventName === 'text-change') {
             //   console.log('text-change', args)
@@ -81,7 +97,9 @@ let mediaPublicationTemplate = {
             //     console.log('selection-change', args)
             // }
 
-            // const content = quill.getContents()
+            const content = quill.getContents()
+
+            fsGlobalVariable.textToPublish = content
 
             // console.log(content)
 

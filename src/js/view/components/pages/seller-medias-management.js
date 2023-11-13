@@ -102,6 +102,7 @@ let sellerMediasManagement = {
 
           const media = document.createElement('media')
           media.setAttribute("media-type", "image")
+          media.setAttribute("uid", `i${i}`)
 
           imagesContainer.appendChild(media)
 
@@ -157,6 +158,7 @@ let sellerMediasManagement = {
 
           const media = document.createElement('media')
           media.setAttribute("media-type", "video")
+          media.setAttribute("uid", `v${i}`)
 
           videosContainer.appendChild(media)
 

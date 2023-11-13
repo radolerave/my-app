@@ -6,6 +6,8 @@ import lightGallery from 'lightgallery';
 
 import { fsConfig } from './../../../config/fsConfig.js';
 
+import { mediaActionsTemplate as self } from "./media-actions-template.js";
+
 // Plugins
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
@@ -178,17 +180,41 @@ let mediaActionsTemplate = {
             mediaHelpBtn.click()
         })
 
-        mediaPublishBtn.addEventListener("click", async () => {                        
+        mediaPublishBtn.addEventListener("click", async () => {    
+            const selectedMedias = selectedMediasDetails()                    
             const previousPage = await navigation.getPrevious()
 
             console.log(previousPage)
 
             if(previousPage.component == "media-publication") {
                 await navigation.pop()
+
+                const currentPage = await navigation.getActive()
+
+                if(currentPage.component == "media-publication") {
+                    const mediaList = document.querySelector("media-publication #media-publication-content #media-list")
+
+                    selectedMedias.forEach((element, key) => {
+                        const copyOfTheElement = document.importNode(element, true)
+                        
+                        const deleteBtn = document.createElement("ion-button")
+                        deleteBtn.innerHTML = `<ion-icon name="close-outline"></ion-icon> enlever`
+                        deleteBtn.setAttribute("color", "warning")
+                        copyOfTheElement.appendChild(deleteBtn)
+
+                        deleteBtn.addEventListener("click", () => {
+                            deleteBtn.parentElement.remove()
+                        })
+
+                        if(mediaList.querySelector(`media[uid="${copyOfTheElement.getAttribute("uid")}"]`) == null) {
+                            mediaList.appendChild(copyOfTheElement)
+                        }
+                    })
+                }
             }
             else {
                 await navigation.push('media-publication', { 
-                    selectedMedias: selectedMediasDetails() 
+                    selectedMedias: selectedMedias
                 })    
             } 
         })    
@@ -199,7 +225,7 @@ let mediaActionsTemplate = {
         })
         
         mediaDeselectAllBtn.addEventListener("click", () => {
-            const selectedMedias = document.querySelectorAll("seller-medias-management #sellerMediaManagementContent media.media-selected")
+            const selectedMedias = selectedMediasDetails()
 
             selectedMedias.forEach((el, key) => {
                 el.classList.remove("media-selected")
@@ -301,6 +327,22 @@ let mediaActionsTemplate = {
 
             gesture.enable();
         })
+    },
+    defer: async (args) => {
+      return {
+        get: async (params) => {
+            return { 
+                selectedMedias: document.querySelectorAll("seller-medias-management #sellerMediaManagementContent media.media-selected"),
+                textToPublish: params.textToPublish
+            }
+        },
+        set: async (params) => {
+            return { 
+                selectedMedias: document.querySelectorAll("media-publication #media-publication-content media.media-selected"),
+                textToPublish: params.textToPublish
+            }
+        }
+      }
     }
 }
 
