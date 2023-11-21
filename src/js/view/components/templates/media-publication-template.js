@@ -1,6 +1,7 @@
 import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
+import { fsConfig } from './../../../config/fsConfig.js'
 
 let mediaPublicationTemplate = {
     name: "media-publication-template",
@@ -20,6 +21,7 @@ let mediaPublicationTemplate = {
         </style>
     `,  
     logic: async (args) => {
+        const apiUrl = fsConfig.apiUrl
         let myFs = new Fs(FsDb, Dexie)
 
         console.log(args)    
@@ -43,7 +45,7 @@ let mediaPublicationTemplate = {
             ['clean']                                         // remove formatting button
         ]
 
-        let quill = new Quill('#text-editor', {
+        fsGlobalVariable.quill = new Quill('#text-editor', {
             modules: {
                 toolbar: toolbarOptions
             },
@@ -55,7 +57,9 @@ let mediaPublicationTemplate = {
             args.currentPage.params.selectedMedias = []
         }
 
-        const selectedMedias = args.currentPage.params.selectedMedias
+        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias        
+        let selectedMedias = fsGlobalVariable.selectedMedias
+        const mediaList = document.querySelector("#media-list")
         let nbrOfSelectedMedias = selectedMedias.length
 
         selectedMedias.forEach((element, key) => {
@@ -71,39 +75,21 @@ let mediaPublicationTemplate = {
                 nbrOfSelectedMedias -= 1
                 document.querySelector("#number-of-selected-media").textContent = nbrOfSelectedMedias
                 deleteBtn.parentElement.remove()
+
+                fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
+
+                console.log(fsGlobalVariable)
+
+                showHidePublishBtn()
             })
 
-            document.querySelector("#media-list").appendChild(copyOfTheElement)
+            mediaList.appendChild(copyOfTheElement)
         })
 
         const publish = document.querySelector("media-publication #publish")
 
-        if(selectedMedias.length > 0) {
-            if(publish.classList.contains("ion-hide")) {
-                publish.classList.remove("ion-hide")
-            }
-        }
-
-        publish.addEventListener("click", () => {
-            alert('xou')
-        })
-
-        quill.setContents(fsGlobalVariable.textToPublish)
-
-        quill.on('editor-change', function(eventName, ...args) {
-            // if (eventName === 'text-change') {
-            //   console.log('text-change', args)
-            // } else if (eventName === 'selection-change') {
-            //     console.log('selection-change', args)
-            // }
-
-            const content = quill.getContents()
-
-            fsGlobalVariable.textToPublish = content
-
-            // console.log(content)
-
-            if(quill.getText() === "\n" && quill.getLength() == 1 && selectedMedias.length == 0) {
+        const showHidePublishBtn = () => {
+            if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
                 if(!publish.classList.contains("ion-hide")) {
                     publish.classList.add("ion-hide")
                 }
@@ -113,6 +99,52 @@ let mediaPublicationTemplate = {
                     publish.classList.remove("ion-hide")
                 }
             }
+        }
+
+        publish.addEventListener("click", async () => {
+            let finalData = {
+                credentials: {
+                    "sellerId" : fsGlobalVariable.session.sellerId,
+                    "sellerUniqueId" : fsGlobalVariable.session.sellerUniqueId,
+                    "email": fsGlobalVariable.session.email,
+                    "password": fsGlobalVariable.session.password,
+                    "accountId": fsGlobalVariable.session.id
+                },
+                updatedData: {
+                    publications: JSON.stringify([
+                        {
+                            textToPublish: fsGlobalVariable.textToPublish,
+                            selectedMedias: fsGlobalVariable.selectedMedias
+                        }
+                    ])
+                }
+            }
+
+            console.log(finalData)
+
+            // console.log(fsGlobalVariable)
+
+            // const response = await myFs.accountInfosUpdate(apiUrl, finalData)
+        })
+
+        fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
+
+        showHidePublishBtn()
+
+        fsGlobalVariable.quill.on('editor-change', function(eventName, ...args) {
+            // if (eventName === 'text-change') {
+            //   console.log('text-change', args)
+            // } else if (eventName === 'selection-change') {
+            //     console.log('selection-change', args)
+            // }
+
+            const content = fsGlobalVariable.quill.getContents()
+
+            fsGlobalVariable.textToPublish = content
+
+            // console.log(content)
+
+            showHidePublishBtn()
         })
 
         const addMediasBtn = document.querySelector("#addMediasBtn")

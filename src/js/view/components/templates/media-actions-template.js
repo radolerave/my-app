@@ -180,8 +180,8 @@ let mediaActionsTemplate = {
             mediaHelpBtn.click()
         })
 
-        mediaPublishBtn.addEventListener("click", async () => {    
-            const selectedMedias = selectedMediasDetails()                    
+        mediaPublishBtn.addEventListener("click", async () => {   
+            const selectedMedias = selectedMediasDetails()
             const previousPage = await navigation.getPrevious()
 
             console.log(previousPage)
@@ -193,6 +193,7 @@ let mediaActionsTemplate = {
 
                 if(currentPage.component == "media-publication") {
                     const mediaList = document.querySelector("media-publication #media-publication-content #media-list")
+                    const publish = document.querySelector("media-publication #publish")
 
                     selectedMedias.forEach((element, key) => {
                         const copyOfTheElement = document.importNode(element, true)
@@ -204,12 +205,35 @@ let mediaActionsTemplate = {
 
                         deleteBtn.addEventListener("click", () => {
                             deleteBtn.parentElement.remove()
+
+                            fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
+
+                            console.log(fsGlobalVariable)
+
+                            showHidePublishBtn()
                         })
 
                         if(mediaList.querySelector(`media[uid="${copyOfTheElement.getAttribute("uid")}"]`) == null) {
                             mediaList.appendChild(copyOfTheElement)
                         }
                     })
+
+                    fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
+
+                    const showHidePublishBtn = () => {
+                        if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
+                            if(!publish.classList.contains("ion-hide")) {
+                                publish.classList.add("ion-hide")
+                            }
+                        }
+                        else {
+                            if(publish.classList.contains("ion-hide")) {
+                                publish.classList.remove("ion-hide")
+                            }
+                        }
+                    }
+
+                    showHidePublishBtn()
                 }
             }
             else {

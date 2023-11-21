@@ -143,7 +143,7 @@ let mainPage = {
 
                 <ion-tab-button tab="my-account">
                     <ion-icon name="people-circle-outline"></ion-icon>
-                    Mon compte
+                    Compte
                 </ion-tab-button>
             </ion-tab-bar>
         </ion-tabs>
@@ -192,6 +192,8 @@ let mainPage = {
 
       if (currentTab == "my-account") {
         const session = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+        fsGlobalVariable.session = session
+        // console.log(fsGlobalVariable)
         await myAccountTemplate.logic(session)
       }
     })
