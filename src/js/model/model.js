@@ -54,7 +54,7 @@ export default class FsDb {
         return localCredentials
     }
 
-    async silentSignIn() {//signIn mode : localDb <=> server db
+    async silentSignIn(apiUrl) {//signIn mode : localDb <=> server db
         try {            
             let localCredentials = await this.db.session.toArray()
 
@@ -71,7 +71,7 @@ export default class FsDb {
             }
 
             //proceed to authentication
-            let serverSideCredentials = await fetch(`https://server2.atria.local/findseller/api.php/records/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
+            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
             serverSideCredentials = await serverSideCredentials.json()
             serverSideCredentials = serverSideCredentials.records
 
@@ -115,13 +115,13 @@ export default class FsDb {
         }
     }
 
-    async signIn(credentials) {//signIn mode : user input <=> server db
+    async signIn(apiUrl, credentials) {//signIn mode : user input <=> server db
         try {            
             let email = credentials.email
             let password = credentials.password
 
             //proceed to authentication
-            let serverSideCredentials = await fetch(`https://server2.atria.local/findseller/api.php/records/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
+            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
             serverSideCredentials = await serverSideCredentials.json()
             serverSideCredentials = serverSideCredentials.records
 
@@ -181,9 +181,9 @@ export default class FsDb {
         let lastEdit = null
 
         try {
-            if(await this.silentSignIn()) {//credentials must be verified to be able to update anything
+            if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
                 // Construct the API endpoint URL for updating the item
-                const updateUrl = `${url}/${args.credentials.sellerId}`;
+                const updateUrl = `${url}/sellers/${args.credentials.sellerId}`;
                 const updatedData = args.updatedData
 
                 //do a verification process before continuing*********** (credentials)
@@ -207,6 +207,64 @@ export default class FsDb {
                 ret = {
                     ok: true,
                     date: lastEdit,
+                    pk : updatedItem
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: null,
+                    pk: null,
+                    errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
+                }
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                pk : null,
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
+    async newPublication(url, args) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
+                // Construct the API endpoint URL for updating the item
+                const updateUrl = `${url}/publications`;
+                const updatedData = args.updatedData
+
+                //do a verification process before continuing*********** (credentials)
+
+                // Send a POST request to create the item
+                let createNewPublicationOperation = await fetch(updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    body: JSON.stringify(updatedData),
+                })
+
+                dateOperation = new Date(createNewPublicationOperation.headers.get("date"))
+
+                let updatedItem = await createNewPublicationOperation.json()
+
+                console.log('Updated item:', updatedItem);
+
+                ret = {
+                    ok: true,
+                    date: dateOperation,
                     pk : updatedItem
                 }
             }
@@ -296,7 +354,7 @@ export default class FsDb {
         let sellerInfos, date
 
         try {
-            sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
+            sellerInfos = await fetch(`${apiUrl}/sellers/${sellerId}?include=${columns}`)
 
             date = new Date(sellerInfos.headers.get("date"))
 
@@ -321,7 +379,7 @@ export default class FsDb {
 
     async updateLocalSellerInfos(data, sellerId) {
         let ret = {}
-        
+
         data.id = sellerId
         console.log(data)
 

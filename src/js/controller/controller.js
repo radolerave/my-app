@@ -27,14 +27,14 @@ export default class Fs {
         return response
     }
 
-    async silentSignIn() {
-        const response = await this.fsDb.silentSignIn()
+    async silentSignIn(apiUrl) {
+        const response = await this.fsDb.silentSignIn(apiUrl)
 
         return response
     }
 
-    async signIn(credentials) {
-        const response = await this.fsDb.signIn(credentials)
+    async signIn(apiUrl, credentials) {
+        const response = await this.fsDb.signIn(apiUrl, credentials)
 
         return response
     }
@@ -47,6 +47,12 @@ export default class Fs {
 
     async accountInfosUpdate(url, args) {
         const response = await this.fsDb.accountInfosUpdate(url, args)
+
+        return response
+    }
+
+    async newPublication(apiUrl, data) {
+        const response = await this.fsDb.newPublication(apiUrl, data)
 
         return response
     }

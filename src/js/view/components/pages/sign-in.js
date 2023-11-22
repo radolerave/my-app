@@ -5,6 +5,7 @@ import { Dialog } from '@capacitor/dialog';
 
 import { myAccountTemplate } from './../templates/my-account-template.js';
 import FormValidators from "../../../helpers/form-validators.js"
+import { fsConfig } from './../../../config/fsConfig.js'
 
 let signIn = {
     name: "sign-in",
@@ -36,6 +37,7 @@ let signIn = {
         </ion-content>
     `,
     logic: () => {
+        const apiUrl = fsConfig.apiUrl
         const formValidation = new FormValidators()
         let myFs = new Fs(FsDb, Dexie)
         let nbrOfAttempts = 0
@@ -50,7 +52,7 @@ let signIn = {
             credentials.email = goSignInEmail.value
             credentials.password = goSignInPassword.value
 
-            const testSignedIn = await myFs.signIn(credentials)
+            const testSignedIn = await myFs.signIn(apiUrl, credentials)
 
             if(testSignedIn) {
                 await myAccountTemplate.logic(testSignedIn)//true

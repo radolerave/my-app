@@ -102,6 +102,17 @@ let mediaPublicationTemplate = {
         }
 
         publish.addEventListener("click", async () => {
+            publish.classList.add("ion-hide")
+            
+            let sMedias = []
+
+            fsGlobalVariable.selectedMedias.forEach((element, index) => {
+                sMedias.push({
+                    mediaType: element.getAttribute("media-type"),
+                    publicId: element.getAttribute("public_id")
+                })
+            })
+
             let finalData = {
                 credentials: {
                     "sellerId" : fsGlobalVariable.session.sellerId,
@@ -111,10 +122,11 @@ let mediaPublicationTemplate = {
                     "accountId": fsGlobalVariable.session.id
                 },
                 updatedData: {
-                    publications: JSON.stringify([
+                    sellerId: fsGlobalVariable.session.sellerId,
+                    publication: JSON.stringify([
                         {
                             textToPublish: fsGlobalVariable.textToPublish,
-                            selectedMedias: fsGlobalVariable.selectedMedias
+                            selectedMedias: sMedias
                         }
                     ])
                 }
@@ -124,7 +136,18 @@ let mediaPublicationTemplate = {
 
             // console.log(fsGlobalVariable)
 
-            // const response = await myFs.accountInfosUpdate(apiUrl, finalData)
+            const response = await myFs.newPublication(apiUrl, finalData)
+
+            if(response.ok) {
+                await navigation.popToRoot()
+                await navigation.push("seller-publications-management")
+            }
+            else {
+                await Dialog.alert({
+                    "title": `Erreur`,
+                    "message": `${response.errorText}`
+                })
+            }
         })
 
         fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)

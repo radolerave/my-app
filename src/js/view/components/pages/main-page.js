@@ -9,6 +9,7 @@ import { sellerSearchTemplate } from './../templates/seller-search-template.js'
 import { landingPageTemplate } from './../templates/landing-page-template.js'
 import { advertisementTemplate } from './../templates/advertisement-template.js'
 import { myAccountTemplate } from './../templates/my-account-template.js';
+import { fsConfig } from './../../../config/fsConfig.js'
 
 let mainPage = {
   name: "main-page",
@@ -151,6 +152,7 @@ let mainPage = {
     </div>
     `,
   logic: async () => {
+    const apiUrl = fsConfig.apiUrl
     let myFs = new Fs(FsDb, Dexie)
     console.log(myFs)
 
@@ -182,7 +184,7 @@ let mainPage = {
     landingPageTemplate.logic()
     // sellerSearchTemplate.logic(args)
 
-    const testSignedIn = await myFs.silentSignIn()//signIn mode : localDb <=> server db
+    const testSignedIn = await myFs.silentSignIn(apiUrl)//signIn mode : localDb <=> server db
     await myAccountTemplate.logic(testSignedIn)
 
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")

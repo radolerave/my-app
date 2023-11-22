@@ -69,6 +69,13 @@ let sellerMediasManagement = {
 
     let lightGalleryForImages, lightGalleryForVideos
 
+    // Create a Cloudinary instance and set your cloud name.    
+    const cld = new Cloudinary({
+      cloud: {
+        cloudName: myCloudName
+      }
+    });   
+
     let renderMedia = async (myCloudName, theTagName) => {
       let imageList, videoList
       imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
@@ -103,6 +110,7 @@ let sellerMediasManagement = {
           const media = document.createElement('media')
           media.setAttribute("media-type", "image")
           media.setAttribute("uid", `i${i}`)
+          media.setAttribute("public_id", imageList[i].public_id)
 
           imagesContainer.appendChild(media)
 
@@ -113,7 +121,7 @@ let sellerMediasManagement = {
           // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
           const myImage = cld.image(imageList[i].public_id); 
 
-          media.setAttribute("data-src", myImage.toURL())
+          media.setAttribute("data-src", myImage.toURL())          
 
           // Resize to 250 x 250 pixels using the 'fill' crop mode.
           myImage.resize(fill().width(250).height(250));          
@@ -159,6 +167,7 @@ let sellerMediasManagement = {
           const media = document.createElement('media')
           media.setAttribute("media-type", "video")
           media.setAttribute("uid", `v${i}`)
+          media.setAttribute("public_id", videoList[i].public_id)
 
           videosContainer.appendChild(media)
 
@@ -277,14 +286,7 @@ let sellerMediasManagement = {
           })
         }
       })
-    }
-
-    // Create a Cloudinary instance and set your cloud name.    
-    const cld = new Cloudinary({
-      cloud: {
-        cloudName: myCloudName
-      }
-    });    
+    } 
 
     await renderMedia(myCloudName, theTagName)
 
