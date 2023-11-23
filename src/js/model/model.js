@@ -292,6 +292,51 @@ export default class FsDb {
         return ret
     }
 
+    async getPublications(url, args) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            if(await this.silentSignIn(url)) {//credentials must be verified
+                const sellerId = args.sellerId
+
+                let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}`)
+
+                dateOperation = new Date(publicationsList.headers.get("date"))
+
+                publicationsList = await publicationsList.json()
+                publicationsList = publicationsList.records
+                
+                ret = {
+                    ok: true,
+                    date: dateOperation,
+                    records : publicationsList
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: null,
+                    records: [],
+                    errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
+                }
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                records : [],
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
     async populateData() {
         let ret = {}
         let lastSync 

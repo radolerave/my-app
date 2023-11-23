@@ -17,7 +17,10 @@ let mediaPublicationTemplate = {
         <div id="media-list"></div>        
 
         <style>
-
+            #text-editor {
+                border: solid grey 1px;
+                height: 50vh;
+            }
         </style>
     `,  
     logic: async (args) => {
@@ -123,12 +126,10 @@ let mediaPublicationTemplate = {
                 },
                 updatedData: {
                     sellerId: fsGlobalVariable.session.sellerId,
-                    publication: JSON.stringify([
-                        {
-                            textToPublish: fsGlobalVariable.textToPublish,
-                            selectedMedias: sMedias
-                        }
-                    ])
+                    publication: JSON.stringify({
+                        textToPublish: fsGlobalVariable.textToPublish,
+                        selectedMedias: sMedias
+                    })
                 }
             }
 

@@ -25,6 +25,27 @@ let mediaPublication = {
     </ion-header>
 
     <ion-content id="media-publication-content" class="ion-text-center">${mediaPublicationTemplate.content}</ion-content>
+
+    <style>
+      media-publication media {
+        display: inline-block;
+        margin: 2.5%;
+        border: solid grey 1px;
+        border-radius: 5px;
+        max-width: 45%;
+      }
+
+      media-publication media img {
+        border: solid transparent 1px;
+        border-radius: 5px;
+      }
+
+      media-publication media video {
+        border: solid transparent 1px;
+        width: 100%;
+        border-radius: 5px;
+      }  
+    </style>
   `,
   logic: async () => {
     const myCloudName = fsConfig.cloudinary.cloudName

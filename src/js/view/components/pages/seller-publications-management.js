@@ -1,4 +1,7 @@
-import { mediaActionsTemplate } from './../templates/media-actions-template.js'
+import { sellerPublicationsManagementTemplate } from './../templates/seller-publications-management-template.js'
+import { Dexie } from 'dexie'
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js';
 
 // Import the Cloudinary class.
@@ -26,17 +29,19 @@ let sellerPublicationsManagement = {
           </ion-buttons>
 
           <ion-title>Publications management</ion-title>
+
+          <ion-buttons slot="end">
+            <ion-button id="newPublication" fill="outline" color="primary">
+              + <ion-icon name="share-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="ion-text-center">
-      <div>
-        <ion-button id="newPublication">
-          + Nouvelle publication
-        </ion-button>
+    <ion-content class="">
+      <div id="sellerPublicationsManagementContent">      
+        ${sellerPublicationsManagementTemplate.content}
       </div>
-
-      <div id="sellerPublicationsManagementContent">This is the content for my Seller publications management.</div>
     </ion-content>
 
     <style>
@@ -44,13 +49,22 @@ let sellerPublicationsManagement = {
     </style>
   `,
   logic: async () => {
-    const newPublicationBtn = document.querySelector("#newPublication")
+    const apiUrl = fsConfig.apiUrl
+    let myFs = new Fs(FsDb, Dexie)    
+
     const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const newPublicationBtn = document.querySelector("#newPublication")
 
     newPublicationBtn.addEventListener("click", async () => {
       fsGlobalVariable.textToPublish = [{ insert: '\n' }]
       await navigation.push("media-publication")
     })
+
+    let response = await myFs.getPublications(apiUrl, {
+      sellerId : fsGlobalVariable.session.sellerId
+    })
+
+    sellerPublicationsManagementTemplate.logic(response)
   }
 }
 

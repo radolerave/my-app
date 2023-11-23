@@ -36,26 +36,6 @@ html, body {
   border: solid red 1px;
 }
 
-#text-editor {
-  border: solid grey 1px;
-  height: 50vh;
-}
+#publicationsList {
 
-media-publication media {
-  display: inline-block;
-  margin: 2.5%;
-  border: solid grey 1px;
-  border-radius: 5px;
-  max-width: 45%;
-}
-
-media-publication media img {
-  border: solid transparent 1px;
-  border-radius: 5px;
-}
-
-media-publication media video {
-  border: solid transparent 1px;
-  width: 100%;
-  border-radius: 5px;
 }

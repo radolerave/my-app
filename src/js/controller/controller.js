@@ -57,6 +57,12 @@ export default class Fs {
         return response
     }
 
+    async getPublications(apiUrl, args) {
+        const response = await this.fsDb.getPublications(apiUrl, args)
+
+        return response
+    }
+
     async populateData() {
         const response = await this.fsDb.populateData()
 
