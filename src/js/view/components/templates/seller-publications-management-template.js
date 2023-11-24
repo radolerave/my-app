@@ -1,4 +1,15 @@
 import { sellerPublicationCardTemplate } from './../templates/seller-publication-card-template.js'
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html'
+import { fsConfig } from './../../../config/fsConfig.js';
+
+import "lightgallery/css/lightGallery-bundle.css"
+
+import lightGallery from 'lightgallery';
+
+// Plugins
+import lgThumbnail from 'lightgallery/plugins/thumbnail'
+import lgZoom from 'lightgallery/plugins/zoom'
+import lgVideo from 'lightgallery/plugins/video'
 
 let sellerPublicationsManagementTemplate = {
     name: "seller-publications-management-template",
@@ -16,14 +27,47 @@ let sellerPublicationsManagementTemplate = {
 
         if(response.ok) {
             publicationsList.innerHTML = ""
+            const records = response.records
 
-            response.records.forEach(async (value, key) => {
+            for(let i=0; i<records.length; i++) {
+                const value = records[i]
+
                 const card = document.createElement("div")
 
-                card.innerHTML = await sellerPublicationCardTemplate.logic(value)
+                const data = await sellerPublicationCardTemplate.logic(value)
+
+                card.innerHTML = data.html
 
                 publicationsList.appendChild(card)
-            })
+
+                lightGallery(card, {
+                    selector: ".fs-media",
+                    plugins: [lgVideo, lgZoom, lgThumbnail],
+                    licenseKey: fsConfig.lightGallery.licenseKey,
+                    videojs: true,
+                    videojsOptions: {
+                        muted: false,
+                    },
+                    speed: 500,
+                })
+
+                try {
+                    card.querySelector(".see-more-btn").addEventListener("click", () => {
+                        let converter = new QuillDeltaToHtmlConverter(data.textToPublish.ops, {});
+
+                        let htmlTextToPublish = converter.convert(); 
+
+                        card.querySelector(".fsPublicationText").innerHTML = `
+                            <ion-text color="dark">
+                                ${htmlTextToPublish}
+                            </ion-text>
+                        `
+                    })
+                }
+                catch(err) {
+                    //do nothing :p
+                }
+            }            
         }
         else {
             await Dialog.alert({

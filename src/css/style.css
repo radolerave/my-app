@@ -37,5 +37,27 @@ html, body {
 }
 
 #publicationsList {
+  /* border: solid red 1px; */
+  background-color: #C1C3CB;
+}
 
+#publicationsList ion-card {
+  margin: 5px 0;
+}
+
+#publicationsList ion-card ion-card-content media {
+  display: inline-flex;
+  /* margin: 2%; */
+  vertical-align: top;
+  /* border: solid grey 1px; */
+  /* border-radius: 5px; */
+  max-width: 49%;
+}
+
+#publicationsList ion-card ion-card-content media video,
+#publicationsList ion-card ion-card-content media img 
+{
+  /* border: solid transparent 1px; */
+  width: 100%;
+  /* border-radius: 5px; */
 }

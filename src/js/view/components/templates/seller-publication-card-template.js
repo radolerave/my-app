@@ -1,4 +1,3 @@
-import { sellerPublicationCardTemplate as self } from './seller-publication-card-template.js'
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html'
 import { fsConfig } from './../../../config/fsConfig.js';
 
@@ -7,15 +6,6 @@ import {Cloudinary} from "@cloudinary/url-gen";
 
 // Import any actions required for transformations.
 import {fill} from "@cloudinary/url-gen/actions/resize";
-
-import "lightgallery/css/lightGallery-bundle.css"
-
-import lightGallery from 'lightgallery';
-
-// Plugins
-import lgThumbnail from 'lightgallery/plugins/thumbnail'
-import lgZoom from 'lightgallery/plugins/zoom'
-import lgVideo from 'lightgallery/plugins/video'
 
 let sellerPublicationCardTemplate = {
     name: "seller-publication-card-template",
@@ -50,13 +40,36 @@ let sellerPublicationCardTemplate = {
                         const myImage = cld.image(value.publicId)
 
                         mediasToPublish += /*html*/`
-                            <media data-src="${myImage.toURL()}">
+                            <media class="fs-media" data-src="${myImage.toURL()}">
                                 <img src="${myImage.resize(fill().width(250).height(250)).toURL()}" />
                             </media>
                         `                        
                         break
 
                     case "video": 
+                        const myVideo = cld.video(value.publicId)
+
+                        mediasToPublish += /*html*/`
+                            <media class="fs-media" data-video=${
+                                JSON.stringify(
+                                    {
+                                        "source": [{
+                                            "src": myVideo.toURL(),
+                                            "type": `video/${value.format}`
+                                        }],
+                                        "attributes": {
+                                            "preload": false,
+                                            "playsinline": true,
+                                            "controls": true
+                                        }              
+                                    }
+                                )
+                            }>
+                                <video>
+                                    <source src="${myVideo.toURL()}"></source>
+                                </video>
+                            </media>
+                        `
                         break
 
                     default:
@@ -68,27 +81,35 @@ let sellerPublicationCardTemplate = {
             }
         })
 
-        return /*html*/`
-            <ion-card>
-                <ion-card-header>
-                    <ion-card-title>Card Title</ion-card-title>
-                    <ion-card-subtitle>${data.date_add}</ion-card-subtitle>
-                </ion-card-header>
-            
-                <ion-card-content>
-                    <div class="fsPublicationText">
-                        ${textToPublish}
-                    </div>
+        return {
+            html: /*html*/`
+                <ion-card class="publication">
+                    <ion-card-header>
+                        <ion-card-title>Card Title</ion-card-title>
+                        <ion-card-subtitle>${data.date_add}</ion-card-subtitle>
+                    </ion-card-header>
+                
+                    <ion-card-content class="ion-no-margin ion-no-padding">
+                        <div class="fsPublicationText ion-margin-start ion-margin-end">
+                            <ion-text color="dark">
+                                ${
+                                    textToPublish.length <= 100 ? textToPublish : textToPublish.substring(0, 100) + "... <ion-button class='see-more-btn'  size='small' fill='clear'>Voir plus</ion-button>"
+                                }
+                            </ion-text>
+                        </div>
 
-                    <div class="fsMediasList">
-                        ${mediasToPublish}
-                    </div>
-                </ion-card-content>
-            
-                <ion-button fill="clear">Action 1</ion-button>
-                <ion-button fill="clear">Action 2</ion-button>
-            </ion-card>
-        `
+                        <div class="fsMediasList">
+                            ${mediasToPublish}
+                        </div>
+                    </ion-card-content>
+                
+                    <ion-button fill="clear">Action 1</ion-button>
+                    <ion-button fill="clear">Action 2</ion-button>
+                </ion-card>
+            `,
+            textToPublish: data.publication.textToPublish,
+            selectedMedias: data.publication.selectedMedias
+        }
     }
 }
 

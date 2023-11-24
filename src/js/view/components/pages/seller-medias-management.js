@@ -45,6 +45,7 @@ let sellerMediasManagement = {
       #sellerMediaManagementContent media {
         display: inline-block;
         margin: 2.5%;
+        vertical-align: top;
         border: solid grey 1px;
         border-radius: 5px;
         max-width: 45%;
@@ -109,6 +110,7 @@ let sellerMediasManagement = {
 
           const media = document.createElement('media')
           media.setAttribute("media-type", "image")
+          media.setAttribute("format", format)
           media.setAttribute("uid", `i${i}`)
           media.setAttribute("public_id", imageList[i].public_id)
 
@@ -166,6 +168,7 @@ let sellerMediasManagement = {
 
           const media = document.createElement('media')
           media.setAttribute("media-type", "video")
+          media.setAttribute("format", format)
           media.setAttribute("uid", `v${i}`)
           media.setAttribute("public_id", videoList[i].public_id)
 

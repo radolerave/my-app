@@ -112,7 +112,8 @@ let mediaPublicationTemplate = {
             fsGlobalVariable.selectedMedias.forEach((element, index) => {
                 sMedias.push({
                     mediaType: element.getAttribute("media-type"),
-                    publicId: element.getAttribute("public_id")
+                    publicId: element.getAttribute("public_id"),
+                    format: element.getAttribute("format")
                 })
             })
 
