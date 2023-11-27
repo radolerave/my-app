@@ -62,6 +62,51 @@ let sellerPublicationsManagementTemplate = {
                                 ${htmlTextToPublish}
                             </ion-text>
                         `
+
+                        card.querySelector(".see-more-btn").classList.add("ion-hide")
+
+                        card.querySelector(".fsPublicationText").classList.add("canBeReduced")
+
+                        const listener = () => {
+                            card.querySelector(".fsPublicationText").innerHTML = `
+                                <ion-text color="dark">
+                                    ${data.shortText}
+                                </ion-text>
+                            `
+
+                            card.querySelector(".see-more-btn").classList.remove("ion-hide")
+
+                            card.querySelector(".fsPublicationText").classList.remove("canBeReduced")
+                        }                        
+
+                        card.querySelector(".canBeReduced").removeEventListener("click", listener)
+
+                        card.querySelector(".canBeReduced").addEventListener("click", listener)
+                    }) 
+
+                    const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")
+                    const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")
+                    const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
+                    const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
+                    
+                    fsPublicationMoreOptions.addEventListener("click", (e) => {
+                        fsPublicationMoreOptionsPopover.event = e
+                        fsPublicationMoreOptionsPopover.isOpen = true
+                    })
+
+                    fsPublicationMoreOptionsPopover.addEventListener('didDismiss', () => (fsPublicationMoreOptionsPopover.isOpen = false))
+
+                    fsPublicationMoreOptionsEdit.addEventListener("click", async (ev) => {
+                        fsPublicationMoreOptionsPopover.isOpen = false
+                        await navigation.push("media-publication", {xou: "xou"})
+
+                        let currentPage = await navigation.getActive()
+
+                        console.log(currentPage)
+                    })
+
+                    fsPublicationMoreOptionsDelete.addEventListener("click", (ev) => {
+                        alert('delete')
                     })
                 }
                 catch(err) {

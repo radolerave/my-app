@@ -61,3 +61,8 @@ html, body {
   width: 100%;
   /* border-radius: 5px; */
 }
+
+#publicationsList .fsPublicationMoreOptions {
+  position: absolute;
+  right: 0;
+}

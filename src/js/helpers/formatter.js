@@ -32,4 +32,8 @@ export default class Formatter {
             }
         }
     }
+
+    htmlStripTag(html, replaceBy = "") {
+        return html.replace(/<[^>]*>/g, replaceBy)
+    }
 }
