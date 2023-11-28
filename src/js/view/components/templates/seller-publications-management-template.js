@@ -1,6 +1,12 @@
 import { sellerPublicationCardTemplate } from './../templates/seller-publication-card-template.js'
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html'
+import { Dexie } from 'dexie'
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js';
+
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
 
 import "lightgallery/css/lightGallery-bundle.css"
 
@@ -21,6 +27,9 @@ let sellerPublicationsManagementTemplate = {
     logic: async (args) => {
         let response = args
         console.log(response)
+
+        const apiUrl = fsConfig.apiUrl
+        let myFs = new Fs(FsDb, Dexie)
         
         const publicationsList = document.querySelector("#publicationsList")
         const navigation = document.querySelector("ion-app ion-nav#navigation")        
@@ -88,6 +97,18 @@ let sellerPublicationsManagementTemplate = {
                     const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")
                     const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
                     const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
+                    const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
+                    const fsPublicationMoreOptionsEnable = card.querySelector(".fsPublicationMoreOptionsEnable")
+                    const fsPublicationMoreOptionsDisable = card.querySelector(".fsPublicationMoreOptionsDisable")
+
+                    if(value.enabled) {
+                        fsPublicationMoreOptionsDisable.setAttribute("disabled", "false")
+                        fsPublicationMoreOptionsEnable.setAttribute("disabled", "true")
+                    }
+                    else {
+                        fsPublicationMoreOptionsDisable.setAttribute("disabled", "true")
+                        fsPublicationMoreOptionsEnable.setAttribute("disabled", "false")
+                    }
                     
                     fsPublicationMoreOptions.addEventListener("click", (e) => {
                         fsPublicationMoreOptionsPopover.event = e
@@ -98,15 +119,69 @@ let sellerPublicationsManagementTemplate = {
 
                     fsPublicationMoreOptionsEdit.addEventListener("click", async (ev) => {
                         fsPublicationMoreOptionsPopover.isOpen = false
-                        await navigation.push("media-publication", {xou: "xou"})
+
+                        fsGlobalVariable.textToPublish = data.textToPublish
+
+                        await navigation.push("media-publication", {
+                            selectedMedias: card.querySelectorAll("media"),
+                            operationType: "update",
+                            publicationId: data.publicationId
+                        })
 
                         let currentPage = await navigation.getActive()
 
                         console.log(currentPage)
                     })
 
-                    fsPublicationMoreOptionsDelete.addEventListener("click", (ev) => {
-                        alert('delete')
+                    fsPublicationMoreOptionsDelete.addEventListener("click", async (ev) => {
+                        const confirmation = await Dialog.confirm({
+                            title: 'Confirmation',
+                            message: `Voulez-vous vraiment supprimer cette publication ?`,
+                            okButtonTitle: "oui",
+                            cancelButtonTitle: "non",
+                        })
+
+                        if(confirmation.value) {
+                            response = await myFs.deletePublication(apiUrl, data.publicationId)
+
+                            if(response.ok) {
+                                fsPublicationMoreOptionsPopover.isOpen = false
+                                
+                                await navigation.popToRoot()
+                                await navigation.push("seller-publications-management")
+                            }
+                            else {
+                                await Dialog.alert({
+                                    "title": `Erreur`,
+                                    "message": `${response.errorText}`
+                                })
+                            }
+                        }
+                        else {
+                            fsPublicationMoreOptionsPopover.isOpen = false
+                        }
+                    })
+
+                    fsPublicationMoreOptionsEnable.addEventListener("click", async () => {
+                        alert("publier")
+                    })
+
+                    fsPublicationMoreOptionsDisable.addEventListener("click", async () => {
+                        alert("dé-publier")
+                    })
+
+                    fsPublicationMoreOptionsInformations.addEventListener("click", async () => {                        
+                        await Dialog.alert({
+                            "title": `Informations`,
+                            "message": `
+                                Cette publication est : ${value.enabled ? "activée" : "désactivée"}
+                                Date d'ajout : ${value.date_add}
+                                Deadline : ${value.deadline}
+                                Dernière mise à jour : ${value.last_edit}
+                            `
+                        })
+
+                        fsPublicationMoreOptionsPopover.isOpen = false
                     })
                 }
                 catch(err) {

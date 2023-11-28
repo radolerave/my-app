@@ -42,7 +42,7 @@ let sellerPublicationCardTemplate = {
                         const myImage = cld.image(value.publicId)
 
                         mediasToPublish += /*html*/`
-                            <media class="fs-media" data-src="${myImage.toURL()}">
+                            <media class="fs-media" data-src="${myImage.toURL()}" public_id="${value.publicId}" media-type="${value.mediaType}" format="${value.format}">
                                 <img src="${myImage.resize(fill().width(250).height(250)).toURL()}" />
                             </media>
                         `                        
@@ -52,7 +52,7 @@ let sellerPublicationCardTemplate = {
                         const myVideo = cld.video(value.publicId)
 
                         mediasToPublish += /*html*/`
-                            <media class="fs-media" data-video=${
+                            <media class="fs-media" public_id="${value.publicId}"  media-type="${value.mediaType}" format="${value.format}" data-video=${
                                 JSON.stringify(
                                     {
                                         "source": [{
@@ -117,6 +117,18 @@ let sellerPublicationCardTemplate = {
                                     <ion-icon name="trash-outline" slot="start"></ion-icon>
                                     <ion-label>Supprimer</ion-label>
                                 </ion-item>
+                                <ion-item button disabled="true" class="fsPublicationMoreOptionsEnable">
+                                    <ion-icon name="share-outline" slot="start"></ion-icon>
+                                    <ion-label>Publier</ion-label>
+                                </ion-item>
+                                <ion-item button disabled="true" class="fsPublicationMoreOptionsDisable">
+                                    <ion-icon name="contract-outline" slot="start"></ion-icon>
+                                    <ion-label>Dé-publier</ion-label>
+                                </ion-item>
+                                <ion-item button class="fsPublicationMoreOptionsInformations">
+                                    <ion-icon name="information-outline" slot="start"></ion-icon>
+                                    <ion-label>Informations</ion-label>
+                                </ion-item>
                             </ion-content>
                         </ion-popover>
                     </ion-card-header>
@@ -139,7 +151,8 @@ let sellerPublicationCardTemplate = {
             `,
             textToPublish: data.publication.textToPublish,
             shortText: shortText,
-            selectedMedias: data.publication.selectedMedias
+            selectedMedias: data.publication.selectedMedias,
+            publicationId: data.id
         }
     }
 }

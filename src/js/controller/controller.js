@@ -63,6 +63,18 @@ export default class Fs {
         return response
     }
 
+    async updatePublication(apiUrl, data) {
+        const response = await this.fsDb.updatePublication(apiUrl, data)
+
+        return response
+    }
+
+    async deletePublication(apiUrl, publicationId) {
+        const response = await this.fsDb.deletePublication(apiUrl, publicationId)
+
+        return response
+    }
+
     async populateData() {
         const response = await this.fsDb.populateData()
 

@@ -2,6 +2,8 @@ import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js'
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
 
 let mediaPublicationTemplate = {
     name: "media-publication-template",
@@ -60,7 +62,9 @@ let mediaPublicationTemplate = {
             args.currentPage.params.selectedMedias = []
         }
 
-        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias        
+        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias
+        const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
+        const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
         let selectedMedias = fsGlobalVariable.selectedMedias
         const mediaList = document.querySelector("#media-list")
         let nbrOfSelectedMedias = selectedMedias.length
@@ -74,9 +78,15 @@ let mediaPublicationTemplate = {
             copyOfTheElement.appendChild(deleteBtn)
 
             deleteBtn.addEventListener("click", () => {
-                document.querySelector(`seller-medias-management #sellerMediaManagementContent media[uid="${copyOfTheElement.getAttribute("uid")}"]`).classList.remove("media-selected")
-                nbrOfSelectedMedias -= 1
-                document.querySelector("#number-of-selected-media").textContent = nbrOfSelectedMedias
+                try {
+                    document.querySelector(`seller-medias-management #sellerMediaManagementContent media[uid="${copyOfTheElement.getAttribute("uid")}"]`).classList.remove("media-selected")
+                    nbrOfSelectedMedias -= 1
+                    document.querySelector("#number-of-selected-media").textContent = nbrOfSelectedMedias                    
+                }
+                catch(err) {
+                    // console.log(err)
+                }
+
                 deleteBtn.parentElement.remove()
 
                 fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
@@ -131,14 +141,25 @@ let mediaPublicationTemplate = {
                         textToPublish: fsGlobalVariable.textToPublish,
                         selectedMedias: sMedias
                     })
-                }
+                },
+                publicationId: publicationId
             }
 
             console.log(finalData)
 
             // console.log(fsGlobalVariable)
 
-            const response = await myFs.newPublication(apiUrl, finalData)
+            let response
+
+            switch(operationType) {
+                case "update":
+                    response = await myFs.updatePublication(apiUrl, finalData)
+                    break;
+
+                default:
+                    response = await myFs.newPublication(apiUrl, finalData)
+                    break;
+            }
 
             if(response.ok) {
                 await navigation.popToRoot()

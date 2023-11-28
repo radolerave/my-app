@@ -207,14 +207,14 @@ export default class FsDb {
                 ret = {
                     ok: true,
                     date: lastEdit,
-                    pk : updatedItem
+                    nbrOfRows : updatedItem
                 }
             }
             else {
                 ret = {
                     ok: false,
                     date: null,
-                    pk: null,
+                    nbrOfRows: 0,
                     errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
                 }
             }
@@ -226,7 +226,7 @@ export default class FsDb {
             ret = {
                 ok: false,
                 date: null,
-                pk : null,
+                nbrOfRows : 0,
                 errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
             }
         }
@@ -258,14 +258,14 @@ export default class FsDb {
 
                 dateOperation = new Date(createNewPublicationOperation.headers.get("date"))
 
-                let updatedItem = await createNewPublicationOperation.json()
+                let createdItem = await createNewPublicationOperation.json()
 
-                console.log('Updated item:', updatedItem);
+                console.log('Updated item:', createdItem);
 
                 ret = {
                     ok: true,
                     date: dateOperation,
-                    pk : updatedItem
+                    pk : createdItem
                 }
             }
             else {
@@ -300,7 +300,7 @@ export default class FsDb {
             if(await this.silentSignIn(url)) {//credentials must be verified
                 const sellerId = args.sellerId
 
-                let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}`)
+                let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}&order=last_edit,desc`)
 
                 dateOperation = new Date(publicationsList.headers.get("date"))
 
@@ -330,6 +330,121 @@ export default class FsDb {
                 ok: false,
                 date: null,
                 records : [],
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
+    async updatePublication(url, args) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
+                // Construct the API endpoint URL for updating the item
+                const updateUrl = `${url}/publications/${args.publicationId}`;
+                const updatedData = args.updatedData
+
+                //do a verification process before continuing*********** (credentials)
+
+                // Send a POST request to create the item
+                let updatePublicationOperation = await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    body: JSON.stringify(updatedData),
+                })
+
+                dateOperation = new Date(updatePublicationOperation.headers.get("date"))
+
+                let updatedItem = await updatePublicationOperation.json()
+
+                console.log('Updated item:', updatedItem);
+
+                ret = {
+                    ok: true,
+                    date: dateOperation,
+                    nbrOfRows : updatedItem
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: null,
+                    nbrOfRows: 0,
+                    errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
+                }
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                nbrOfRows : 0,
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
+    async deletePublication(url, publicationId) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
+                // Construct the API endpoint URL for updating the item
+                const updateUrl = `${url}/publications/${publicationId}`;
+
+                //do a verification process before continuing*********** (credentials)
+
+                // Send a POST request to create the item
+                let updatePublicationOperation = await fetch(updateUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    // body: JSON.stringify(updatedData),
+                })
+
+                dateOperation = new Date(updatePublicationOperation.headers.get("date"))
+
+                let deletedItem = await updatePublicationOperation.json()
+
+                console.log('Updated item:', deletedItem);
+
+                ret = {
+                    ok: true,
+                    date: dateOperation,
+                    nbrOfDeletedRows : deletedItem
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: null,
+                    nbrOfDeletedRows: 0,
+                    errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
+                }
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                nbrOfDeletedRows : 0,
                 errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
             }
         }
