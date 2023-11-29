@@ -1,43 +1,28 @@
+import { Dexie } from 'dexie'
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
+import { fsConfig } from './../../../config/fsConfig.js'
+
+import { sellerPublicationsManagementTemplate } from './../templates/seller-publications-management-template.js'
+
 let sellerMediasTemplate = {
   name: "seller-medias-template",
   content: /*html*/`
-    <div id="my-gallery"></div>
+    <div id="sellerPublicationsList" first-load="true">
+      ${sellerPublicationsManagementTemplate.content}
+    </div>
   `,
-  logic: (args) => {
-    return {
-      showMediaGallery : () => {
-        // const cloudName = "dtu8h2u98"; // replace with your own cloud name
+  logic: async (args) => {
+    const apiUrl = fsConfig.apiUrl
+    let myFs = new Fs(FsDb, Dexie)
 
-        // // Remove the comments from the code below to add
-        // // additional functionality.
-        // // Note that these are only a few examples, to see
-        // // the full list of possible parameters that you
-        // // can add see:
-        // //   https://cloudinary.com/documentation/product_gallery_reference
+    let response = await myFs.getPublicationsPublicMode(apiUrl, {
+      sellerId : fsGlobalVariable.sellerInfos.id
+    })
 
-        // const myGallery = cloudinary.galleryWidget({
-        //   container: "#my-gallery",
-        //   cloudName: cloudName,
-        //   mediaAssets: [
-        //     { tag: "fs" }, // by default mediaType: "image"
-        //     { tag: "fs", mediaType: "video" },
-        //     // { tag: "electric_car_360_product_gallery_demo", mediaType: "spin" }
-        //   ],
-        //   // displayProps: { mode: "expanded", columns: 2 }, // multi column display
-        //   // aspectRatio: "4:3", // if most assets are in landscape orientation
-        //   // imageBreakpoint: 200,  // responsive resize images to closest step in 200px increments
-        //   // carouselStyle: "indicators", // displays thumbnails by default
-        //   // indicatorProps: { color: "red" },   // only relevant if CarouselStyle is set to indicators
-        //   // carouselLocation: "right",  // "left" by default
-        //   // borderColor: "red",  // color is transparent by default
-        //   // borderWidth: 5, // border width is 0 by default
-        //   // transition: "fade",  // "slide" by default
-        //   // zoom: false,    // deactivate the zoom feature
-        // });
+    console.log(response)
 
-        // myGallery.render();
-      }
-    }
+    sellerPublicationsManagementTemplate.logic(response)
   }
 }
 

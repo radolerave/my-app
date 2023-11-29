@@ -110,6 +110,7 @@ let sellerDetailsTemplate = {
     navigation.removeEventListener("ionNavDidChange", args.listener)
 
     const data = args.currentPage.params.data
+    fsGlobalVariable.sellerInfos = data
     let myFormatter = new Formatter()
 
     document.querySelector("seller-details ion-title #title").innerHTML = data.name
@@ -245,7 +246,7 @@ let sellerDetailsTemplate = {
     sellerEventsTemplate.logic(data)
 
     document.querySelector("#mediasDetails").innerHTML = sellerMediasTemplate.content
-    sellerMediasTemplate.logic(data)
+    await sellerMediasTemplate.logic(data)
 
     document.querySelector("#localitiesDetails").innerHTML = sellerLocalitiesTemplate.content
     sellerLocalitiesTemplate.logic(data)    
@@ -274,10 +275,10 @@ let sellerDetailsTemplate = {
 
       generatTabTitle(currentTab)
 
-      /*It is especially for cloudinary product gallery widget which doesn't work when the container of the element or the element is display: none*/
       if(currentTab == "medias") {
-        if(document.querySelector("#my-gallery").innerHTML == "") {
-          sellerMediasTemplate.logic().showMediaGallery()
+        if(document.querySelector("#sellerPublicationsList").getAttribute("first-load") == "true") {
+          await sellerMediasTemplate.logic()
+          document.querySelector("#sellerPublicationsList").setAttribute("first-load", "false")
         }
       }
     })

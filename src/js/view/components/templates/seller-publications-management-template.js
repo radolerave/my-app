@@ -100,89 +100,153 @@ let sellerPublicationsManagementTemplate = {
                     const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
                     const fsPublicationMoreOptionsEnable = card.querySelector(".fsPublicationMoreOptionsEnable")
                     const fsPublicationMoreOptionsDisable = card.querySelector(".fsPublicationMoreOptionsDisable")
+                    const fsPublicationAction1 = card.querySelector(".fsPublicationAction1")
+                    const fsPublicationAction2 = card.querySelector(".fsPublicationAction2")
 
-                    if(value.enabled) {
-                        fsPublicationMoreOptionsDisable.setAttribute("disabled", "false")
-                        fsPublicationMoreOptionsEnable.setAttribute("disabled", "true")
+                    if(typeof response.noControls == "boolean" && response.noControls == true) {
+                        fsPublicationMoreOptions.remove()
+                        fsPublicationAction1.remove()
+                        fsPublicationAction2.remove()
                     }
-                    else {
-                        fsPublicationMoreOptionsDisable.setAttribute("disabled", "true")
-                        fsPublicationMoreOptionsEnable.setAttribute("disabled", "false")
-                    }
-                    
-                    fsPublicationMoreOptions.addEventListener("click", (e) => {
-                        fsPublicationMoreOptionsPopover.event = e
-                        fsPublicationMoreOptionsPopover.isOpen = true
-                    })
-
-                    fsPublicationMoreOptionsPopover.addEventListener('didDismiss', () => (fsPublicationMoreOptionsPopover.isOpen = false))
-
-                    fsPublicationMoreOptionsEdit.addEventListener("click", async (ev) => {
-                        fsPublicationMoreOptionsPopover.isOpen = false
-
-                        fsGlobalVariable.textToPublish = data.textToPublish
-
-                        await navigation.push("media-publication", {
-                            selectedMedias: card.querySelectorAll("media"),
-                            operationType: "update",
-                            publicationId: data.publicationId
-                        })
-
-                        let currentPage = await navigation.getActive()
-
-                        console.log(currentPage)
-                    })
-
-                    fsPublicationMoreOptionsDelete.addEventListener("click", async (ev) => {
-                        const confirmation = await Dialog.confirm({
-                            title: 'Confirmation',
-                            message: `Voulez-vous vraiment supprimer cette publication ?`,
-                            okButtonTitle: "oui",
-                            cancelButtonTitle: "non",
-                        })
-
-                        if(confirmation.value) {
-                            response = await myFs.deletePublication(apiUrl, data.publicationId)
-
-                            if(response.ok) {
-                                fsPublicationMoreOptionsPopover.isOpen = false
-                                
-                                await navigation.popToRoot()
-                                await navigation.push("seller-publications-management")
-                            }
-                            else {
-                                await Dialog.alert({
-                                    "title": `Erreur`,
-                                    "message": `${response.errorText}`
-                                })
-                            }
+                    else {                        
+                        if(value.enabled) {
+                            fsPublicationMoreOptionsDisable.setAttribute("disabled", "false")
+                            fsPublicationMoreOptionsEnable.setAttribute("disabled", "true")
                         }
                         else {
-                            fsPublicationMoreOptionsPopover.isOpen = false
+                            fsPublicationMoreOptionsDisable.setAttribute("disabled", "true")
+                            fsPublicationMoreOptionsEnable.setAttribute("disabled", "false")
                         }
-                    })
-
-                    fsPublicationMoreOptionsEnable.addEventListener("click", async () => {
-                        alert("publier")
-                    })
-
-                    fsPublicationMoreOptionsDisable.addEventListener("click", async () => {
-                        alert("dé-publier")
-                    })
-
-                    fsPublicationMoreOptionsInformations.addEventListener("click", async () => {                        
-                        await Dialog.alert({
-                            "title": `Informations`,
-                            "message": `
-                                Cette publication est : ${value.enabled ? "activée" : "désactivée"}
-                                Date d'ajout : ${value.date_add}
-                                Deadline : ${value.deadline}
-                                Dernière mise à jour : ${value.last_edit}
-                            `
+                        
+                        fsPublicationMoreOptions.addEventListener("click", (e) => {
+                            fsPublicationMoreOptionsPopover.event = e
+                            fsPublicationMoreOptionsPopover.isOpen = true
                         })
 
-                        fsPublicationMoreOptionsPopover.isOpen = false
-                    })
+                        fsPublicationMoreOptionsPopover.addEventListener('didDismiss', () => (fsPublicationMoreOptionsPopover.isOpen = false))
+
+                        fsPublicationMoreOptionsEdit.addEventListener("click", async (ev) => {
+                            fsPublicationMoreOptionsPopover.isOpen = false
+
+                            fsGlobalVariable.textToPublish = data.textToPublish
+
+                            await navigation.push("media-publication", {
+                                selectedMedias: card.querySelectorAll("media"),
+                                operationType: "update",
+                                publicationId: data.publicationId
+                            })
+
+                            let currentPage = await navigation.getActive()
+
+                            console.log(currentPage)
+                        })
+
+                        fsPublicationMoreOptionsDelete.addEventListener("click", async (ev) => {
+                            const confirmation = await Dialog.confirm({
+                                title: 'Confirmation',
+                                message: `Voulez-vous vraiment supprimer cette publication ?`,
+                                okButtonTitle: "oui",
+                                cancelButtonTitle: "non",
+                            })
+
+                            if(confirmation.value) {
+                                response = await myFs.deletePublication(apiUrl, data.publicationId)
+
+                                if(response.ok) {
+                                    fsPublicationMoreOptionsPopover.isOpen = false
+                                    
+                                    await navigation.popToRoot()
+                                    await navigation.push("seller-publications-management")
+                                }
+                                else {
+                                    await Dialog.alert({
+                                        "title": `Erreur`,
+                                        "message": `${response.errorText}`
+                                    })
+                                }
+                            }
+                            else {
+                                fsPublicationMoreOptionsPopover.isOpen = false
+                            }
+                        })
+
+                        fsPublicationMoreOptionsEnable.addEventListener("click", async () => {
+                            const confirmation = await Dialog.confirm({
+                                title: 'Confirmation',
+                                message: `Voulez-vous vraiment activer cette publication ?`,
+                                okButtonTitle: "oui",
+                                cancelButtonTitle: "non",
+                            })
+
+                            if(confirmation.value) {
+                                const response = await myFs.updatePublication(apiUrl, { 
+                                    updatedData: {
+                                        enabled: 1
+                                    },
+                                    publicationId: data.publicationId
+                                })
+
+                                if(response.ok) {
+                                    fsPublicationMoreOptionsPopover.isOpen = false
+                                    
+                                    await navigation.popToRoot()
+                                    await navigation.push("seller-publications-management")
+                                }
+                                else {
+                                    await Dialog.alert({
+                                        "title": `Erreur`,
+                                        "message": `${response.errorText}`
+                                    })
+                                }
+                            }
+                            else {
+                                fsPublicationMoreOptionsPopover.isOpen = false
+                            }
+                        })
+
+                        fsPublicationMoreOptionsDisable.addEventListener("click", async () => {
+                            const confirmation = await Dialog.confirm({
+                                title: 'Confirmation',
+                                message: `Voulez-vous vraiment désactiver cette publication ?`,
+                                okButtonTitle: "oui",
+                                cancelButtonTitle: "non",
+                            })
+
+                            if(confirmation.value) {
+                                const response = await myFs.updatePublication(apiUrl, { 
+                                    updatedData: {
+                                        enabled: 0
+                                    },
+                                    publicationId: data.publicationId
+                                })
+
+                                if(response.ok) {
+                                    fsPublicationMoreOptionsPopover.isOpen = false
+                                    
+                                    await navigation.popToRoot()
+                                    await navigation.push("seller-publications-management")
+                                }
+                                else {
+                                    await Dialog.alert({
+                                        "title": `Erreur`,
+                                        "message": `${response.errorText}`
+                                    })
+                                }
+                            }
+                            else {
+                                fsPublicationMoreOptionsPopover.isOpen = false
+                            }
+                        })
+
+                        fsPublicationMoreOptionsInformations.addEventListener("click", async () => {                        
+                            await Dialog.alert({
+                                "title": `Informations`,
+                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDeadline : ${value.deadline}\nDernière mise à jour : ${value.last_edit}`
+                            })
+
+                            fsPublicationMoreOptionsPopover.isOpen = false
+                        })
+                    }
                 }
                 catch(err) {
                     //do nothing :p

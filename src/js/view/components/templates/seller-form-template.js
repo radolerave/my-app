@@ -477,9 +477,11 @@ let sellerFormTemplate = {
 
             JSONEditor.defaults.callbacks = {
                 "button" : {
-                    "manageSellerMedia" : function (jseditor, e) {
+                    "manageSellerMedia" : async function (jseditor, e) {
                         const navigation = document.querySelector("ion-nav#navigation") 
-                        navigation.push("medias-or-publications-choice")
+                        await navigation.push("medias-or-publications-choice")
+                        
+                        fsGlobalVariable.sellerInfos = form.getValue()
                     }
                 }
             }

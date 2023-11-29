@@ -99,7 +99,7 @@ let sellerPublicationCardTemplate = {
                 <ion-card class="publication">
                     <ion-card-header>
                         <ion-card-title>
-                            Card Title
+                            ${fsGlobalVariable.sellerInfos.name}
                             <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
                                 <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                             </ion-button>
@@ -145,8 +145,16 @@ let sellerPublicationCardTemplate = {
                         </div>
                     </ion-card-content>
                 
-                    <ion-button fill="clear">Action 1</ion-button>
-                    <ion-button fill="clear">Action 2</ion-button>
+                    <ion-grid class="fsUsersInterations">
+                        <ion-row>
+                            <ion-col class="ion-text-left">Reactions</ion-col>
+                            <ion-col class="ion-text-center" size="1"></ion-col>
+                            <ion-col class="ion-text-right">Comments</ion-col>
+                        </ion-row>
+                    </ion-grid>
+
+                    <ion-button class="fsPublicationAction1" fill="clear">Action 1</ion-button>
+                    <ion-button class="fsPublicationAction2" fill="clear">Action 2</ion-button>
                 </ion-card>
             `,
             textToPublish: data.publication.textToPublish,

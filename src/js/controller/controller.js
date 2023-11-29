@@ -63,6 +63,12 @@ export default class Fs {
         return response
     }
 
+    async getPublicationsPublicMode(apiUrl, args) {
+        const response = await this.fsDb.getPublicationsPublicMode(apiUrl, args)
+
+        return response
+    }
+
     async updatePublication(apiUrl, data) {
         const response = await this.fsDb.updatePublication(apiUrl, data)
 

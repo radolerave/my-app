@@ -337,6 +337,43 @@ export default class FsDb {
         return ret
     }
 
+    async getPublicationsPublicMode(url, args) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            const sellerId = args.sellerId
+
+            let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
+
+            dateOperation = new Date(publicationsList.headers.get("date"))
+
+            publicationsList = await publicationsList.json()
+            publicationsList = publicationsList.records
+            
+            ret = {
+                ok: true,
+                date: dateOperation,
+                records : publicationsList,
+                noControls : true
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                records : [],
+                noControls : true,
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
     async updatePublication(url, args) {
         let ret = {}
         let dateOperation = null

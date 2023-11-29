@@ -66,3 +66,7 @@ html, body {
   position: absolute;
   right: 0;
 }
+
+.fsUsersInterations {
+  border-top: solid grey 1px;
+}
