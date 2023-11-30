@@ -17,6 +17,8 @@ let signIn = {
                 </ion-buttons>
 
                 <ion-title>Connexion</ion-title>
+
+                <ion-text class="ion-margin-end" id="user-type-indicator" slot="end">userType</ion-text>
             </ion-toolbar>
         </ion-header>
 
@@ -36,17 +38,31 @@ let signIn = {
             <ion-text id="error-text" color="danger"></ion-text>
         </ion-content>
     `,
-    logic: () => {
+    logic: async () => {
         const apiUrl = fsConfig.apiUrl
         const formValidation = new FormValidators()
         let myFs = new Fs(FsDb, Dexie)
         let nbrOfAttempts = 0
 
+        const navigation = fsGlobalVariable.navigation
+        const userTypeIndicator = document.querySelector("#user-type-indicator")
         const goSignInBtn = document.querySelector("#goSignIn")
         const goSignInEmail = document.querySelector("#goSignInEmail")
         const goSignInPassword = document.querySelector("#goSignInPassword")
         const errorText = document.querySelector("#error-text")
         const credentials = {}
+
+        const listener = async () => {
+            let currentPage = await navigation.getActive()
+        
+            console.log(currentPage)
+        
+            if(currentPage.component == "sign-in") {
+                userTypeIndicator.innerHTML = fsGlobalVariable.userType
+            }
+        }        
+    
+        navigation.addEventListener('ionNavDidChange', listener)
         
         goSignInBtn.addEventListener("click", async () => {
             credentials.email = goSignInEmail.value

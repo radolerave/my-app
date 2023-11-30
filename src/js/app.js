@@ -13,7 +13,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import 'leaflet-geosearch/dist/geosearch.css';
 
-window.fsGlobalVariable = {}
+window.fsGlobalVariable = {
+    userType: undefined,
+    navigation : document.querySelector("ion-app ion-nav#navigation")
+}
 
 let lastBackButonTimerMs = Date.now()
 let myFsView = new FsView()
@@ -57,7 +60,8 @@ window.addEventListener("load", async (event) => {
 
 document.addEventListener('ionBackButton', async (ev) => {
     let timer = (Date.now() - lastBackButonTimerMs)
-    const navigation = document.querySelector("ion-nav#navigation")
+    
+    const navigation = fsGlobalVariable.navigation
     const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
     
     if(timer < 500)

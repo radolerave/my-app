@@ -7,8 +7,8 @@ export default class FsDb {
 
     dbStructure(initDb, Wrapper) {        
         initDb.version(1).stores({
-            session: `&email, password, sellerId, sellerUniqueId, name`,
-			sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, uniqueId, verified, who_what`,
+            session: `&email, password, seller_id, name`,
+			sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, verified, who_what`,
             sellersListLastSyncDate : `id, date`,
             countriesList : `id, *attributes`
 		})        
@@ -300,7 +300,7 @@ export default class FsDb {
             if(await this.silentSignIn(url)) {//credentials must be verified
                 const sellerId = args.sellerId
 
-                let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}&order=last_edit,desc`)
+                let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&order=last_edit,desc`)
 
                 dateOperation = new Date(publicationsList.headers.get("date"))
 
@@ -344,7 +344,7 @@ export default class FsDb {
         try {
             const sellerId = args.sellerId
 
-            let publicationsList = await fetch(`${url}/publications?filter=sellerId,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
+            let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
 
             dateOperation = new Date(publicationsList.headers.get("date"))
 

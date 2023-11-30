@@ -480,7 +480,7 @@ let sellerFormTemplate = {
                     "manageSellerMedia" : async function (jseditor, e) {
                         const navigation = document.querySelector("ion-nav#navigation") 
                         await navigation.push("medias-or-publications-choice")
-                        
+
                         fsGlobalVariable.sellerInfos = form.getValue()
                     }
                 }
@@ -540,7 +540,7 @@ let sellerFormTemplate = {
             
             form.on('ready', async () => {
                 //get the seller infos  
-                const response = await myFs.getSellerInfos(apiUrl, session.sellerId)
+                const response = await myFs.getSellerInfos(apiUrl, session.seller_id)
 
                 if(response.ok) {                    
                     sellerInfos = response.sellerInfos
@@ -760,8 +760,7 @@ let sellerFormTemplate = {
 
                 saveBtn.addEventListener("click", async () => {
                     finalData["credentials"] = {
-                        "sellerId" : session.sellerId,
-                        "sellerUniqueId" : session.sellerUniqueId,
+                        "sellerId" : session.seller_id,
                         "email": session.email,
                         "password": session.password,
                         "accountId": session.id

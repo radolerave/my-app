@@ -147,14 +147,23 @@ let sellerPublicationCardTemplate = {
                 
                     <ion-grid class="fsUsersInterations">
                         <ion-row>
-                            <ion-col class="ion-text-left">Reactions</ion-col>
-                            <ion-col class="ion-text-center" size="1"></ion-col>
-                            <ion-col class="ion-text-right">Comments</ion-col>
+                            <ion-col class="ion-text-left" size="5">Interaction1</ion-col>
+                            <ion-col class="ion-text-center" size="2"></ion-col>
+                            <ion-col class="ion-text-right" size="5">Interaction2</ion-col>
                         </ion-row>
                     </ion-grid>
 
-                    <ion-button class="fsPublicationAction1" fill="clear">Action 1</ion-button>
-                    <ion-button class="fsPublicationAction2" fill="clear">Action 2</ion-button>
+                    <ion-grid class="fsUsersActions">
+                        <ion-row>
+                            <ion-col class="ion-text-left" size="5">
+                                <ion-button class="fsPublicationAction1" fill="clear">Action 1</ion-button>
+                            </ion-col>
+                            <ion-col class="ion-text-center" size="2"></ion-col>
+                            <ion-col class="ion-text-right" size="5">
+                                <ion-button class="fsPublicationAction2" fill="clear">Action 2</ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
                 </ion-card>
             `,
             textToPublish: data.publication.textToPublish,

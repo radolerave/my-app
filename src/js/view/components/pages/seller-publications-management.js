@@ -61,7 +61,7 @@ let sellerPublicationsManagement = {
     })
 
     let response = await myFs.getPublications(apiUrl, {
-      sellerId : fsGlobalVariable.session.sellerId
+      sellerId : fsGlobalVariable.session.seller_id
     })
 
     sellerPublicationsManagementTemplate.logic(response)

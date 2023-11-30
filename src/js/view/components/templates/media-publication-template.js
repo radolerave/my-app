@@ -129,14 +129,13 @@ let mediaPublicationTemplate = {
 
             let finalData = {
                 credentials: {
-                    "sellerId" : fsGlobalVariable.session.sellerId,
-                    "sellerUniqueId" : fsGlobalVariable.session.sellerUniqueId,
+                    "sellerId" : fsGlobalVariable.session.seller_id,
                     "email": fsGlobalVariable.session.email,
                     "password": fsGlobalVariable.session.password,
                     "accountId": fsGlobalVariable.session.id
                 },
                 updatedData: {
-                    sellerId: fsGlobalVariable.session.sellerId,
+                    sellerId: fsGlobalVariable.session.seller_id,
                     publication: JSON.stringify({
                         textToPublish: fsGlobalVariable.textToPublish,
                         selectedMedias: sMedias

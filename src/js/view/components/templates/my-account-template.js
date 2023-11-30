@@ -65,22 +65,52 @@ let myAccountTemplate = {
 
             myAccountContent.innerHTML = /*html*/`
                 <div>
-                    <ion-button id="signInBis" expand="full">Se connecter</ion-button>    
+                    <h3>Vous êtes : </h3>
+                    <ion-radio-group id="user-type" allow-empty-selection="true">
+                        <ion-radio value="1" label-placement="end">Seller (vendeur)</ion-radio><br />
+                        <ion-radio value="2" label-placement="end">Finder (client)</ion-radio>
+                    </ion-radio-group>
+                    <br>
+                    <br>
+                    <hr>
+                    <br>
+                    <h3>Que voulez-vous faire ?</h3>
+                    <ion-button id="signInBis" disabled="true" expand="full">Se connecter</ion-button>    
                     <ion-text>-</ion-text>
-                    <ion-button id="signUpBis" expand="full">S'inscrire</ion-button>
+                    <ion-button id="signUpBis" disabled="true" expand="full">S'inscrire</ion-button>
                 </div>
             `
-            
+
+            const userType = myAccountContent.querySelector("ion-radio-group#user-type")
+
             const signInBis = document.querySelector("#signInBis")
             const signUpBis = document.querySelector("#signUpBis")
 
+            userType.addEventListener("ionChange", () => {
+                switch(true) {
+                    case (typeof(userType.value) != "undefined"): 
+                        fsGlobalVariable.userType = userType.value
+                        signInBis.setAttribute("disabled", "false")
+                        signUpBis.setAttribute("disabled", "false")
+                        break
+
+                    default:
+                        fsGlobalVariable.userType = undefined
+                        signInBis.setAttribute("disabled", "true")
+                        signUpBis.setAttribute("disabled", "true")
+                        break
+                }
+
+                console.log(fsGlobalVariable.userType)
+            })                    
+
             signInBis.addEventListener("click", async () => {
-                navigation.push('sign-in')
+                await navigation.push('sign-in')
                 // await self.logic(true)
             })
 
-            signUpBis.addEventListener("click", () => {
-                navigation.push('sign-up')
+            signUpBis.addEventListener("click", async () => {
+                await navigation.push('sign-up')
             })
         }        
     }
