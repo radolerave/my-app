@@ -145,7 +145,7 @@ let sellerPublicationCardTemplate = {
                         </div>
                     </ion-card-content>
                 
-                    <ion-grid class="fsUsersInterations">
+                    <ion-grid class="fsUsersInterations ion-hide">
                         <ion-row>
                             <ion-col class="ion-text-left" size="5">Interaction1</ion-col>
                             <ion-col class="ion-text-center" size="2"></ion-col>
@@ -153,7 +153,7 @@ let sellerPublicationCardTemplate = {
                         </ion-row>
                     </ion-grid>
 
-                    <ion-grid class="fsUsersActions">
+                    <ion-grid class="fsUsersActions ion-hide">
                         <ion-row>
                             <ion-col class="ion-text-left" size="5">
                                 <ion-button class="fsPublicationAction1" fill="clear">Action 1</ion-button>

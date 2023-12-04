@@ -19,10 +19,11 @@ let myAccountTemplate = {
             }
         </style>
     `,
-    logic: async (session) => {
+    logic: async (conn = false) => {
+        let session = fsGlobalVariable.session
         const myAccountContent = document.querySelector("#my-account-template-content")
         const signOutBtn = document.querySelector("#signOut")
-        const signedIn = (typeof session == "object" && typeof session.email != "undefined") ? true : false
+        const signedIn = conn
 
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
@@ -41,18 +42,41 @@ let myAccountTemplate = {
                 </div>
             `
         }
-        else */if(connected) {//test if user is connected      
-            if(myAccountContent.classList.contains("notConnected")) {//first load
-                myAccountContent.classList.remove("notConnected") 
+        else */if(connected) {//test if user is connected   
+            switch(session.userType) {
+                case "1": 
+                    if(myAccountContent.classList.contains("notConnected")) {//first load
+                        myAccountContent.classList.remove("notConnected") 
+        
+                        myAccountContent.innerHTML = sellerFormTemplate.content
+        
+                        sellerFormTemplate.logic(session)
+                    }
+        
+                    await navigation.popToRoot()//important!!!
+        
+                    if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
+                    break;
 
-                myAccountContent.innerHTML = sellerFormTemplate.content
+                case "2":
+                    if(myAccountContent.classList.contains("notConnected")) {//first load
+                        myAccountContent.classList.remove("notConnected") 
+        
+                        myAccountContent.innerHTML = /*html*/`
+                            <div>Welcome ${session.name}.</div>
+                            <div>Ah! you are a finder</div>
+                        `
+                    }
+        
+                    await navigation.popToRoot()//important!!!
+        
+                    if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
+                    break;
 
-                sellerFormTemplate.logic(session)
+                default:
+                    await self.logic(false)
+                    break;
             }
-
-            await navigation.popToRoot()//important!!!
-
-            if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
         }
         else {
             await navigation.popToRoot()//important!!!
@@ -89,23 +113,19 @@ let myAccountTemplate = {
             userType.addEventListener("ionChange", () => {
                 switch(true) {
                     case (typeof(userType.value) != "undefined"): 
-                        fsGlobalVariable.userType = userType.value
                         signInBis.setAttribute("disabled", "false")
                         signUpBis.setAttribute("disabled", "false")
                         break
 
                     default:
-                        fsGlobalVariable.userType = undefined
                         signInBis.setAttribute("disabled", "true")
                         signUpBis.setAttribute("disabled", "true")
                         break
                 }
-
-                console.log(fsGlobalVariable.userType)
             })                    
 
             signInBis.addEventListener("click", async () => {
-                await navigation.push('sign-in')
+                await navigation.push('sign-in', { userType: userType.value })
                 // await self.logic(true)
             })
 

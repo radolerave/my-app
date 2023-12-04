@@ -7,7 +7,7 @@ export default class FsDb {
 
     dbStructure(initDb, Wrapper) {        
         initDb.version(1).stores({
-            session: `&email, password, seller_id, name`,
+            session: `&email, password, seller_id, name, userType`,
 			sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, verified, who_what`,
             sellersListLastSyncDate : `id, date`,
             countriesList : `id, *attributes`
@@ -40,7 +40,7 @@ export default class FsDb {
     }
 
     async getLocalCredentials() {//device <=> localDb
-        let localCredentials = {}
+        let localCredentials = undefined
         try {
             const resp = await this.db.session.toArray()
             localCredentials = resp[0]
@@ -115,7 +115,7 @@ export default class FsDb {
         }
     }
 
-    async signIn(apiUrl, credentials) {//signIn mode : user input <=> server db
+    async signIn(apiUrl, credentials, userType) {//signIn mode : user input <=> server db
         try {            
             let email = credentials.email
             let password = credentials.password
@@ -149,7 +149,10 @@ export default class FsDb {
             }
 
             if(mustBeTrue()) {
-                await this.db.session.put(serverSideCredentials[0])
+                let session = serverSideCredentials[0]
+                session.userType = userType
+                
+                await this.db.session.put(session)
                 return true
             }
             else {

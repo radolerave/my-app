@@ -45,6 +45,7 @@ let signIn = {
         let nbrOfAttempts = 0
 
         const navigation = fsGlobalVariable.navigation
+        let currPage, userType
         const userTypeIndicator = document.querySelector("#user-type-indicator")
         const goSignInBtn = document.querySelector("#goSignIn")
         const goSignInEmail = document.querySelector("#goSignInEmail")
@@ -53,12 +54,12 @@ let signIn = {
         const credentials = {}
 
         const listener = async () => {
-            let currentPage = await navigation.getActive()
+            let currentPage = currPage = await navigation.getActive()
         
             console.log(currentPage)
         
             if(currentPage.component == "sign-in") {
-                userTypeIndicator.innerHTML = fsGlobalVariable.userType
+                userTypeIndicator.innerHTML = currentPage.params.userType
             }
         }        
     
@@ -68,10 +69,23 @@ let signIn = {
             credentials.email = goSignInEmail.value
             credentials.password = goSignInPassword.value
 
-            const testSignedIn = await myFs.signIn(apiUrl, credentials)
+            userType = currPage.params.userType
+
+            const testSignedIn = await myFs.signIn(apiUrl, credentials, userType)
 
             if(testSignedIn) {
-                await myAccountTemplate.logic(testSignedIn)//true
+                try {
+                    const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+                    fsGlobalVariable.session = localCredentials
+                    
+                    await myAccountTemplate.logic(testSignedIn)//true
+                }
+                catch(err) {
+                    await Dialog.alert({
+                        title: 'Connexion impossible',
+                        message: `Une erreur inattendue s'est produite.`,
+                    })
+                }
             }
             else {
                 await Dialog.alert({

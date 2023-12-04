@@ -184,19 +184,26 @@ let mainPage = {
     landingPageTemplate.logic()
     // sellerSearchTemplate.logic(args)
 
-    const testSignedIn = await myFs.silentSignIn(apiUrl)//signIn mode : localDb <=> server db
-    await myAccountTemplate.logic(testSignedIn)
-
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")
 
     tab.addEventListener('ionTabsDidChange', async () => {
       let currentTab = await tab.getSelected()
 
       if (currentTab == "my-account") {
-        const session = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
-        fsGlobalVariable.session = session
+        const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+        
+        // console.log(localCredentials)
+
+        fsGlobalVariable.session = localCredentials
+
         // console.log(fsGlobalVariable)
-        await myAccountTemplate.logic(session)
+        
+        if(localCredentials != undefined) {                    
+          await myAccountTemplate.logic(true)          
+        }
+        else {
+          await myAccountTemplate.logic(false)
+        }        
       }
     })
 

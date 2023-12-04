@@ -33,8 +33,8 @@ export default class Fs {
         return response
     }
 
-    async signIn(apiUrl, credentials) {
-        const response = await this.fsDb.signIn(apiUrl, credentials)
+    async signIn(apiUrl, credentials, userType) {
+        const response = await this.fsDb.signIn(apiUrl, credentials, userType)
 
         return response
     }

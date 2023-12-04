@@ -14,7 +14,6 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 
 window.fsGlobalVariable = {
-    userType: undefined,
     navigation : document.querySelector("ion-app ion-nav#navigation")
 }
 
