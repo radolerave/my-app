@@ -130,7 +130,7 @@ let myAccountTemplate = {
             })
 
             signUpBis.addEventListener("click", async () => {
-                await navigation.push('sign-up')
+                await navigation.push('sign-up', { userType: userType.value })
             })
         }        
     }

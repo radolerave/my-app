@@ -46,11 +46,11 @@ let signIn = {
 
         const navigation = fsGlobalVariable.navigation
         let currPage, userType
-        const userTypeIndicator = document.querySelector("#user-type-indicator")
+        const userTypeIndicator = document.querySelector("sign-in #user-type-indicator")
         const goSignInBtn = document.querySelector("#goSignIn")
         const goSignInEmail = document.querySelector("#goSignInEmail")
         const goSignInPassword = document.querySelector("#goSignInPassword")
-        const errorText = document.querySelector("#error-text")
+        const errorText = document.querySelector("sign-in #error-text")
         const credentials = {}
 
         const listener = async () => {
@@ -101,9 +101,9 @@ let signIn = {
             }            
         })
 
-        goSignInEmail.addEventListener('ionInput', (ev) => {
-            const validEmail = formValidation.validateEmailInput(ev.target.value, ev.target)
-            const validPwd = formValidation.validatePasswordInput(goSignInPassword.value, goSignInPassword)
+        function validateThisInput() {
+            const validEmail = formValidation.validateInput(goSignInEmail.value, fsConfig.patterns.email)
+            const validPwd = formValidation.validateInput(goSignInPassword.value, fsConfig.patterns.password)
 
             if(validEmail && validPwd) {
                 goSignInBtn.removeAttribute("disabled")
@@ -113,20 +113,14 @@ let signIn = {
                 goSignInBtn.setAttribute("disabled", "true")
                 errorText.textContent = `Email ou mot de passe invalid`
             }
+        }
+
+        goSignInEmail.addEventListener('ionInput', (ev) => {
+            validateThisInput()
         })
 
         goSignInPassword.addEventListener('ionInput', (ev) => {
-            const validPwd = formValidation.validatePasswordInput(ev.target.value, ev.target)
-            const validEmail = formValidation.validateEmailInput(goSignInEmail.value, goSignInEmail)
-
-            if(validEmail && validPwd) {
-                goSignInBtn.removeAttribute("disabled")
-                errorText.textContent = ``
-            }
-            else {
-                goSignInBtn.setAttribute("disabled", "true")
-                errorText.textContent = `Email ou mot de passe invalid`
-            }
+            validateThisInput()
         })
     }
 }

@@ -27,6 +27,12 @@ export default class Fs {
         return response
     }
 
+    async signUp(apiUrl, args, userType) {
+        const response = await this.fsDb.signUp(apiUrl, args, userType)
+
+        return response
+    }
+
     async silentSignIn(apiUrl) {
         const response = await this.fsDb.silentSignIn(apiUrl)
 

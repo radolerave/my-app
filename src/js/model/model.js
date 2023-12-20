@@ -54,6 +54,54 @@ export default class FsDb {
         return localCredentials
     }
 
+    async signUp(url, args, userType) {
+        let ret = {}
+        let dateOperation = null
+
+        try {
+            // Construct the API endpoint URL for creating the item
+            const updateUrl = `${url}/accounts`;
+            const data = args.data
+
+            //do a verification process before continuing*********** (credentials)
+
+            // Send a POST request to create the item
+            let signUpOperation = await fetch(updateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include any necessary authentication headers here
+                },
+                body: JSON.stringify(data),
+            })
+
+            dateOperation = new Date(signUpOperation.headers.get("date"))
+
+            let createdItem = await signUpOperation.json()
+
+            console.log('Updated item:', createdItem);
+
+            ret = {
+                ok: true,
+                date: dateOperation,
+                pk : createdItem
+            }
+        }
+        catch(error) {
+            console.error('Error updating item:', error);
+            // Handle error
+
+            ret = {
+                ok: false,
+                date: null,
+                pk : null,
+                errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
+            }
+        }
+
+        return ret
+    }
+
     async silentSignIn(apiUrl) {//signIn mode : localDb <=> server db
         try {            
             let localCredentials = await this.db.session.toArray()
@@ -243,7 +291,7 @@ export default class FsDb {
 
         try {
             if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
-                // Construct the API endpoint URL for updating the item
+                // Construct the API endpoint URL for creating the item
                 const updateUrl = `${url}/publications`;
                 const updatedData = args.updatedData
 
