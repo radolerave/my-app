@@ -77,7 +77,13 @@ let signUp = {
 
             userType = currPage.params.userType
 
-            const signUpResult = await myFs.signUp(apiUrl, credentials, userType)
+            const signUpResult = await myFs.signUp(
+                apiUrl, 
+                { 
+                    data: credentials 
+                }, 
+                userType
+            )
 
             console.log(signUpResult)
         })

@@ -54,19 +54,19 @@ export default class FsDb {
         return localCredentials
     }
 
-    async signUp(url, args, userType) {
+    async signUp(apiUrl, args, userType) {
         let ret = {}
         let dateOperation = null
 
         try {
             // Construct the API endpoint URL for creating the item
-            const updateUrl = `${url}/accounts`;
-            const data = args.data
+            const url = `${apiUrl}/accounts`;
+            let data = args.data
 
             //do a verification process before continuing*********** (credentials)
 
             // Send a POST request to create the item
-            let signUpOperation = await fetch(updateUrl, {
+            let signUpOperation = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export default class FsDb {
 
             let createdItem = await signUpOperation.json()
 
-            console.log('Updated item:', createdItem);
+            console.log('Added item:', createdItem);
 
             ret = {
                 ok: true,
@@ -311,7 +311,7 @@ export default class FsDb {
 
                 let createdItem = await createNewPublicationOperation.json()
 
-                console.log('Updated item:', createdItem);
+                console.log('Created item:', createdItem);
 
                 ret = {
                     ok: true,
@@ -437,7 +437,7 @@ export default class FsDb {
 
                 //do a verification process before continuing*********** (credentials)
 
-                // Send a POST request to create the item
+                // Send a PUT request to update the item
                 let updatePublicationOperation = await fetch(updateUrl, {
                     method: 'PUT',
                     headers: {
@@ -494,7 +494,7 @@ export default class FsDb {
 
                 //do a verification process before continuing*********** (credentials)
 
-                // Send a POST request to create the item
+                // Send a DELETE request to delete the item
                 let updatePublicationOperation = await fetch(updateUrl, {
                     method: 'DELETE',
                     headers: {

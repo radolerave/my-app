@@ -14,7 +14,7 @@ let sellerInformationsTemplate = {
 
           ${sellerInformationsItemTemplate.logic({
             title : "Nom Commercial",
-            property : "tradeName",
+            property : "trade_name",
           })}
 
           ${sellerInformationsItemTemplate.logic({
@@ -90,7 +90,7 @@ let sellerInformationsTemplate = {
     const componentName = currentPage.component
 
     document.querySelector(`${componentName} #name`).innerHTML = data.name
-    document.querySelector(`${componentName} #tradeName`).innerHTML = data.tradeName
+    document.querySelector(`${componentName} #trade_name`).innerHTML = data.trade_name
     document.querySelector(`${componentName} #country`).innerHTML = data.country
     document.querySelector(`${componentName} #who_what`).innerHTML = data.who_what
     document.querySelector(`${componentName} #nif`).innerHTML = data.nif

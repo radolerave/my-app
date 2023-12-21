@@ -98,7 +98,7 @@ let sellerFormTemplate = {
                             'type': 'string',
                             'title': 'Nom ou Raison sociale'
                         },                    
-                        'tradeName': {
+                        'trade_name': {
                             'type': 'string',
                             'title': 'Nom Commercial'
                         },
@@ -449,18 +449,18 @@ let sellerFormTemplate = {
                                     "title": "Médias & publications",
                                     "properties": {
                                         "information": {
-                                            "type": "info",
+                                            "format": "info",
                                             "title": "Information",
                                             "description": "Pour gérer vos médias et vos publications, veuillez appuyer sur le bouton ci-après."
                                         },
                                         "mediaButton": {
-                                            "type": "button",
+                                            "format": "button",
                                             "title": "Gérer",
                                             "options": {
                                                 "button": {
                                                     "icon": "collection-play-fill",
                                                     "action": "manageSellerMedia",
-                                                    "validated": "manageSellerMedia"
+                                                    "validated": false
                                                 }
                                             }
                                         }
