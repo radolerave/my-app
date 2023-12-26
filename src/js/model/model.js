@@ -60,31 +60,69 @@ export default class FsDb {
 
         try {
             // Construct the API endpoint URL for creating the item
-            const url = `${apiUrl}/accounts`;
-            let data = args.data
+            const urlAccounts = `${apiUrl}/accounts`;
+            let dataAccounts = args.data
 
-            //do a verification process before continuing*********** (credentials)
+            const urlSellers = `${apiUrl}/sellers`;
+            let dataSellers = {}
 
-            // Send a POST request to create the item
-            let signUpOperation = await fetch(url, {
+            // console.log(dataAccounts)
+
+            let createSellerOperation = await fetch(urlSellers, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     // Include any necessary authentication headers here
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(dataSellers),
             })
 
-            dateOperation = new Date(signUpOperation.headers.get("date"))
+            let createdSeller = await createSellerOperation.json()
 
-            let createdItem = await signUpOperation.json()
+            if(typeof createdSeller == "number") {
+                dataAccounts.seller_id = createdSeller
 
-            console.log('Added item:', createdItem);
+                // Send a POST request to create the item
+                let signUpOperation = await fetch(urlAccounts, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include any necessary authentication headers here
+                    },
+                    body: JSON.stringify(dataAccounts),
+                })
 
-            ret = {
-                ok: true,
-                date: dateOperation,
-                pk : createdItem
+                dateOperation = new Date(signUpOperation.headers.get("date"))
+
+                let createdItem = await signUpOperation.json()
+
+                if(typeof createdItem == "number") {
+                    console.log('Created item:', createdItem);
+
+                    ret = {
+                        ok: true,
+                        date: dateOperation,
+                        pk : createdItem
+                    }
+                }
+                else {
+                    ret = {
+                        ok: false,
+                        date: dateOperation,
+                        pk: null,
+                        errorCode: createdItem.code,
+                        errorText: createdItem.message
+                    }
+                }
+            }
+            else {
+                ret = {
+                    ok: false,
+                    date: dateOperation,
+                    pk: null,
+                    errorCode: createdSeller.code,
+                    errorText: createdSeller.message
+                }
             }
         }
         catch(error) {

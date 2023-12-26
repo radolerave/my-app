@@ -56,7 +56,7 @@ let signUp = {
         const goSignUpEmail = document.querySelector("#goSignUpEmail")
         const goSignUpPassword = document.querySelector("#goSignUpPassword")
         const errorText = document.querySelector("sign-up #error-text")
-        const credentials = {}
+        let credentials = {}
 
         const listener = async () => {
             let currentPage = currPage = await navigation.getActive()
@@ -79,9 +79,7 @@ let signUp = {
 
             const signUpResult = await myFs.signUp(
                 apiUrl, 
-                { 
-                    data: credentials 
-                }, 
+                { data: credentials }, 
                 userType
             )
 

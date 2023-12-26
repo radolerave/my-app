@@ -91,8 +91,8 @@ let myAccountTemplate = {
                 <div>
                     <h3>Vous êtes : </h3>
                     <ion-radio-group id="user-type" allow-empty-selection="true">
-                        <ion-radio value="1" label-placement="end">Seller (vendeur)</ion-radio><br />
-                        <ion-radio value="2" label-placement="end">Finder (client)</ion-radio>
+                        <ion-radio value="1" label-placement="end">Fournisseur</ion-radio><br />
+                        <ion-radio value="2" label-placement="end">Client</ion-radio>
                     </ion-radio-group>
                     <br>
                     <br>

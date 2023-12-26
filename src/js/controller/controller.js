@@ -132,7 +132,7 @@ export default class Fs {
             else {                
                 return ((params.where.country.length > 0 && seller.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
                     &&
-                    ((params.where.name.length > 0 && (seller.name.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1 || seller.tradeName.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1)) || params.where.name.length == 0)
+                    ((params.where.name.length > 0 && (seller.name.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1 || seller.trade_name.toLowerCase().indexOf(params.where.name.toLowerCase()) > -1)) || params.where.name.length == 0)
                     && 
                     (params.where.who_what != 0 && seller.who_what == params.where.who_what || params.where.who_what == 0)
                     && 
