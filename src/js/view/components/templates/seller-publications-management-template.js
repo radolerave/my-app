@@ -258,6 +258,14 @@ let sellerPublicationsManagementTemplate = {
                 "title": `Erreur`,
                 "message": `${response.errorText}`
             })
+
+            if(response.errorCode == 1) {
+                const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
+
+                await myFs.signOut()
+                await navigation.popToRoot()
+                await mainPageTab.select("landing")
+            }            
         }
     }
 }

@@ -64,8 +64,9 @@ let sellerMediasManagement = {
     </style>
   `,
   logic: async () => {
+    // console.log(fsGlobalVariable)
     const myCloudName = fsConfig.cloudinary.cloudName
-    const theTagName = fsConfig.cloudinary.defaultTag
+    const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
     const myUploadPreset = fsConfig.cloudinary.uploadPreset
 
     let lightGalleryForImages, lightGalleryForVideos
@@ -291,7 +292,12 @@ let sellerMediasManagement = {
       })
     } 
 
-    await renderMedia(myCloudName, theTagName)
+    try {
+      await renderMedia(myCloudName, theTagName)
+    }
+    catch(err) {
+      console.log(err)
+    }
 
     mediaActionsTemplate.logic({
       myCloudName: myCloudName,

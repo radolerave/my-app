@@ -407,6 +407,7 @@ export default class FsDb {
                     ok: false,
                     date: null,
                     records: [],
+                    errorCode: 1,
                     errorText: "Vos informations d'identification ne correspondent pas, veuillez vous reconnecter."
                 }
             }
@@ -419,6 +420,7 @@ export default class FsDb {
                 ok: false,
                 date: null,
                 records : [],
+                errorCode: 0,
                 errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
             }
         }
@@ -456,6 +458,7 @@ export default class FsDb {
                 date: null,
                 records : [],
                 noControls : true,
+                errorCode: 0,
                 errorText: "Vérifiez votre connexion au serveur. Assurez vous d'être connecté(e) à Internet."
             }
         }
