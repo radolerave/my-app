@@ -187,17 +187,17 @@ let mainPage = {
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")
 
     tab.addEventListener('ionTabsDidChange', async () => {
+      const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+        
+      // console.log(localCredentials)
+
+      fsGlobalVariable.session = localCredentials
+
+      // console.log(fsGlobalVariable)
+
       let currentTab = await tab.getSelected()
 
-      if (currentTab == "my-account") {
-        const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
-        
-        // console.log(localCredentials)
-
-        fsGlobalVariable.session = localCredentials
-
-        // console.log(fsGlobalVariable)
-        
+      if (currentTab == "my-account") {            
         if(localCredentials != undefined) {                    
           await myAccountTemplate.logic(true)          
         }

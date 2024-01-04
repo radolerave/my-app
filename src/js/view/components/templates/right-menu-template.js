@@ -38,7 +38,24 @@ let rightMenuTemplate = {
         
         <ion-item-divider></ion-item-divider>
 
-        <ion-item button id="signOut" class="ion-margin-top ion-padding">
+        <ion-item button id="connected-account" class="">
+          <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
+            <ion-row class="ion-align-items-center">
+              <ion-col size="auto">
+                <ion-icon name="person-outline"></ion-icon>
+              </ion-col>
+              <ion-col class="ion-padding-start">
+                <ion-label class="ion-text-wrap">
+                  <h2>Compte connecté</h2>
+                  <p id="connected-user-name"></p>
+                  <p id="connected-user-email"></p>
+                </ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item button id="signOut" class="ion-margin-top">
           <ion-grid class="ion-no-padding ion-padding-bottom ion-padding-top">
             <ion-row class="ion-align-items-center">
               <ion-col size="auto">
@@ -147,14 +164,32 @@ let rightMenuTemplate = {
       }
     })
 
+    document.querySelector("#connected-account").addEventListener("click", async () => {
+      alert('test')
+    })
+
     menu.addEventListener("ionWillOpen", async () => {//important!!!
-      const session = await myFs.getLocalCredentials()
-      await myAccountTemplate.logic(session)
+      const localCredentials = await myFs.getLocalCredentials()      
+      
+      if(localCredentials != undefined) {                    
+        fsGlobalVariable.session = localCredentials
+        await myAccountTemplate.logic(true)          
+      }
+      else {
+        await myAccountTemplate.logic(false)
+      }
     })
 
     menu.addEventListener("ionWillClose", async () => {//important!!!
-      const session = await myFs.getLocalCredentials()
-      await myAccountTemplate.logic(session)
+      const localCredentials = await myFs.getLocalCredentials()      
+      
+      if(localCredentials != undefined) {                    
+        fsGlobalVariable.session = localCredentials
+        await myAccountTemplate.logic(true)          
+      }
+      else {
+        await myAccountTemplate.logic(false)
+      }
     })
   }
 }

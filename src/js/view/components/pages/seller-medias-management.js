@@ -66,7 +66,7 @@ let sellerMediasManagement = {
   logic: async () => {
     // console.log(fsGlobalVariable)
     const myCloudName = fsConfig.cloudinary.cloudName
-    const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
+    const theTagName = "fs"
     const myUploadPreset = fsConfig.cloudinary.uploadPreset
 
     let lightGalleryForImages, lightGalleryForVideos

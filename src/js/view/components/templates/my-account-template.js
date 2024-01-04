@@ -23,6 +23,7 @@ let myAccountTemplate = {
         let session = fsGlobalVariable.session
         const myAccountContent = document.querySelector("#my-account-template-content")
         const signOutBtn = document.querySelector("#signOut")
+        const connectedAccount = document.querySelector("#connected-account")
         const signedIn = conn
 
 
@@ -56,6 +57,7 @@ let myAccountTemplate = {
                     await navigation.popToRoot()//important!!!
         
                     if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
+                    if(connectedAccount.classList.contains("ion-hide")) connectedAccount.classList.remove("ion-hide")
                     break;
 
                 case "2":
@@ -71,17 +73,22 @@ let myAccountTemplate = {
                     await navigation.popToRoot()//important!!!
         
                     if(signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.remove("ion-hide")
+                    if(connectedAccount.classList.contains("ion-hide")) connectedAccount.classList.remove("ion-hide")
                     break;
 
                 default:
                     await self.logic(false)
                     break;
             }
+
+            connectedAccount.querySelector("#connected-user-name").textContent = session.name
+            connectedAccount.querySelector("#connected-user-email").textContent = session.email
         }
         else {
             await navigation.popToRoot()//important!!!
 
             if(!signOutBtn.classList.contains("ion-hide")) signOutBtn.classList.add("ion-hide") 
+            if(!connectedAccount.classList.contains("ion-hide")) connectedAccount.classList.add("ion-hide") 
 
             if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
             
