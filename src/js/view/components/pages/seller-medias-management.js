@@ -66,7 +66,7 @@ let sellerMediasManagement = {
   logic: async () => {
     // console.log(fsGlobalVariable)
     const myCloudName = fsConfig.cloudinary.cloudName
-    const theTagName = "fs"
+    const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
     const myUploadPreset = fsConfig.cloudinary.uploadPreset
 
     let lightGalleryForImages, lightGalleryForVideos
@@ -80,17 +80,28 @@ let sellerMediasManagement = {
 
     let renderMedia = async (myCloudName, theTagName) => {
       let imageList, videoList
-      imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
-      imageList = await imageList.json()
-      console.log(imageList)
+      
+      try {
+        imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
+        imageList = await imageList.json()
+        console.log(imageList)
 
-      imageList = imageList.resources
+        imageList = imageList.resources
+      }
+      catch(err) {
+        console.log(err)
+      }
 
-      videoList = await fetch(`https://res.cloudinary.com/${myCloudName}/video/list/${theTagName}.json`)
-      videoList = await videoList.json()
-      console.log(videoList)      
+      try {
+        videoList = await fetch(`https://res.cloudinary.com/${myCloudName}/video/list/${theTagName}.json`)
+        videoList = await videoList.json()
+        console.log(videoList)      
 
-      videoList = videoList.resources
+        videoList = videoList.resources
+      }
+      catch(err) {
+        console.log(err)
+      }
 
       document.querySelector("#sellerMediaManagementContent").innerHTML = `` 
       
@@ -235,61 +246,65 @@ let sellerMediasManagement = {
 
       let plusImagesBtn = document.querySelector("#plusImages")
 
-      plusImagesBtn.addEventListener("click", (ev) =>{
-        if(plusImagesBtn.getAttribute("show-all") == "false") {
-          let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='image']")
+      if(plusImagesBtn != null) {
+        plusImagesBtn.addEventListener("click", (ev) =>{
+          if(plusImagesBtn.getAttribute("show-all") == "false") {
+            let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='image']")
 
-          medias.forEach((element, key) => {
-            if(element.classList.contains("ion-hide") && element.getAttribute("media-type") == "image") {
-              element.classList.remove("ion-hide")
-              plusImagesBtn.setAttribute("show-all", "true")
-              plusImagesBtn.textContent = "Moins d'images"
-            }
-          })
-        }
-        else if(plusImagesBtn.getAttribute("show-all") == "true") {
-          let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='image']")
-
-          medias.forEach((element, key) => {
-            if(key > 1) {
-              if(!element.classList.contains("ion-hide") && element.getAttribute("media-type") == "image") {
-                element.classList.add("ion-hide")
-                plusImagesBtn.setAttribute("show-all", "false")
-                plusImagesBtn.textContent = "Plus d'images ..."
+            medias.forEach((element, key) => {
+              if(element.classList.contains("ion-hide") && element.getAttribute("media-type") == "image") {
+                element.classList.remove("ion-hide")
+                plusImagesBtn.setAttribute("show-all", "true")
+                plusImagesBtn.textContent = "Moins d'images"
               }
-            }
-          })
-        }
-      })
+            })
+          }
+          else if(plusImagesBtn.getAttribute("show-all") == "true") {
+            let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='image']")
+
+            medias.forEach((element, key) => {
+              if(key > 1) {
+                if(!element.classList.contains("ion-hide") && element.getAttribute("media-type") == "image") {
+                  element.classList.add("ion-hide")
+                  plusImagesBtn.setAttribute("show-all", "false")
+                  plusImagesBtn.textContent = "Plus d'images ..."
+                }
+              }
+            })
+          }
+        })
+      }
 
       let plusVideosBtn = document.querySelector("#plusVideos")
 
-      plusVideosBtn.addEventListener("click", (ev) =>{
-        if(plusVideosBtn.getAttribute("show-all") == "false") {
-          let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='video']")
+      if(plusVideosBtn != null) {
+        plusVideosBtn.addEventListener("click", (ev) =>{
+          if(plusVideosBtn.getAttribute("show-all") == "false") {
+            let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='video']")
 
-          medias.forEach((element, key) => {
-            if(element.classList.contains("ion-hide") && element.getAttribute("media-type") == "video") {
-              element.classList.remove("ion-hide")
-              plusVideosBtn.setAttribute("show-all", "true")
-              plusVideosBtn.textContent = "Moins de vidéos"
-            }
-          })
-        }
-        else if(plusVideosBtn.getAttribute("show-all") == "true") {
-          let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='video']")
-
-          medias.forEach((element, key) => {
-            if(key > 1) {
-              if(!element.classList.contains("ion-hide") && element.getAttribute("media-type") == "video") {
-                element.classList.add("ion-hide")
-                plusVideosBtn.setAttribute("show-all", "false")
-                plusVideosBtn.textContent = "Plus de vidéos ..."
+            medias.forEach((element, key) => {
+              if(element.classList.contains("ion-hide") && element.getAttribute("media-type") == "video") {
+                element.classList.remove("ion-hide")
+                plusVideosBtn.setAttribute("show-all", "true")
+                plusVideosBtn.textContent = "Moins de vidéos"
               }
-            }
-          })
-        }
-      })
+            })
+          }
+          else if(plusVideosBtn.getAttribute("show-all") == "true") {
+            let medias = document.querySelectorAll("#sellerMediaManagementContent media[media-type='video']")
+
+            medias.forEach((element, key) => {
+              if(key > 1) {
+                if(!element.classList.contains("ion-hide") && element.getAttribute("media-type") == "video") {
+                  element.classList.add("ion-hide")
+                  plusVideosBtn.setAttribute("show-all", "false")
+                  plusVideosBtn.textContent = "Plus de vidéos ..."
+                }
+              }
+            })
+          }
+        })
+      }
     } 
 
     try {
@@ -303,7 +318,15 @@ let sellerMediasManagement = {
       myCloudName: myCloudName,
       theTagName: theTagName,
       myUploadPreset: myUploadPreset,
-      allMylightGalleries: [lightGalleryForImages, lightGalleryForVideos]
+      allMylightGalleries: [lightGalleryForImages, lightGalleryForVideos],
+      renderMedia: async () => {
+        try {
+          await renderMedia(myCloudName, theTagName)
+        }
+        catch(err) {
+          console.log(err)
+        }
+      }
     })
   }
 }

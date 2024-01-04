@@ -166,7 +166,7 @@ let mediaActionsTemplate = {
               if (!error && result && result.event === "success") { 
                 console.log('Done! Here is the media info: ', result.info);
                 setTimeout(async () => {
-                  await renderMedia(myCloudName, theTagName) 
+                  await args.renderMedia(myCloudName, theTagName) 
                 }, 3000);
               }
             }
