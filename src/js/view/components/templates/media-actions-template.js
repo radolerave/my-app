@@ -244,8 +244,18 @@ let mediaActionsTemplate = {
         })    
 
         mediaDeleteBtn.addEventListener("click", () => {
-            numberOfSelectedMedias = countSelectedMedias()
-            alert(numberOfSelectedMedias)
+            const selectedMedias = selectedMediasDetails()
+            let public_ids = []
+
+            // console.log(selectedMedias)
+
+            if(selectedMedias.length > 0) {
+                selectedMedias.forEach((el, key) => {
+                    public_ids.push(el.getAttribute("public_id"))
+                })
+
+                console.log(public_ids)
+            }
         })
         
         mediaDeselectAllBtn.addEventListener("click", () => {
@@ -266,22 +276,22 @@ let mediaActionsTemplate = {
             if(icon.getAttribute("name") == "chevron-collapse-outline") {
                 icon.setAttribute("name", "chevron-expand-outline")
 
-                if(plusImagesBtn.getAttribute("show-all") == "true") { 
+                if(plusImagesBtn != null && plusImagesBtn.getAttribute("show-all") == "true") { 
                     plusImagesBtn.click()            
                 }
 
-                if(plusVideosBtn.getAttribute("show-all") == "true") { 
+                if(plusVideosBtn != null && plusVideosBtn.getAttribute("show-all") == "true") { 
                     plusVideosBtn.click()            
                 }
             }
             else {
                 icon.setAttribute("name", "chevron-collapse-outline")
 
-                if(plusImagesBtn.getAttribute("show-all") == "false") { 
+                if(plusImagesBtn != null && plusImagesBtn.getAttribute("show-all") == "false") { 
                     plusImagesBtn.click()            
                 }
 
-                if(plusVideosBtn.getAttribute("show-all") == "false") { 
+                if(plusVideosBtn != null && plusVideosBtn.getAttribute("show-all") == "false") { 
                     plusVideosBtn.click()            
                 }
             }                                 

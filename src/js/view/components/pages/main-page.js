@@ -143,7 +143,7 @@ let mainPage = {
                 </ion-tab-button>
 
                 <ion-tab-button tab="my-account">
-                    <ion-icon name="people-circle-outline"></ion-icon>
+                  <ion-icon name="person-circle-outline"></ion-icon>
                     Compte
                 </ion-tab-button>
             </ion-tab-bar>
