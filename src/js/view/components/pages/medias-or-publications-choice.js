@@ -86,7 +86,7 @@ let mediasOrPublicationsChoice = {
         });      
 
       uppy.setMeta({
-        seller_id: "xou",
+        seller_id: fsGlobalVariable.session.seller_id,
       });
     })
 
