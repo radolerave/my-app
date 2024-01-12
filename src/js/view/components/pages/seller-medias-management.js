@@ -1,5 +1,6 @@
 import { mediaActionsTemplate } from './../templates/media-actions-template.js'
 import { fsConfig } from './../../../config/fsConfig.js';
+import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
 
 // Import the Cloudinary class.
 import {Cloudinary} from "@cloudinary/url-gen";
@@ -64,6 +65,35 @@ let sellerMediasManagement = {
     </style>
   `,
   logic: async () => {
+    let fileTypeIdentifier = new FileTypeIdentifier()
+
+    try {
+      let imageList = [], videoList = []
+      let files = await fetch("https://localhost/findseller/dirTree.php?dirname=.\\files\\1")
+      files = await files.json()
+
+      console.log(files)
+
+      for(let i=0; i<files.length; i++) {
+        let file = files[i]
+
+        switch(fileTypeIdentifier.identify(file.infos.mime_type)) {
+          case "image": imageList.push(file)
+            break;
+
+          case "video": videoList.push(file)
+            break;
+
+          default://other files
+            break;
+        }
+      }
+
+      console.log(imageList, videoList)
+    }
+    catch(err) {
+      console.log(err)
+    }
     // console.log(fsGlobalVariable)
     const myCloudName = fsConfig.cloudinary.cloudName
     const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
