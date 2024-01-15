@@ -1,6 +1,7 @@
 import { mediaActionsTemplate } from './../templates/media-actions-template.js'
 import { fsConfig } from './../../../config/fsConfig.js';
 import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
+import FsImageManipulations from './../../../helpers/imageManipulations.js'
 
 // Import the Cloudinary class.
 import {Cloudinary} from "@cloudinary/url-gen";
@@ -66,34 +67,8 @@ let sellerMediasManagement = {
   `,
   logic: async () => {
     let fileTypeIdentifier = new FileTypeIdentifier()
-
-    try {
-      let imageList = [], videoList = []
-      let files = await fetch("https://localhost/findseller/dirTree.php?dirname=.\\files\\1")
-      files = await files.json()
-
-      console.log(files)
-
-      for(let i=0; i<files.length; i++) {
-        let file = files[i]
-
-        switch(fileTypeIdentifier.identify(file.infos.mime_type)) {
-          case "image": imageList.push(file)
-            break;
-
-          case "video": videoList.push(file)
-            break;
-
-          default://other files
-            break;
-        }
-      }
-
-      console.log(imageList, videoList)
-    }
-    catch(err) {
-      console.log(err)
-    }
+    let fsImageManipulations = new FsImageManipulations()    
+    
     // console.log(fsGlobalVariable)
     const myCloudName = fsConfig.cloudinary.cloudName
     const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
@@ -109,18 +84,46 @@ let sellerMediasManagement = {
     });   
 
     let renderMedia = async (myCloudName, theTagName) => {
-      let imageList, videoList
-      
-      try {
-        imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
-        imageList = await imageList.json()
-        console.log(imageList)
+      let imageList = [], videoList = []
 
-        imageList = imageList.resources
+      try {        
+        let files = await fetch("https://localhost/findseller/dirTree.php?dirname=.\\files\\1")
+        files = await files.json()
+  
+        console.log(files)
+  
+        for(let i=0; i<files.length; i++) {
+          let file = files[i]
+          file.infos.format = file.infos.extension
+  
+          switch(fileTypeIdentifier.identify(file.infos.mime_type)) {
+            case "image": imageList.push(file)
+              break;
+  
+            case "video": videoList.push(file)
+              break;
+  
+            default://other files
+              break;
+          }
+        }
+  
+        console.log(imageList, videoList)
       }
       catch(err) {
         console.log(err)
       }
+      
+      // try {
+      //   imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
+      //   imageList = await imageList.json()
+      //   console.log(imageList)
+
+      //   imageList = imageList.resources
+      // }
+      // catch(err) {
+      //   console.log(err)
+      // }
 
       try {
         videoList = await fetch(`https://res.cloudinary.com/${myCloudName}/video/list/${theTagName}.json`)
@@ -145,7 +148,7 @@ let sellerMediasManagement = {
       videosContainer.setAttribute("id", "videos-container")
 
       for(let i=0; i<imageList.length; i++) {            
-        const format = imageList[i].format
+        const format = imageList[i].infos.format
 
         if(["jpg", "jpeg", "png", "bmp"].includes(format)) {
           imageCount++
@@ -154,7 +157,7 @@ let sellerMediasManagement = {
           media.setAttribute("media-type", "image")
           media.setAttribute("format", format)
           media.setAttribute("uid", `i${i}`)
-          media.setAttribute("public_id", imageList[i].public_id)
+          media.setAttribute("public_id", imageList[i].infos.url)
 
           imagesContainer.appendChild(media)
 
@@ -162,24 +165,23 @@ let sellerMediasManagement = {
             media.classList.add("ion-hide")
           }
 
-          // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
-          const myImage = cld.image(imageList[i].public_id); 
 
-          media.setAttribute("data-src", myImage.toURL())          
 
-          // Resize to 250 x 250 pixels using the 'fill' crop mode.
-          myImage.resize(fill().width(250).height(250));          
+          media.setAttribute("data-src", imageList[i].infos.url)                        
           
           // Render the image in an 'img' element.
           const imgElement = document.createElement('img');
-          imgElement.setAttribute("public_id", imageList[i].public_id)
-          imgElement.setAttribute("format", imageList[i].format)
+          // Resize to 250 x 250 pixels using the 'fill' crop mode.
+          // const resizedImage = fsImageManipulations.resizeImage(imgElement, 250)  
+
+          imgElement.setAttribute("public_id", imageList[i].infos.url)
+          imgElement.setAttribute("format", imageList[i].infos.format)
 
           media.appendChild(imgElement)
 
           document.querySelector("#sellerMediaManagementContent").appendChild(imagesContainer)
 
-          imgElement.src = myImage.toURL();
+          imgElement.src = imageList[i].infos.url;
         }
       }  
 

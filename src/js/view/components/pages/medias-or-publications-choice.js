@@ -1,9 +1,11 @@
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
+import ImageEditor from '@uppy/image-editor';
 import XHR from '@uppy/xhr-upload';
 
 import '@uppy/core/dist/style.min.css';
 import '@uppy/dashboard/dist/style.min.css';
+import '@uppy/image-editor/dist/style.min.css';
 
 let mediasOrPublicationsChoice = {
   name: "medias-or-publications-choice",
@@ -80,6 +82,7 @@ let mediasOrPublicationsChoice = {
 
       let uppy = new Uppy()
         .use(Dashboard, { inline: true, target: '#uppy-dashboard-content', height: 0 })
+        .use(ImageEditor, { target: Dashboard })
         .use(XHR, { 
           endpoint: 'https://localhost/findseller/upload.php',
           fieldName: 'my_fs_file',
