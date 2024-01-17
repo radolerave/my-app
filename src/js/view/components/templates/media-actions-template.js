@@ -13,11 +13,20 @@ import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
 import lgVideo from 'lightgallery/plugins/video'
 
+import Uppy from '@uppy/core';
+import Dashboard from '@uppy/dashboard';
+import ImageEditor from '@uppy/image-editor';
+import XHR from '@uppy/xhr-upload';
+
+import '@uppy/core/dist/style.min.css';
+import '@uppy/dashboard/dist/style.min.css';
+import '@uppy/image-editor/dist/style.min.css';
+
 let mediaActionsTemplate = {
     name: "media-actions-template",
     content: /*html*/`
         <div id="media-actions">
-            <ion-button id="upload_widget" size="small" color="dark" fill="outline">+<ion-icon name="images-outline"></ion-icon></ion-button>
+            <ion-button id="uppyBtn" size="small" color="dark" fill="outline">+<ion-icon name="images-outline"></ion-icon></ion-button>
 
             <ion-button id="prePublish" size="small" color="tertiary" fill="outline"><ion-icon name="share-outline"></ion-icon><ion-badge slot="end" id="number-of-selected-media"></ion-badge></ion-button>
 
@@ -72,13 +81,14 @@ let mediaActionsTemplate = {
     logic: async (args) => {
         const navigation = document.querySelector("ion-app ion-nav#navigation")
 
-        const myCloudName = args.myCloudName
-        const theTagName = args.theTagName
-        const myUploadPreset = args.myUploadPreset
         let allMylightGalleries = args.allMylightGalleries
         let lightGalleryForImages, lightGalleryForVideos
 
-        const mediaUploadWidgetBtn = document.querySelector("#upload_widget")
+        const uppyBtn = document.querySelector("#uppyBtn")
+        const uppyDashboard = document.querySelector("#uppy-dashboard")
+        const uppyDashboardContent = document.querySelector("#uppy-dashboard-content")
+        const uppyCloseBtn = document.querySelector("#close-uppy")
+
         const mediaPublishBtn = document.querySelector("#prePublish")
         const mediaDeleteBtn = document.querySelector("#media_delete")
         const mediaDeselectAllBtn = document.querySelector("#media_deselect_all")
@@ -152,29 +162,37 @@ let mediaActionsTemplate = {
             }
         }
 
-        let myWidget = window.cloudinary.createUploadWidget({
-            cloudName: myCloudName, 
-            uploadPreset: myUploadPreset,
-            prepareUploadParams: (cb, params) => {
-                params = { tags : [theTagName] }
-    
-                cb(params)
-            },
-            cropping: true
-        }, 
-            async (error, result) => { 
-              if (!error && result && result.event === "success") { 
-                console.log('Done! Here is the media info: ', result.info);
-                setTimeout(async () => {
-                  await args.renderMedia(myCloudName, theTagName) 
-                }, 3000);
-              }
+                 
+        uppyBtn.addEventListener("click", async () => {
+            if(uppyDashboard.classList.contains("ion-hide")) {
+                uppyDashboard.classList.remove("ion-hide")
             }
-        )
-          
-        mediaUploadWidgetBtn.addEventListener("click", function(){
-          myWidget.open();
-        }, false);                
+            else {
+                uppyDashboard.classList.add("ion-hide")
+            }
+
+            uppyDashboardContent.innerHTML = ""
+
+            let uppy = new Uppy()
+                .use(Dashboard, { inline: true, target: '#uppy-dashboard-content'})
+                .use(ImageEditor, { target: Dashboard })
+                .use(XHR, { 
+                endpoint: 'https://localhost/findseller/upload.php',
+                fieldName: 'my_fs_file',
+                });      
+
+            uppy.setMeta({
+                seller_id: fsGlobalVariable.session.seller_id,
+            });
+        })
+
+        uppyCloseBtn.addEventListener("click", () => {
+            uppyDashboardContent.innerHTML = ""
+
+            if(!uppyDashboard.classList.contains("ion-hide")) {
+                uppyDashboard.classList.add("ion-hide")
+            }
+        })              
 
         mediaManipulationInstructions.addEventListener("click", () => {
             mediaHelpBtn.click()
@@ -243,18 +261,33 @@ let mediaActionsTemplate = {
             } 
         })    
 
-        mediaDeleteBtn.addEventListener("click", () => {
+        mediaDeleteBtn.addEventListener("click", async () => {
             const selectedMedias = selectedMediasDetails()
-            let public_ids = []
+            let filesToBeDeleted = []
 
             // console.log(selectedMedias)
 
             if(selectedMedias.length > 0) {
                 selectedMedias.forEach((el, key) => {
-                    public_ids.push(el.getAttribute("public_id"))
+                    filesToBeDeleted.push(el.getAttribute("basename"))
                 })
 
-                console.log(public_ids)
+                console.log(JSON.stringify({a: 1}))
+
+                try {
+                    const response = await fetch("https://localhost/findseller/delete.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({a: 1}),
+                    });
+                
+                    const result = await response.json();
+                    console.log("Success:", result);
+                } catch (error) {
+                    console.error("Error:", error);
+                }
             }
         })
         

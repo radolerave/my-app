@@ -70,9 +70,3 @@ html, body {
 .fsUsersInterations {
   border-top: solid grey 1px;
 }
-
-#uppy-dashboard {
-  /* border: solid red 1px; */
-  max-height: 100%;
-  overflow: auto;
-}

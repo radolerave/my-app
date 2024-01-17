@@ -3,27 +3,51 @@ export default class FsImageManipulations {
 
     }
 
-    resizeImage(imgToResize, newWidth = undefined, newHeight = undefined) {
-		const canvas = document.createElement("canvas");
-		const context = canvas.getContext("2d");
+	async loadImageFromBlob(url) {
 
-		const originalWidth = imgToResize.width;
-		const originalHeight = imgToResize.height;
+		return new Promise((resolve, reject) => {
+	
+			window.fetch(url)
+			.then(resp => resp.blob())
+			.then(blob => {
+				const urlFromBlob = window.URL.createObjectURL(blob);
+				resolve(urlFromBlob)
+			})
+	
+		})
+	
+	}
 
-		const canvasWidth = typeof newWidth != undefined ? newWidth : originalWidth;
-		const canvasHeight = typeof newHeight != undefined ? newHeight : (newWidth * originalWidth) / originalHeight;
+    async resizeImage(imgToResize, newWidth = undefined, newHeight = undefined) {
+		return new Promise((resolve, reject) => {
+			imgToResize.onload = () => {
+				try {
+					let canvas = document.createElement("canvas");
+					let context = canvas.getContext("2d");
 
-		canvas.width = canvasWidth;
-		canvas.height = canvasHeight;
+					const originalWidth = imgToResize.width;
+					const originalHeight = imgToResize.height;
 
-		context.drawImage(
-			imgToResize,
-			0,
-			0,
-			canvasWidth,
-			canvasHeight
-		);
+					canvas.width = typeof newWidth != "undefined" ? newWidth : originalWidth;
+					canvas.height = typeof newHeight != "undefined" ? newHeight : (newWidth * originalHeight) / originalWidth;
 
-		return canvas.toDataURL();
+					console.log(canvas.width, canvas.height)
+
+					
+					context.drawImage(
+						imgToResize,
+						0,
+						0,
+						canvas.width,
+						canvas.height
+					);
+					
+					resolve(canvas.toDataURL())
+				}
+				catch(err) {
+					reject(err)
+				}
+			}
+		})
 	}
 }

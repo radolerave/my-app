@@ -3,12 +3,6 @@ import { fsConfig } from './../../../config/fsConfig.js';
 import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
 import FsImageManipulations from './../../../helpers/imageManipulations.js'
 
-// Import the Cloudinary class.
-import {Cloudinary} from "@cloudinary/url-gen";
-
-// Import any actions required for transformations.
-import {fill} from "@cloudinary/url-gen/actions/resize";
-
 import "lightgallery/css/lightGallery-bundle.css"
 
 import lightGallery from 'lightgallery';
@@ -32,6 +26,12 @@ let sellerMediasManagement = {
     </ion-header>
 
     <ion-content class="ion-text-center">
+      <div id="uppy-dashboard" class="ion-hide">
+        <ion-button id="close-uppy" expand="full">Fermer</ion-button>
+
+        <div id="uppy-dashboard-content"></div>
+      </div>
+
       ${mediaActionsTemplate.content}
 
       <div id="sellerMediaManagementContent">This is the content for my Seller media management.</div>
@@ -67,23 +67,12 @@ let sellerMediasManagement = {
   `,
   logic: async () => {
     let fileTypeIdentifier = new FileTypeIdentifier()
-    let fsImageManipulations = new FsImageManipulations()    
+    // let fsImageManipulations = new FsImageManipulations()    
     
     // console.log(fsGlobalVariable)
-    const myCloudName = fsConfig.cloudinary.cloudName
-    const theTagName = typeof fsGlobalVariable.session.seller_id != "undefined" ? fsGlobalVariable.session.seller_id : fsConfig.cloudinary.defaultTag
-    const myUploadPreset = fsConfig.cloudinary.uploadPreset
-
     let lightGalleryForImages, lightGalleryForVideos
 
-    // Create a Cloudinary instance and set your cloud name.    
-    const cld = new Cloudinary({
-      cloud: {
-        cloudName: myCloudName
-      }
-    });   
-
-    let renderMedia = async (myCloudName, theTagName) => {
+    let renderMedia = async () => {
       let imageList = [], videoList = []
 
       try {        
@@ -113,28 +102,6 @@ let sellerMediasManagement = {
       catch(err) {
         console.log(err)
       }
-      
-      // try {
-      //   imageList = await fetch(`https://res.cloudinary.com/${myCloudName}/image/list/${theTagName}.json`)
-      //   imageList = await imageList.json()
-      //   console.log(imageList)
-
-      //   imageList = imageList.resources
-      // }
-      // catch(err) {
-      //   console.log(err)
-      // }
-
-      try {
-        videoList = await fetch(`https://res.cloudinary.com/${myCloudName}/video/list/${theTagName}.json`)
-        videoList = await videoList.json()
-        console.log(videoList)      
-
-        videoList = videoList.resources
-      }
-      catch(err) {
-        console.log(err)
-      }
 
       document.querySelector("#sellerMediaManagementContent").innerHTML = `` 
       
@@ -158,6 +125,7 @@ let sellerMediasManagement = {
           media.setAttribute("format", format)
           media.setAttribute("uid", `i${i}`)
           media.setAttribute("public_id", imageList[i].infos.url)
+          media.setAttribute("basename", imageList[i].infos.basename)
 
           imagesContainer.appendChild(media)
 
@@ -171,8 +139,10 @@ let sellerMediasManagement = {
           
           // Render the image in an 'img' element.
           const imgElement = document.createElement('img');
-          // Resize to 250 x 250 pixels using the 'fill' crop mode.
-          // const resizedImage = fsImageManipulations.resizeImage(imgElement, 250)  
+
+          // const virtualImgElement = document.createElement('img');
+          // virtualImgElement.src = await fsImageManipulations.loadImageFromBlob(imageList[i].infos.url)
+          
 
           imgElement.setAttribute("public_id", imageList[i].infos.url)
           imgElement.setAttribute("format", imageList[i].infos.format)
@@ -180,6 +150,9 @@ let sellerMediasManagement = {
           media.appendChild(imgElement)
 
           document.querySelector("#sellerMediaManagementContent").appendChild(imagesContainer)
+
+          // const resizedImage = await fsImageManipulations.resizeImage(virtualImgElement, 250)  
+          // imgElement.src = resizedImage;
 
           imgElement.src = imageList[i].infos.url;
         }
@@ -205,7 +178,7 @@ let sellerMediasManagement = {
       })
 
       for(let i=0; i<videoList.length; i++) {        
-        const format = videoList[i].format        
+        const format = videoList[i].infos.format        
 
         if(["webm", "ogg", "mp4"].includes(format)) {
           videoCount++
@@ -214,7 +187,8 @@ let sellerMediasManagement = {
           media.setAttribute("media-type", "video")
           media.setAttribute("format", format)
           media.setAttribute("uid", `v${i}`)
-          media.setAttribute("public_id", videoList[i].public_id)
+          media.setAttribute("public_id", videoList[i].infos.url)
+          media.setAttribute("basename", videoList[i].infos.basename)
 
           videosContainer.appendChild(media)
 
@@ -222,12 +196,10 @@ let sellerMediasManagement = {
             media.classList.add("ion-hide")
           }
 
-          const myVideo = cld.video(videoList[i].public_id); 
-
           media.setAttribute("data-video", JSON.stringify(
             {
               "source": [{
-                "src": myVideo.toURL(),
+                "src": videoList[i].infos.url,
                 "type": `video/${format}`
               }],
               "attributes": {
@@ -240,8 +212,8 @@ let sellerMediasManagement = {
 
           // Render the video in an 'video' element.
           const videoElement = document.createElement('video');
-          videoElement.setAttribute("public_id", videoList[i].public_id)
-          videoElement.setAttribute("format", videoList[i].format)
+          videoElement.setAttribute("public_id", videoList[i].infos.url)
+          videoElement.setAttribute("format", format)
           // videoElement.setAttribute("controls", "true")
 
           const source = document.createElement("source")
@@ -252,7 +224,7 @@ let sellerMediasManagement = {
 
           document.querySelector("#sellerMediaManagementContent").appendChild(videosContainer)
 
-          source.src = myVideo.toURL();
+          source.src = videoList[i].infos.url;
         }
       }
 
@@ -340,20 +312,17 @@ let sellerMediasManagement = {
     } 
 
     try {
-      await renderMedia(myCloudName, theTagName)
+      await renderMedia()
     }
     catch(err) {
       console.log(err)
     }
 
     mediaActionsTemplate.logic({
-      myCloudName: myCloudName,
-      theTagName: theTagName,
-      myUploadPreset: myUploadPreset,
       allMylightGalleries: [lightGalleryForImages, lightGalleryForVideos],
       renderMedia: async () => {
         try {
-          await renderMedia(myCloudName, theTagName)
+          await renderMedia()
         }
         catch(err) {
           console.log(err)
