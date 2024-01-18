@@ -8,6 +8,9 @@ import { fsConfig } from './../../../config/fsConfig.js';
 
 import { mediaActionsTemplate as self } from "./media-actions-template.js";
 
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
+
 // Plugins
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
@@ -123,14 +126,14 @@ let mediaActionsTemplate = {
                 mediaDeselectAllBtn.setAttribute("disabled", "true")
                 
                 try {
-                    try {
-                        allMylightGalleries.forEach((el, index) => {
+                    allMylightGalleries.forEach((el, index) => {
+                        try {
                             el.destroy()
-                        })
-                    }
-                    catch(err) {
-                        console.log("lightGallery already destroyed!!!!")
-                    }
+                        }
+                        catch(err) {
+                            console.log("lightGallery already destroyed!!!!")
+                        }
+                    })
                     
                     if(prevNbr == 0) {
                         lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
@@ -177,12 +180,25 @@ let mediaActionsTemplate = {
                 .use(Dashboard, { inline: true, target: '#uppy-dashboard-content'})
                 .use(ImageEditor, { target: Dashboard })
                 .use(XHR, { 
-                endpoint: 'https://localhost/findseller/upload.php',
+                endpoint: 'https://server2.atria.local/findseller/upload.php',
                 fieldName: 'my_fs_file',
                 });      
 
             uppy.setMeta({
                 seller_id: fsGlobalVariable.session.seller_id,
+            });
+
+            uppy.on('complete', async (result) => {
+                console.log('successful files:', result.successful);
+                console.log('failed files:', result.failed);
+
+                await Toast.show({
+                    text: `${result.successful.length} fichiers téléversés avec succès. ${result.failed.length} téléversements échoués.`,
+                    position: "bottom"
+                })
+                
+                await navigation.pop()
+                await navigation.push("seller-medias-management")
             });
         })
 
@@ -262,31 +278,66 @@ let mediaActionsTemplate = {
         })    
 
         mediaDeleteBtn.addEventListener("click", async () => {
-            const selectedMedias = selectedMediasDetails()
-            let filesToBeDeleted = []
+            const confirmation = await Dialog.confirm({
+                title: 'Confirmation',
+                message: `Voulez-vous vraiment supprimer ce(s) média(s) ?`,
+                okButtonTitle: "oui",
+                cancelButtonTitle: "non",
+            })
 
-            // console.log(selectedMedias)
+            if(confirmation.value) {
+                const selectedMedias = selectedMediasDetails()
+                let filesToBeDeleted = []
 
-            if(selectedMedias.length > 0) {
-                selectedMedias.forEach((el, key) => {
-                    filesToBeDeleted.push(el.getAttribute("basename"))
-                })
+                // console.log(selectedMedias)
 
-                console.log(JSON.stringify({a: 1}))
+                if(selectedMedias.length > 0) {
+                    selectedMedias.forEach((el, key) => {
+                        filesToBeDeleted.push(el.getAttribute("basename"))
+                    })
 
-                try {
-                    const response = await fetch("https://localhost/findseller/delete.php", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({a: 1}),
-                    });
-                
-                    const result = await response.json();
-                    console.log("Success:", result);
-                } catch (error) {
-                    console.error("Error:", error);
+                    let formData = new FormData()
+
+                    formData.append("filesToBeDeleted", JSON.stringify(filesToBeDeleted))
+                    formData.append("seller_id", fsGlobalVariable.session.seller_id)
+
+                    try {
+                        const response = await fetch("https://server2.atria.local/findseller/delete.php", {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        if(response.ok) {
+                            // console.log(response)
+                            const result = await response.json();
+                            // console.log(result);
+
+                            if(result.ok) {
+                                await Toast.show({
+                                    text: result.message,
+                                    position: "bottom"
+                                })
+
+                                console.log("Success: ", result.message)
+                            }
+                            else {
+                                await Toast.show({
+                                    text: result.message,
+                                    position: "bottom"
+                                })
+
+                                console.log("Error: ", result.message)
+                            }
+                        }
+                        else {
+                            console.log("Error:", response)
+                        }                                    
+                    } catch (error) {
+                        console.error("Error:", error);
+                    }
+
+                    await navigation.pop()
+                    await navigation.push("seller-medias-management")
                 }
             }
         })
@@ -368,16 +419,16 @@ let mediaActionsTemplate = {
                         }
                         else {//long press   
                             if(!longPressActivated) {             
-                                longPressActivated = true         
-                                
-                                try {
-                                    allMylightGalleries.forEach((el, index) => {
+                                longPressActivated = true
+
+                                allMylightGalleries.forEach((el, index) => {
+                                    try {
                                         el.destroy()
-                                    })
-                                }
-                                catch(err) {
-                                    console.log("lightGallery already destroyed!!!!")
-                                }
+                                    }
+                                    catch(err) {
+                                        console.log("lightGallery already destroyed!!!!")
+                                    }
+                                })                                
                             }
                             
                             element.classList.toggle("media-selected")
