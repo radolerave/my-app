@@ -123,6 +123,7 @@ let mediaPublicationTemplate = {
                 sMedias.push({
                     mediaType: element.getAttribute("media-type"),
                     publicId: element.getAttribute("public_id"),
+                    src: element.getAttribute("public_id"),
                     format: element.getAttribute("format")
                 })
             })

@@ -39,24 +39,20 @@ let sellerPublicationCardTemplate = {
             try {
                 switch(value.mediaType) {
                     case "image": 
-                        const myImage = cld.image(value.publicId)
-
                         mediasToPublish += /*html*/`
-                            <media class="fs-media" data-src="${myImage.toURL()}" public_id="${value.publicId}" media-type="${value.mediaType}" format="${value.format}">
-                                <img src="${myImage.resize(fill().width(250).height(250)).toURL()}" />
+                            <media class="fs-media" data-src="${value.src}" public_id="${value.publicId}" media-type="${value.mediaType}" format="${value.format}">
+                                <img src="${value.src}" />
                             </media>
                         `                        
                         break
 
                     case "video": 
-                        const myVideo = cld.video(value.publicId)
-
                         mediasToPublish += /*html*/`
                             <media class="fs-media" public_id="${value.publicId}"  media-type="${value.mediaType}" format="${value.format}" data-video=${
                                 JSON.stringify(
                                     {
                                         "source": [{
-                                            "src": myVideo.toURL(),
+                                            "src": value.src,
                                             "type": `video/${value.format}`
                                         }],
                                         "attributes": {
@@ -68,7 +64,7 @@ let sellerPublicationCardTemplate = {
                                 )
                             }>
                                 <video>
-                                    <source src="${myVideo.toURL()}"></source>
+                                    <source src="${value.src}"></source>
                                 </video>
                             </media>
                         `

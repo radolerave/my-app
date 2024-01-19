@@ -241,7 +241,7 @@ let sellerPublicationsManagementTemplate = {
                         fsPublicationMoreOptionsInformations.addEventListener("click", async () => {                        
                             await Dialog.alert({
                                 "title": `Informations`,
-                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDeadline : ${value.deadline}\nDernière mise à jour : ${value.last_edit}`
+                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDate limite : ${value.deadline}\nDernière mise à jour : ${value.last_edit}`
                             })
 
                             fsPublicationMoreOptionsPopover.isOpen = false

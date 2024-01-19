@@ -34,7 +34,7 @@ let sellerMediasManagement = {
 
       ${mediaActionsTemplate.content}
 
-      <div id="sellerMediaManagementContent">This is the content for my Seller media management.</div>
+      <div id="sellerMediaManagementContent">This is the content for my Seller media management. Wait a moment please ...</div>
     </ion-content>
 
     <style>

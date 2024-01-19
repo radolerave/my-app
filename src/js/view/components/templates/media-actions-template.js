@@ -176,13 +176,18 @@ let mediaActionsTemplate = {
 
             uppyDashboardContent.innerHTML = ""
 
-            let uppy = new Uppy()
-                .use(Dashboard, { inline: true, target: '#uppy-dashboard-content'})
-                .use(ImageEditor, { target: Dashboard })
-                .use(XHR, { 
+            let uppy = new Uppy({
+                restrictions: {
+                    allowedFileTypes: ["image/jpeg", "image/png", "image/bmp", "image/gif", "video/webm", "video/ogg", "video/mp4"],
+                    maxTotalFileSize: 5242880,//5MB
+                }
+            })
+            .use(Dashboard, { inline: true, target: '#uppy-dashboard-content'})
+            .use(ImageEditor, { target: Dashboard })
+            .use(XHR, { 
                 endpoint: 'https://server2.atria.local/findseller/upload.php',
                 fieldName: 'my_fs_file',
-                });      
+            });      
 
             uppy.setMeta({
                 seller_id: fsGlobalVariable.session.seller_id,
