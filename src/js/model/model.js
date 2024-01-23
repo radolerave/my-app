@@ -689,4 +689,29 @@ export default class FsDb {
 
         return ret
     }
+
+    async getCreditTokensValue(apiUrl, sellerId) {
+        let ret = {}
+        let creditTokens, date
+
+        try {
+            creditTokens = await fetch(`${apiUrl}/sellers/${sellerId}?include=credit_tokens`)
+
+            date = new Date(creditTokens.headers.get("date"))
+
+            creditTokens = await creditTokens.json()
+
+            ret.ok = true
+            ret.date = date
+            ret.creditTokens = creditTokens.credit_tokens
+        }
+        catch(err) {
+            ret.ok = false
+            ret.date = undefined
+            ret.creditTokens = undefined
+            ret.error = err
+        }
+
+        return ret
+    }
 }

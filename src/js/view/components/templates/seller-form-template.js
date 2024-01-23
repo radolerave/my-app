@@ -467,7 +467,65 @@ let sellerFormTemplate = {
                                     }
                                 }
                             }
-                        }
+                        },
+                        "credit_tokens": {
+                            "type": "number",
+                            "title": "Jetons de crédit",
+                            "options": {
+                                "containerAttributes": {
+                                    "class": "ion-hide"
+                                }
+                            }
+                        },
+                        "tokens": {
+                            "type": "object",
+                            "title": "Mes jetons",
+                            "properties": {
+                                "my_fs_tokens": {
+                                    "type": "string",
+                                    "title": "Jetons de crédit",
+                                    "template": "creditTokensCallbackFunction",
+                                    "watch": {
+                                        "tkn": "credit_tokens"
+                                    }
+                                },
+                                "refresh": {
+                                    "format": "info",
+                                    "title": "Rafraîchir",
+                                    "description": "Pour rafraîchir la quantité de vos jetons de crédit, veuillez appuyer sur le bouton ci-après."
+                                },
+                                "refreshFsTokensButton": {
+                                    "format": "button",
+                                    "title": "Rafraîchir",
+                                    "options": {
+                                        "button": {
+                                            "icon": "arrow-clockwise",
+                                            "action": "refreshFsTokens",
+                                            "validated": false
+                                        },
+                                        "containerAttributes": {
+                                            "class": "ion-margin-bottom"
+                                        }
+                                    }
+                                },
+                                "add": {
+                                    "format": "info",
+                                    "title": "Rajouter",
+                                    "description": "Pour rajouter des jetons à votre crédit, veuillez appuyer sur le bouton ci-après."
+                                },
+                                "addFsTokensButton": {
+                                    "format": "button",
+                                    "title": "Rajouter",
+                                    "options": {
+                                        "button": {
+                                            "icon": "cash-coin",
+                                            "action": "addFsTokens",
+                                            "validated": false
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
                     },
                     "format": "categories",
                     "basicCategoryTitle": "Informations",
@@ -480,6 +538,42 @@ let sellerFormTemplate = {
                     "manageSellerMedia" : async function (jseditor, e) {
                         const navigation = document.querySelector("ion-nav#navigation") 
                         await navigation.push("medias-or-publications-choice")
+
+                        fsGlobalVariable.sellerInfos = form.getValue()
+                    },
+                    "refreshFsTokens" : async function (jseditor, e) {
+                        // Get a reference to a node within the editor
+                        const creditTokens = form.getEditor('root.credit_tokens');
+
+                        // `getEditor` will return null if the path is invalid
+                        if (creditTokens) {
+                            let response = await myFs.getCreditTokensValue(apiUrl, session.seller_id)
+
+                            // console.log(response)
+
+                            if(response.ok) {
+                                creditTokens.setValue(response.creditTokens);
+
+                                console.log(creditTokens.getValue());
+
+                                setTimeout(() => {
+                                    editBtn.classList.remove("ion-hide")
+                                    undoBtn.classList.add("ion-hide")
+                                    saveBtn.classList.add("ion-hide")
+                                    lockBtn.classList.add("ion-hide")
+                                }, 100)
+                            }
+                            else {
+                                await Dialog.alert({
+                                    "title": `Erreur`,
+                                    "message": `${response.error}`
+                                })
+                            }
+                        }
+                    },
+                    "addFsTokens" : async function (jseditor, e) {
+                        const navigation = document.querySelector("ion-nav#navigation") 
+                        await navigation.push("buy-fs-tokens")
 
                         fsGlobalVariable.sellerInfos = form.getValue()
                     }
@@ -500,6 +594,13 @@ let sellerFormTemplate = {
                     }
                     
                     return latLng
+                },
+                "creditTokensCallbackFunction": (jseditor,e) => {
+                    let fst
+
+                    fst = `${e.tkn} FST`
+                    
+                    return fst
                 }
             }            
 
@@ -540,7 +641,9 @@ let sellerFormTemplate = {
             
             form.on('ready', async () => {
                 //get the seller infos  
-                const response = await myFs.getSellerInfos(apiUrl, session.seller_id)
+                let response = await myFs.getSellerInfos(apiUrl, session.seller_id)
+
+                response.sellerInfos.tokens = { "my_fs_tokens": "" }//juste pour la forme
 
                 if(response.ok) {                    
                     sellerInfos = response.sellerInfos

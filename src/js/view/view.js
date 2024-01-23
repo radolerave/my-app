@@ -30,6 +30,7 @@ export default class FsView {
         this.generateThisComponent(this.components.sellerSettings) 
         this.generateThisComponent(this.components.sellerPreferences) 
         this.generateThisComponent(this.components.sellerSearch) 
+        this.generateThisComponent(this.components.buyFsTokens) 
     }
 
     async skeleton() {
