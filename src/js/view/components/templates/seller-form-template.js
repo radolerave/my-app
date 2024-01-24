@@ -44,6 +44,12 @@ let sellerFormTemplate = {
 
         sellerFormActionsTemplate.logic()
 
+        const myAccountContent = document.querySelector("#my-account-template-content")
+
+        if(!myAccountContent.classList.contains("ion-hide")) {
+            myAccountContent.classList.add("ion-hide")
+        }
+
         const element = document.querySelector('#sellerForm');   
         let sellerInfos     
 
@@ -545,6 +551,10 @@ let sellerFormTemplate = {
                         // Get a reference to a node within the editor
                         const creditTokens = form.getEditor('root.credit_tokens');
 
+                        const sellerFormActions = document.querySelector("#seller-form-actions")
+
+                        sellerFormActions.classList.add("ion-hide")
+
                         // `getEditor` will return null if the path is invalid
                         if (creditTokens) {
                             let response = await myFs.getCreditTokensValue(apiUrl, session.seller_id)
@@ -561,6 +571,8 @@ let sellerFormTemplate = {
                                     undoBtn.classList.add("ion-hide")
                                     saveBtn.classList.add("ion-hide")
                                     lockBtn.classList.add("ion-hide")
+
+                                    sellerFormActions.classList.remove("ion-hide")
                                 }, 100)
                             }
                             else {
@@ -639,11 +651,13 @@ let sellerFormTemplate = {
                 document.querySelector("#mapDescription").classList.add("ion-hide")
             }
             
-            form.on('ready', async () => {
+            form.on('ready', async () => {                
                 //get the seller infos  
                 let response = await myFs.getSellerInfos(apiUrl, session.seller_id)
 
-                response.sellerInfos.tokens = { "my_fs_tokens": "" }//juste pour la forme
+                if(typeof response.sellerInfos != "undefined") {
+                    response.sellerInfos.tokens = { "my_fs_tokens": "" }//juste pour la forme
+                }
 
                 if(response.ok) {                    
                     sellerInfos = response.sellerInfos
@@ -658,6 +672,8 @@ let sellerFormTemplate = {
         
                     form.setValue(sellerInfos)
 
+                    myAccountContent.classList.remove("ion-hide")
+
                     const lastModificationDate = myFormatter.dateFormatter(lastEdit.replace(" ", "T"), true)
 
                     console.log(lastModificationDate)
@@ -666,9 +682,7 @@ let sellerFormTemplate = {
                 }
                 else 
                 {
-                    console.log(response.error)
-
-                    const myAccountContent = document.querySelector("#my-account-template-content")
+                    console.log(response.error)                    
 
                     if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
 
@@ -678,6 +692,8 @@ let sellerFormTemplate = {
                             <div>Vérifiez votre connexion!</div>
                         </div>
                     `
+
+                    myAccountContent.classList.remove("ion-hide")
                 }
                 //////////////////////////////
 
