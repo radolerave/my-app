@@ -8,6 +8,34 @@ import { Toast } from '@capacitor/toast'
 let mediaPublicationTemplate = {
     name: "media-publication-template",
     content: /*html*/`
+        <ion-card id="publication-settings">
+            <ion-card-content>
+                <ion-radio-group id="publication-type" value="1">
+                    <ion-grid class="">
+                        <ion-row>
+                            <ion-col class="ion-text-left" size="4">
+                                <ion-radio value="1" label-placement="end">Publication</ion-radio>
+                            </ion-col>
+                            <ion-col class="ion-text-center" size="4">
+                                <ion-radio value="2" label-placement="end">Annonce</ion-radio>
+                            </ion-col>
+                            <ion-col class="ion-text-right" size="4">
+                                <ion-radio value="3" label-placement="end">Actualité</ion-radio>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>                    
+                </ion-radio-group>
+
+                <ion-item class="ion-hide">
+                    <ion-input id="publication-validity-period" label="Validité : " type="number" min="1" placeholder="illimitée"></ion-input>&nbsp;jours
+                </ion-item>
+
+                <ion-item>
+                    <ion-text>Coût : <span id="cost-of-publication">1</span> FST</ion-text>
+                </ion-item>
+            </ion-card-content>
+        </ion-card>
+
         <div id="text-editor"></div>
 
         <div id="addMedias">
@@ -21,7 +49,7 @@ let mediaPublicationTemplate = {
         <style>
             #text-editor {
                 border: solid grey 1px;
-                height: 50vh;
+                height: 40vh;
             }
         </style>
     `,  
@@ -33,6 +61,60 @@ let mediaPublicationTemplate = {
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
         navigation.removeEventListener("ionNavDidChange", args.listener)
+
+        const publicationSettings = document.querySelector("#publication-settings")
+        const publicationType = document.querySelector("#publication-type")
+        const publicationValidityPeriod = document.querySelector("#publication-validity-period")
+        const costOfPublication = document.querySelector("#cost-of-publication")
+
+        const publicationRateInfos = await myFs.getPublicationRate(apiUrl)
+        const costs = publicationRateInfos.publicationRate
+
+        console.log(costs)
+
+        function costCalculation() {
+            if(isNaN(parseInt(publicationValidityPeriod.value)) || parseInt(publicationValidityPeriod.value) <= 0) {
+                publicationValidityPeriod.value = 1
+            }
+
+            const validity = parseInt(publicationValidityPeriod.value)
+            const rate = costs.find(element => element.id === parseInt(publicationType.value))
+            const cost = rate.unit_price
+
+            if(publicationType.value != 1) { //announcement or news
+                costOfPublication.textContent = cost * validity
+            }
+            else { //publication
+                costOfPublication.textContent = cost
+            }
+        }
+
+        publicationType.addEventListener("ionChange", (e) => {
+            const rate = costs.find(element => element.id === parseInt(e.target.value))
+            const cost = rate.unit_price
+
+            costOfPublication.textContent = cost
+
+            switch(parseInt(e.target.value)) {
+                case 1: //publication
+                    if(!publicationValidityPeriod.parentElement.classList.contains("ion-hide")) {
+                        publicationValidityPeriod.parentElement.classList.add("ion-hide")
+                    }
+                    break
+
+                default: //announcement or news
+                    if(publicationValidityPeriod.parentElement.classList.contains("ion-hide")) {
+                        publicationValidityPeriod.parentElement.classList.remove("ion-hide")
+                    }
+
+                    costCalculation()
+                    break
+            }
+        })
+
+        publicationValidityPeriod.addEventListener("ionInput", () => {
+            costCalculation()
+        })
 
         let toolbarOptions = [
             [{ 'header': 1 }, { 'header': 2 }], // custom button values
@@ -115,6 +197,8 @@ let mediaPublicationTemplate = {
         }
 
         publish.addEventListener("click", async () => {
+            alert("confirmer coût avant validation")
+
             publish.classList.add("ion-hide")
             
             let sMedias = []
@@ -140,7 +224,9 @@ let mediaPublicationTemplate = {
                     publication: JSON.stringify({
                         textToPublish: fsGlobalVariable.textToPublish,
                         selectedMedias: sMedias
-                    })
+                    }),
+                    type: publicationType.value,
+                    validity: parseInt(publicationType.value) != 1 ? publicationValidityPeriod.value : 0
                 },
                 publicationId: publicationId
             }

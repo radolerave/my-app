@@ -119,6 +119,13 @@ export default class Fs {
         return response
     }
 
+    async getPublicationRate(apiUrl) {
+        const response = await this.fsDb.getPublicationRate(apiUrl)
+        
+        return response
+    }
+
+
     async getData(params) {
         let countrySearchActivated = (params.where.country.length == 0)
         let nameSearchActivated = (params.where.name.length == 0)

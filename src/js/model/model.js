@@ -714,4 +714,29 @@ export default class FsDb {
 
         return ret
     }
+
+    async getPublicationRate(apiUrl) {
+        let ret = {}
+        let publicationRate, date
+
+        try {
+            publicationRate = await fetch(`${apiUrl}/publication_rate`)
+
+            date = new Date(publicationRate.headers.get("date"))
+
+            publicationRate = await publicationRate.json()
+
+            ret.ok = true
+            ret.date = date
+            ret.publicationRate = publicationRate.records
+        }
+        catch(err) {
+            ret.ok = false
+            ret.date = undefined
+            ret.publicationRate = undefined
+            ret.error = err
+        }
+
+        return ret
+    }
 }
