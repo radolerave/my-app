@@ -165,7 +165,9 @@ let sellerPublicationCardTemplate = {
             textToPublish: data.publication.textToPublish,
             shortText: shortText,
             selectedMedias: data.publication.selectedMedias,
-            publicationId: data.id
+            publicationId: data.id,
+            publicationType: data.type,
+            publicationValidity: data.validity
         }
     }
 }

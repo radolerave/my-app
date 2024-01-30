@@ -2,13 +2,15 @@ import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js'
+import FsHelper from "../../../helpers/fsHelper.js"
+
 import { Dialog } from '@capacitor/dialog';
 import { Toast } from '@capacitor/toast'
 
 let mediaPublicationTemplate = {
     name: "media-publication-template",
     content: /*html*/`
-        <ion-card id="publication-settings">
+        <ion-card id="publication-settings" disabled="true">
             <ion-card-content>
                 <ion-radio-group id="publication-type" value="1">
                     <ion-grid class="">
@@ -26,8 +28,8 @@ let mediaPublicationTemplate = {
                     </ion-grid>                    
                 </ion-radio-group>
 
-                <ion-item class="ion-hide">
-                    <ion-input id="publication-validity-period" label="Validité : " type="number" min="1" placeholder="illimitée"></ion-input>&nbsp;jours
+                <ion-item>
+                    <ion-input id="publication-validity-period" label="Validité : " type="number" min="1" placeholder="1" value="1"></ion-input>&nbsp;jours
                 </ion-item>
 
                 <ion-item>
@@ -56,12 +58,14 @@ let mediaPublicationTemplate = {
     logic: async (args) => {
         const apiUrl = fsConfig.apiUrl
         let myFs = new Fs(FsDb, Dexie)
+        let myFsHelper = new FsHelper()
 
         console.log(args)    
 
         const navigation = document.querySelector("ion-app ion-nav#navigation")
         navigation.removeEventListener("ionNavDidChange", args.listener)
-
+        
+        const publish = document.querySelector("media-publication #publish")
         const publicationSettings = document.querySelector("#publication-settings")
         const publicationType = document.querySelector("#publication-type")
         const publicationValidityPeriod = document.querySelector("#publication-validity-period")
@@ -73,43 +77,20 @@ let mediaPublicationTemplate = {
         console.log(costs)
 
         function costCalculation() {
-            if(isNaN(parseInt(publicationValidityPeriod.value)) || parseInt(publicationValidityPeriod.value) <= 0) {
-                publicationValidityPeriod.value = 1
-            }
+            let validity = parseInt(publicationValidityPeriod.value)
 
-            const validity = parseInt(publicationValidityPeriod.value)
+            if(isNaN(parseInt(validity)) || parseInt(validity) <= 0) {
+                validity = 1
+            }
+            
             const rate = costs.find(element => element.id === parseInt(publicationType.value))
             const cost = rate.unit_price
 
-            if(publicationType.value != 1) { //announcement or news
-                costOfPublication.textContent = cost * validity
-            }
-            else { //publication
-                costOfPublication.textContent = cost
-            }
+            costOfPublication.textContent = cost * validity
         }
 
         publicationType.addEventListener("ionChange", (e) => {
-            const rate = costs.find(element => element.id === parseInt(e.target.value))
-            const cost = rate.unit_price
-
-            costOfPublication.textContent = cost
-
-            switch(parseInt(e.target.value)) {
-                case 1: //publication
-                    if(!publicationValidityPeriod.parentElement.classList.contains("ion-hide")) {
-                        publicationValidityPeriod.parentElement.classList.add("ion-hide")
-                    }
-                    break
-
-                default: //announcement or news
-                    if(publicationValidityPeriod.parentElement.classList.contains("ion-hide")) {
-                        publicationValidityPeriod.parentElement.classList.remove("ion-hide")
-                    }
-
-                    costCalculation()
-                    break
-            }
+            costCalculation()
         })
 
         publicationValidityPeriod.addEventListener("ionInput", () => {
@@ -147,9 +128,23 @@ let mediaPublicationTemplate = {
         fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias
         const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
         const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
+        const publicationTypeValue = typeof args.currentPage.params.publicationType != "undefined" ? args.currentPage.params.publicationType : 1
+        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 0
         let selectedMedias = fsGlobalVariable.selectedMedias
         const mediaList = document.querySelector("#media-list")
         let nbrOfSelectedMedias = selectedMedias.length
+
+        if(operationType == "update") {
+            publicationType.setAttribute("value", publicationTypeValue)
+            publicationValidityPeriod.setAttribute("value", publicationValidityValue)
+            
+            costCalculation()
+
+            console.log(publicationTypeValue)
+        }
+        else {
+            publicationSettings.removeAttribute("disabled")
+        }
 
         selectedMedias.forEach((element, key) => {
             const copyOfTheElement = document.importNode(element, true)
@@ -179,9 +174,7 @@ let mediaPublicationTemplate = {
             })
 
             mediaList.appendChild(copyOfTheElement)
-        })
-
-        const publish = document.querySelector("media-publication #publish")
+        })        
 
         const showHidePublishBtn = () => {
             if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
@@ -226,7 +219,7 @@ let mediaPublicationTemplate = {
                         selectedMedias: sMedias
                     }),
                     type: publicationType.value,
-                    validity: parseInt(publicationType.value) != 1 ? publicationValidityPeriod.value : 0
+                    validity: publicationValidityPeriod.value
                 },
                 publicationId: publicationId
             }
@@ -239,6 +232,9 @@ let mediaPublicationTemplate = {
 
             switch(operationType) {
                 case "update":
+                    delete finalData.updatedData.type//will not be considered
+                    delete finalData.updatedData.validity//will not be considered
+
                     response = await myFs.updatePublication(apiUrl, finalData)
                     break;
 
@@ -261,7 +257,7 @@ let mediaPublicationTemplate = {
 
         fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
 
-        showHidePublishBtn()
+        if(operationType != "update") { showHidePublishBtn() }
 
         fsGlobalVariable.quill.on('editor-change', function(eventName, ...args) {
             // if (eventName === 'text-change') {
@@ -270,13 +266,13 @@ let mediaPublicationTemplate = {
             //     console.log('selection-change', args)
             // }
 
-            const content = fsGlobalVariable.quill.getContents()
+            const content = fsGlobalVariable.quill.getContents()            
 
-            fsGlobalVariable.textToPublish = content
-
-            // console.log(content)
-
-            showHidePublishBtn()
+            if(eventName === 'text-change') { 
+                console.log(content)
+                fsGlobalVariable.textToPublish = content
+                showHidePublishBtn() 
+            }
         })
 
         const addMediasBtn = document.querySelector("#addMediasBtn")

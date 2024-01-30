@@ -5,6 +5,8 @@ import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js';
 
+import { DateTime } from "luxon"
+
 import { Dialog } from '@capacitor/dialog';
 import { Toast } from '@capacitor/toast'
 
@@ -133,7 +135,9 @@ let sellerPublicationsManagementTemplate = {
                             await navigation.push("media-publication", {
                                 selectedMedias: card.querySelectorAll("media"),
                                 operationType: "update",
-                                publicationId: data.publicationId
+                                publicationId: data.publicationId,
+                                publicationType: data.publicationType,
+                                publicationValidity: data.publicationValidity
                             })
 
                             let currentPage = await navigation.getActive()
@@ -238,10 +242,13 @@ let sellerPublicationsManagementTemplate = {
                             }
                         })
 
-                        fsPublicationMoreOptionsInformations.addEventListener("click", async () => {                        
+                        fsPublicationMoreOptionsInformations.addEventListener("click", async () => {     
+                            const dateAdd = new Date(value.date_add)      
+                            const deadline = DateTime.fromJSDate(dateAdd).plus({ days: parseInt(value.validity) }).toFormat('yyyy-LL-dd HH:mm:ss');
+                            
                             await Dialog.alert({
                                 "title": `Informations`,
-                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDate limite : ${value.deadline}\nDernière mise à jour : ${value.last_edit}`
+                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDate limite : ${deadline}\nDernière mise à jour : ${value.last_edit}`
                             })
 
                             fsPublicationMoreOptionsPopover.isOpen = false
