@@ -1,4 +1,5 @@
 let fsConfig = {
+    serverUrl: "https://server2.atria.local/findseller",
     apiUrl: "https://server2.atria.local/findseller/api.php/records",
     patterns: {
         password: /.{1,}/g,

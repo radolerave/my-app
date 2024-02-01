@@ -83,6 +83,7 @@ let mediaActionsTemplate = {
     `,
     logic: async (args) => {
         const navigation = document.querySelector("ion-app ion-nav#navigation")
+        const serverUrl = fsConfig.serverUrl
 
         let allMylightGalleries = args.allMylightGalleries
         let lightGalleryForImages, lightGalleryForVideos
@@ -185,7 +186,7 @@ let mediaActionsTemplate = {
             .use(Dashboard, { inline: true, target: '#uppy-dashboard-content'})
             .use(ImageEditor, { target: Dashboard })
             .use(XHR, { 
-                endpoint: 'https://server2.atria.local/findseller/upload.php',
+                endpoint: `${serverUrl}/upload.php`,
                 fieldName: 'my_fs_file',
             });      
 
@@ -307,7 +308,7 @@ let mediaActionsTemplate = {
                     formData.append("seller_id", fsGlobalVariable.session.seller_id)
 
                     try {
-                        const response = await fetch("https://server2.atria.local/findseller/delete.php", {
+                        const response = await fetch(`${serverUrl}/delete.php`, {
                             method: "POST",
                             body: formData,
                         });

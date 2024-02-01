@@ -29,6 +29,8 @@
     "@cloudinary/url-gen": "^1.11.2",
     "@ionic/core": "^7.3.3",
     "@json-editor/json-editor": "^2.10.1",
+    "@maskito/core": "^2.0.1",
+    "@maskito/kit": "^2.0.1",
     "@uppy/core": "^3.8.0",
     "@uppy/dashboard": "^3.7.1",
     "@uppy/image-editor": "^2.4.0",

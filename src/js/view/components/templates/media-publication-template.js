@@ -4,6 +4,9 @@ import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js'
 import FsHelper from "../../../helpers/fsHelper.js"
 
+import { Maskito, maskitoTransform } from '@maskito/core';
+import { maskitoNumberOptionsGenerator, maskitoParseNumber } from '@maskito/kit';
+
 import { Dialog } from '@capacitor/dialog';
 import { Toast } from '@capacitor/toast'
 
@@ -29,11 +32,11 @@ let mediaPublicationTemplate = {
                 </ion-radio-group>
 
                 <ion-item>
-                    <ion-input id="publication-validity-period" label="Validité : " type="number" min="1" placeholder="1" value="1"></ion-input>&nbsp;jours
+                    <ion-input id="publication-validity-period" label="Validité : " min="1" placeholder="1" value="1"></ion-input>&nbsp;jours
                 </ion-item>
 
                 <ion-item>
-                    <ion-text>Coût : <span id="cost-of-publication">1</span> FST</ion-text>
+                    <ion-text>Coût : <span id="cost-of-publication">1</span></ion-text>
                 </ion-item>
             </ion-card-content>
         </ion-card>
@@ -57,6 +60,7 @@ let mediaPublicationTemplate = {
     `,  
     logic: async (args) => {
         const apiUrl = fsConfig.apiUrl
+        const serverUrl = fsConfig.serverUrl
         let myFs = new Fs(FsDb, Dexie)
         let myFsHelper = new FsHelper()
 
@@ -71,29 +75,58 @@ let mediaPublicationTemplate = {
         const publicationValidityPeriod = document.querySelector("#publication-validity-period")
         const costOfPublication = document.querySelector("#cost-of-publication")
 
+        const publicationValidityPeriodNativeEl = await publicationValidityPeriod.getInputElement()
+
+        new Maskito(publicationValidityPeriodNativeEl, maskitoNumberOptionsGenerator({
+            decimalSeparator: '.',
+            thousandSeparator: ' ',
+            precision: 0,
+            max: 3650,
+            min: 0,//will be valued as 1 in the cost calculation
+        }))
+
+        // Call this function when the element is detached from DOM
+	    // maskedInput.destroy();
+
         const publicationRateInfos = await myFs.getPublicationRate(apiUrl)
         const costs = publicationRateInfos.publicationRate
 
         console.log(costs)
 
         function costCalculation() {
-            let validity = parseInt(publicationValidityPeriod.value)
+            let validity = publicationValidityPeriod.value
 
-            if(isNaN(parseInt(validity)) || parseInt(validity) <= 0) {
+            validity = maskitoParseNumber(validity, '.')
+
+            console.log(validity)
+
+            if(isNaN(validity) || validity <= 0) {
                 validity = 1
+            }
+            else {
+                validity = parseInt(validity)
             }
             
             const rate = costs.find(element => element.id === parseInt(publicationType.value))
-            const cost = rate.unit_price
+            const unitPrice = rate.unit_price
+            const cost = unitPrice * validity
 
-            costOfPublication.textContent = cost * validity
+            costOfPublication.textContent = maskitoTransform((cost).toString(), maskitoNumberOptionsGenerator({ 
+                decimalSeparator: '.',
+                thousandSeparator: ' ',
+                decimalZeroPadding: true,
+                precision: 2, 
+                postfix: ' FST',
+            }))
+
+            return cost
         }
 
         publicationType.addEventListener("ionChange", (e) => {
             costCalculation()
         })
 
-        publicationValidityPeriod.addEventListener("ionInput", () => {
+        publicationValidityPeriod.addEventListener("ionInput", (e) => {
             costCalculation()
         })
 
@@ -189,11 +222,7 @@ let mediaPublicationTemplate = {
             }
         }
 
-        publish.addEventListener("click", async () => {
-            alert("confirmer coût avant validation")
-
-            publish.classList.add("ion-hide")
-            
+        async function publishFn() {
             let sMedias = []
 
             fsGlobalVariable.selectedMedias.forEach((element, index) => {
@@ -253,6 +282,72 @@ let mediaPublicationTemplate = {
                     "message": `${response.errorText}`
                 })
             }
+        }
+
+        publish.addEventListener("click", async () => {
+            // alert("confirmer coût avant validation")
+
+            publish.classList.add("ion-hide")
+
+            const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+            let myCreditTokens = undefined
+
+            if(typeof ct.creditTokens == "number") {
+                myCreditTokens = ct.creditTokens
+            }
+
+            const cost = costCalculation()
+
+            console.log({
+                "credit" : myCreditTokens,
+                "pubCost" : cost
+            })
+
+            if(parseFloat(myCreditTokens) < parseFloat(cost)) {
+                alert("not enough money!")
+            }
+
+            // let formData = new FormData()
+
+            // formData.append("filesToBeDeleted", JSON.stringify(filesToBeDeleted))
+            // formData.append("seller_id", fsGlobalVariable.session.seller_id)
+            
+            // try {
+            //     const response = await fetch(`${serverUrl}/delete.php`, {
+            //         method: "POST",
+            //         body: formData,
+            //     });
+
+            //     if(response.ok) {
+            //         // console.log(response)
+            //         const result = await response.json();
+            //         // console.log(result);
+
+            //         if(result.ok) {
+            //             await Toast.show({
+            //                 text: result.message,
+            //                 position: "bottom"
+            //             })
+
+            //             console.log("Success: ", result.message)
+            //         }
+            //         else {
+            //             await Toast.show({
+            //                 text: result.message,
+            //                 position: "bottom"
+            //             })
+
+            //             console.log("Error: ", result.message)
+            //         }
+            //     }
+            //     else {
+            //         console.log("Error:", response)
+            //     }                                    
+            // } catch (error) {
+            //     console.error("Error:", error);
+            // }
+
+            // await publishFn()
         })
 
         fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
