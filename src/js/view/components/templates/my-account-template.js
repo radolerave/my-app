@@ -5,7 +5,7 @@ import { myAccountTemplate as self } from './my-account-template.js';
 let myAccountTemplate = {
     name: "my-account-template",
     content: /*html*/`                
-        <div id="my-account-template-content" class="notConnected ion-hide">This is the content for my account.</div>
+        <div id="my-account-template-content" class="notConnected">This is the content for my account.</div>
 
         <style>
             #my-account-template-content.notConnected {

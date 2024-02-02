@@ -277,16 +277,52 @@ let mediaPublicationTemplate = {
                 await navigation.push("seller-publications-management")
             }
             else {
-                await Dialog.alert({
-                    "title": `Erreur`,
-                    "message": `${response.errorText}`
-                })
+                throw new Error(response.errorText)                
             }
         }
 
-        publish.addEventListener("click", async () => {
-            // alert("confirmer coût avant validation")
+        async function backendPaymentOperation(paymentDetails) {
+            console.log(paymentDetails)
+            
+            let paymentOk = false 
+            let formData = new FormData()
 
+            formData.append("payment_details", JSON.stringify({
+                "supposed_credit_tokens_value": paymentDetails.credit,
+                "pub_cost": paymentDetails.pubCost
+            }))
+            
+            try {
+                const response = await fetch(`${serverUrl}/payment.php`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if(response.ok) {
+                    // console.log(response)
+                    const result = await response.json();
+                    // console.log(result);
+
+                    if(result.ok) {
+                        paymentOk = true
+
+                        console.log("Success: ", result.message)
+                    }
+                    else {
+                        throw new Error(result.message)
+                    }
+                }
+                else {
+                    throw new Error(response.message)
+                }                                    
+            } catch (error) {
+                console.error(error);
+            }
+
+            return paymentOk
+        }
+
+        publish.addEventListener("click", async () => {
             publish.classList.add("ion-hide")
 
             const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
@@ -298,56 +334,71 @@ let mediaPublicationTemplate = {
 
             const cost = costCalculation()
 
-            console.log({
+            const paymentDetails = {
                 "credit" : myCreditTokens,
                 "pubCost" : cost
-            })
+            }                                   
 
             if(parseFloat(myCreditTokens) < parseFloat(cost)) {
                 alert("not enough money!")
             }
-
-            // let formData = new FormData()
-
-            // formData.append("filesToBeDeleted", JSON.stringify(filesToBeDeleted))
-            // formData.append("seller_id", fsGlobalVariable.session.seller_id)
+            else {
+                try {
+                    if(operationType == "update") {
+                        const confirmation = await Dialog.confirm({
+                            title: 'Modification',
+                            message: `Voulez-vous confirmer cette action ?`,
+                            okButtonTitle: "oui",
+                            cancelButtonTitle: "non",
+                        })
             
-            // try {
-            //     const response = await fetch(`${serverUrl}/delete.php`, {
-            //         method: "POST",
-            //         body: formData,
-            //     });
+                        if(confirmation.value) {
+                            await publishFn()
+                        }
+                        else {
+                            publish.classList.remove("ion-hide")
+                        }
+                    }
+                    else {
+                        const confirmation = await Dialog.confirm({
+                            title: 'Confirmation de paiement',
+                            message: `Le coût de cette publication est de : ${paymentDetails.pubCost} FST.\nVotre solde de crédit est de : ${paymentDetails.credit} FST\n\nVoulez-vous confirmer cette action ?`,
+                            okButtonTitle: "oui",
+                            cancelButtonTitle: "non",
+                        })
+            
+                        if(confirmation.value) {
+                            if(await backendPaymentOperation(paymentDetails)) {
+                                await publishFn()
+                            }
+                            else {
+                                await Dialog.alert({
+                                    title: "Erreur",
+                                    message: "Une erreur inconnue s'est produite!\nLa publication est annulée."
+                                })
+                                //rollback ......
+                            }
+                        }
+                        else {
+                            publish.classList.remove("ion-hide")
+                            
+                            await Toast.show({
+                                text: `Action annulée!`
+                            })
+                        }                        
+                    }
+                }
+                catch(err) {
+                    await Dialog.alert({
+                        title: "Erreur",
+                        message: err
+                    })
 
-            //     if(response.ok) {
-            //         // console.log(response)
-            //         const result = await response.json();
-            //         // console.log(result);
-
-            //         if(result.ok) {
-            //             await Toast.show({
-            //                 text: result.message,
-            //                 position: "bottom"
-            //             })
-
-            //             console.log("Success: ", result.message)
-            //         }
-            //         else {
-            //             await Toast.show({
-            //                 text: result.message,
-            //                 position: "bottom"
-            //             })
-
-            //             console.log("Error: ", result.message)
-            //         }
-            //     }
-            //     else {
-            //         console.log("Error:", response)
-            //     }                                    
-            // } catch (error) {
-            //     console.error("Error:", error);
-            // }
-
-            // await publishFn()
+                    //rollback ...... if new pub
+                    
+                    console.error(err)
+                }
+            }             
         })
 
         fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
