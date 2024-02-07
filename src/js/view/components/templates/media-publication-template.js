@@ -36,7 +36,7 @@ let mediaPublicationTemplate = {
                 </ion-item>
 
                 <ion-item>
-                    <ion-text>Coût : <span id="cost-of-publication">1</span></ion-text>
+                    <ion-text>Coût : <span id="cost-of-publication">1 FST</span></ion-text>
                 </ion-item>
             </ion-card-content>
         </ion-card>
@@ -281,15 +281,48 @@ let mediaPublicationTemplate = {
             }
         }
 
+        async function rollBack(paymentDetails) {//set credit_tokens to the previous value
+            const resp = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+
+            // console.log(resp)
+
+            if(parseFloat(resp.creditTokens) != parseFloat(paymentDetails.credit)) {
+                let finalData = {
+                    credentials: {
+                        "sellerId" : fsGlobalVariable.session.seller_id,
+                        "email": fsGlobalVariable.session.email,
+                        "password": fsGlobalVariable.session.password,
+                        "accountId": fsGlobalVariable.session.id
+                    },
+                    updatedData: {
+                        credit_tokens: paymentDetails.credit
+                    }
+                }                
+    
+                // console.log(finalData)            
+    
+                const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
+                
+                if(!response.ok) {
+                    await Dialog.alert({
+                        "title": `Erreur`,
+                        "message": `${response.errorText}`
+                    })
+                }
+            }                        
+        }
+
         async function backendPaymentOperation(paymentDetails) {
             console.log(paymentDetails)
             
-            let paymentOk = false 
+            let paymentOk = false
+
             let formData = new FormData()
 
             formData.append("payment_details", JSON.stringify({
                 "supposed_credit_tokens_value": paymentDetails.credit,
-                "pub_cost": paymentDetails.pubCost
+                "pub_cost": paymentDetails.pubCost,
+                "id": fsGlobalVariable.session.seller_id
             }))
             
             try {
@@ -305,8 +338,6 @@ let mediaPublicationTemplate = {
 
                     if(result.ok) {
                         paymentOk = true
-
-                        console.log("Success: ", result.message)
                     }
                     else {
                         throw new Error(result.message)
@@ -316,7 +347,7 @@ let mediaPublicationTemplate = {
                     throw new Error(response.message)
                 }                                    
             } catch (error) {
-                console.error(error);
+                throw new Error(error)
             }
 
             return paymentOk
@@ -337,67 +368,86 @@ let mediaPublicationTemplate = {
             const paymentDetails = {
                 "credit" : myCreditTokens,
                 "pubCost" : cost
-            }                                   
-
-            if(parseFloat(myCreditTokens) < parseFloat(cost)) {
-                alert("not enough money!")
-            }
-            else {
-                try {
-                    if(operationType == "update") {
-                        const confirmation = await Dialog.confirm({
-                            title: 'Modification',
-                            message: `Voulez-vous confirmer cette action ?`,
-                            okButtonTitle: "oui",
-                            cancelButtonTitle: "non",
-                        })
+            }         
             
-                        if(confirmation.value) {
-                            await publishFn()
-                        }
-                        else {
-                            publish.classList.remove("ion-hide")
-                        }
-                    }
-                    else {
-                        const confirmation = await Dialog.confirm({
-                            title: 'Confirmation de paiement',
-                            message: `Le coût de cette publication est de : ${paymentDetails.pubCost} FST.\nVotre solde de crédit est de : ${paymentDetails.credit} FST\n\nVoulez-vous confirmer cette action ?`,
-                            okButtonTitle: "oui",
-                            cancelButtonTitle: "non",
-                        })
-            
-                        if(confirmation.value) {
+            if(operationType != "update") {//new publication
+                if(parseFloat(myCreditTokens) < parseFloat(cost)) {
+                    await Dialog.alert({
+                        title: "Avertissement",
+                        message: "Vous n'avez pas assez de crédits pour cette publication."
+                    }) 
+    
+                    publish.classList.remove("ion-hide")
+                }
+                else {
+                    const confirmation = await Dialog.confirm({
+                        title: 'Confirmation de paiement',
+                        message: `Le coût de cette publication est de : ${paymentDetails.pubCost} FST.\nVotre solde de crédit est de : ${paymentDetails.credit} FST\n\nVoulez-vous confirmer cette action ?`,
+                        okButtonTitle: "oui",
+                        cancelButtonTitle: "non",
+                    })
+        
+                    if(confirmation.value) {
+                        try {
                             if(await backendPaymentOperation(paymentDetails)) {
-                                await publishFn()
+                                try {
+                                    await publishFn()
+                                }
+                                catch(err) {
+                                    //rollback ......
+                                    await rollBack(paymentDetails)
+                                    
+                                    await Dialog.alert({
+                                        title: "Erreur",
+                                        message: "Une erreur s'est produite!\nLe paiement a été annulé."
+                                    })                                    
+                                }
                             }
                             else {
                                 await Dialog.alert({
                                     title: "Erreur",
-                                    message: "Une erreur inconnue s'est produite!\nLa publication est annulée."
-                                })
-                                //rollback ......
+                                    message: "Une erreur s'est produite!\nLa publication est annulée."
+                                })                                
                             }
                         }
-                        else {
-                            publish.classList.remove("ion-hide")
-                            
-                            await Toast.show({
-                                text: `Action annulée!`
-                            })
-                        }                        
+                        catch(err) {
+                            await Dialog.alert({
+                                title: "Erreur",
+                                message: err
+                            }) 
+                        }
+                    }
+                    else {
+                        publish.classList.remove("ion-hide")
+                        
+                        await Toast.show({
+                            text: `Action annulée!`
+                        })
                     }
                 }
-                catch(err) {
-                    await Dialog.alert({
-                        title: "Erreur",
-                        message: err
-                    })
-
-                    //rollback ...... if new pub
-                    
-                    console.error(err)
+            }
+            else {                
+                const confirmation = await Dialog.confirm({
+                    title: 'Modification',
+                    message: `Voulez-vous confirmer cette action ?`,
+                    okButtonTitle: "oui",
+                    cancelButtonTitle: "non",
+                })
+    
+                if(confirmation.value) {
+                    try {
+                        await publishFn()
+                    }
+                    catch(err) {//no need to rollback
+                        await Dialog.alert({
+                            title: "Erreur",
+                            message: err
+                        }) 
+                    }
                 }
+                else {
+                    publish.classList.remove("ion-hide")
+                }            
             }             
         })
 
