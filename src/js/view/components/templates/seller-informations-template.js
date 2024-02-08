@@ -136,6 +136,10 @@ let sellerInformationsTemplate = {
             theSellerHourly += `<ion-text> à ${element.to}</ion-text>`
           }
 
+          if(typeof element.description != "undefined" && element.description.length > 0) {
+            theSellerHourly += `<ion-text> (${element.description})</ion-text>`
+          }
+
           theSellerHourly += `</p>`
         });        
 

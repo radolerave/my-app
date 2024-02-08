@@ -290,7 +290,7 @@ let sellerFormTemplate = {
                         },
                         "hourly": {
                             "type": "object",
-                            "title": "Horaires d'ouverture",
+                            "title": "Horaires",
                             "properties": hourly
                         },
                         "calendar": {
@@ -562,11 +562,18 @@ let sellerFormTemplate = {
                             // console.log(response)
 
                             if(response.ok) {
+                                undoBtn.click()
+                                
                                 creditTokens.setValue(response.creditTokens);
 
                                 console.log(creditTokens.getValue());
 
                                 setTimeout(() => {
+                                    editBtn.classList.remove("ion-hide")
+                                    undoBtn.classList.add("ion-hide")
+                                    saveBtn.classList.add("ion-hide")
+                                    lockBtn.classList.add("ion-hide")
+
                                     sellerFormActions.classList.remove("ion-hide")
                                 }, 100)
                             }

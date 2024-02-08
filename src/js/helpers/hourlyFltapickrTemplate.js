@@ -33,6 +33,11 @@ let hourlyFltapickr = {
             "format": "time",
             "title": "à",
             "options": fstime
+        },
+        "description": {
+            "type": "string",
+            "format": "textarea",
+            "title": "Description"
         }
     },
     "format": "grid"
