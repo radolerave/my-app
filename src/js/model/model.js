@@ -389,7 +389,7 @@ export default class FsDb {
             if(await this.silentSignIn(url)) {//credentials must be verified
                 const sellerId = args.sellerId
 
-                let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&order=last_edit,desc`)
+                let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
 
                 dateOperation = new Date(publicationsList.headers.get("date"))
 
@@ -435,7 +435,7 @@ export default class FsDb {
         try {
             const sellerId = args.sellerId
 
-            let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
+            let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&filter=published,eq,1&order=last_edit,desc`)
 
             dateOperation = new Date(publicationsList.headers.get("date"))
 

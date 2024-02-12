@@ -113,11 +113,11 @@ let sellerPublicationCardTemplate = {
                                     <ion-icon name="trash-outline" slot="start"></ion-icon>
                                     <ion-label>Supprimer</ion-label>
                                 </ion-item>
-                                <ion-item button disabled="true" class="fsPublicationMoreOptionsEnable">
+                                <ion-item button disabled="true" class="fsPublicationMoreOptionsPublish">
                                     <ion-icon name="share-outline" slot="start"></ion-icon>
                                     <ion-label>Publier</ion-label>
                                 </ion-item>
-                                <ion-item button disabled="true" class="fsPublicationMoreOptionsDisable">
+                                <ion-item button disabled="true" class="fsPublicationMoreOptionsUnpublish">
                                     <ion-icon name="contract-outline" slot="start"></ion-icon>
                                     <ion-label>Dé-publier</ion-label>
                                 </ion-item>

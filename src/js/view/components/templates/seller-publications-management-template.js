@@ -100,8 +100,8 @@ let sellerPublicationsManagementTemplate = {
                     const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
                     const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
                     const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
-                    const fsPublicationMoreOptionsEnable = card.querySelector(".fsPublicationMoreOptionsEnable")
-                    const fsPublicationMoreOptionsDisable = card.querySelector(".fsPublicationMoreOptionsDisable")
+                    const fsPublicationMoreOptionsPublish = card.querySelector(".fsPublicationMoreOptionsPublish")
+                    const fsPublicationMoreOptionsUnpublish = card.querySelector(".fsPublicationMoreOptionsUnpublish")
                     const fsPublicationAction1 = card.querySelector(".fsPublicationAction1")
                     const fsPublicationAction2 = card.querySelector(".fsPublicationAction2")
 
@@ -111,13 +111,13 @@ let sellerPublicationsManagementTemplate = {
                         fsPublicationAction2.remove()
                     }
                     else {                        
-                        if(value.enabled) {
-                            fsPublicationMoreOptionsDisable.setAttribute("disabled", "false")
-                            fsPublicationMoreOptionsEnable.setAttribute("disabled", "true")
+                        if(value.published) {
+                            fsPublicationMoreOptionsUnpublish.setAttribute("disabled", "false")
+                            fsPublicationMoreOptionsPublish.setAttribute("disabled", "true")
                         }
                         else {
-                            fsPublicationMoreOptionsDisable.setAttribute("disabled", "true")
-                            fsPublicationMoreOptionsEnable.setAttribute("disabled", "false")
+                            fsPublicationMoreOptionsUnpublish.setAttribute("disabled", "true")
+                            fsPublicationMoreOptionsPublish.setAttribute("disabled", "false")
                         }
                         
                         fsPublicationMoreOptions.addEventListener("click", (e) => {
@@ -174,7 +174,7 @@ let sellerPublicationsManagementTemplate = {
                             }
                         })
 
-                        fsPublicationMoreOptionsEnable.addEventListener("click", async () => {
+                        fsPublicationMoreOptionsPublish.addEventListener("click", async () => {
                             const confirmation = await Dialog.confirm({
                                 title: 'Confirmation',
                                 message: `Voulez-vous vraiment activer cette publication ?`,
@@ -185,7 +185,7 @@ let sellerPublicationsManagementTemplate = {
                             if(confirmation.value) {
                                 const response = await myFs.updatePublication(apiUrl, { 
                                     updatedData: {
-                                        enabled: 1
+                                        published: 1
                                     },
                                     publicationId: data.publicationId
                                 })
@@ -208,7 +208,7 @@ let sellerPublicationsManagementTemplate = {
                             }
                         })
 
-                        fsPublicationMoreOptionsDisable.addEventListener("click", async () => {
+                        fsPublicationMoreOptionsUnpublish.addEventListener("click", async () => {
                             const confirmation = await Dialog.confirm({
                                 title: 'Confirmation',
                                 message: `Voulez-vous vraiment désactiver cette publication ?`,
@@ -219,7 +219,7 @@ let sellerPublicationsManagementTemplate = {
                             if(confirmation.value) {
                                 const response = await myFs.updatePublication(apiUrl, { 
                                     updatedData: {
-                                        enabled: 0
+                                        published: 0
                                     },
                                     publicationId: data.publicationId
                                 })
@@ -248,7 +248,7 @@ let sellerPublicationsManagementTemplate = {
                             
                             await Dialog.alert({
                                 "title": `Informations`,
-                                "message": `Cette publication est : ${value.enabled ? "activée" : "désactivée"}\nDate d'ajout : ${value.date_add}\nDate limite : ${deadline}\nDernière mise à jour : ${value.last_edit}`
+                                "message": `Etat : ${value.published ? "publié" : "non publié"}\nDate d'ajout : ${value.date_add}\nDate limite : ${deadline}\nDernière mise à jour : ${value.last_edit}`
                             })
 
                             fsPublicationMoreOptionsPopover.isOpen = false
