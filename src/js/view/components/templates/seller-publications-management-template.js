@@ -26,14 +26,14 @@ let sellerPublicationsManagementTemplate = {
             This is the content for my Seller publications management.
         </div>
     `,  
-    logic: async (args) => {
+    logic: async (args, containerId) => {
         let response = args
         console.log(response)
 
         const apiUrl = fsConfig.apiUrl
         let myFs = new Fs(FsDb, Dexie)
         
-        const publicationsList = document.querySelector("#publicationsList")
+        const publicationsList = document.querySelector(`${containerId} #publicationsList`)
         const navigation = document.querySelector("ion-app ion-nav#navigation")        
 
         if(response.ok) {

@@ -64,7 +64,7 @@ let sellerPublicationsManagement = {
       sellerId : fsGlobalVariable.session.seller_id
     })
 
-    sellerPublicationsManagementTemplate.logic(response)
+    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsManagementContent")
   }
 }
 

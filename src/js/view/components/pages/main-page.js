@@ -7,7 +7,8 @@ import { leftMenuTemplate } from './../templates/left-menu-template.js'
 import { rightMenuTemplate } from './../templates/right-menu-template.js'
 import { sellerSearchTemplate } from './../templates/seller-search-template.js'
 import { landingPageTemplate } from './../templates/landing-page-template.js'
-import { advertisementTemplate } from './../templates/advertisement-template.js'
+import { advertisementsTemplate } from './../templates/advertisements-template.js'
+import { newsTemplate } from './../templates/news-template.js'
 import { myAccountTemplate } from './../templates/my-account-template.js';
 import { fsConfig } from './../../../config/fsConfig.js'
 
@@ -103,7 +104,7 @@ let mainPage = {
                 <ion-nav id="advertisement-nav"></ion-nav>
                 <div id="advertisement-page">
                     <ion-content>
-                        <div id="advertisement-page-content" class="">${advertisementTemplate.content}</div>
+                        <div id="advertisement-page-content" class="">${advertisementsTemplate.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>
@@ -112,7 +113,7 @@ let mainPage = {
                 <ion-nav id="news-nav"></ion-nav>
                 <div id="news-page">
                     <ion-content>
-                        <div id="news-page-content" class="">xou b</div>
+                        <div id="news-page-content" class="">${newsTemplate.content}</div>
                     </ion-content>
                 </div>
             </ion-tab>
@@ -197,13 +198,26 @@ let mainPage = {
 
       let currentTab = await tab.getSelected()
 
-      if (currentTab == "my-account") {            
-        if(localCredentials != undefined) {                    
-          await myAccountTemplate.logic(true)          
-        }
-        else {
-          await myAccountTemplate.logic(false)
-        }        
+      switch(currentTab) {
+        case "my-account": 
+          if(localCredentials != undefined) {                    
+            await myAccountTemplate.logic(true)          
+          }
+          else {
+            await myAccountTemplate.logic(false)
+          }
+          break
+        
+        case "advertisement": 
+          await advertisementsTemplate.logic()  
+          break
+
+        case "news": 
+          await newsTemplate.logic()  
+          break
+
+        default:
+          break
       }
     })
 

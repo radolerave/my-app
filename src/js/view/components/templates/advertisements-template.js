@@ -1,3 +1,4 @@
+
 import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
@@ -5,10 +6,10 @@ import { fsConfig } from './../../../config/fsConfig.js'
 
 import { sellerPublicationsManagementTemplate } from './../templates/seller-publications-management-template.js'
 
-let sellerMediasTemplate = {
-  name: "seller-medias-template",
+let advertisementsTemplate = {
+  name: "advertisements-template",
   content: /*html*/`
-    <div id="sellerPublicationsList" first-load="true">
+    <div id="sellerAdvertisementsList" first-load="true">
       ${sellerPublicationsManagementTemplate.content}
     </div>
   `,
@@ -16,14 +17,12 @@ let sellerMediasTemplate = {
     const apiUrl = fsConfig.apiUrl
     let myFs = new Fs(FsDb, Dexie)
 
-    let response = await myFs.getPublicationsPublicMode(apiUrl, {
-      sellerId : fsGlobalVariable.sellerInfos.id
-    })
+    let response = await myFs.getPublicationsPublicMode(apiUrl, {}, 2, true)
 
     console.log(response)
 
-    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsList")
+    sellerPublicationsManagementTemplate.logic(response, "#sellerAdvertisementsList")
   }
 }
 
-export { sellerMediasTemplate }
+export { advertisementsTemplate }

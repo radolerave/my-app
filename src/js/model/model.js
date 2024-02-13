@@ -381,15 +381,21 @@ export default class FsDb {
         return ret
     }
 
-    async getPublications(url, args) {
+    async getPublications(url, args, type = null) {
         let ret = {}
         let dateOperation = null
 
         try {
             if(await this.silentSignIn(url)) {//credentials must be verified
                 const sellerId = args.sellerId
+                let publicationsList
 
-                let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
+                if(type === null) {
+                    publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&order=last_edit,desc`)
+                }
+                else {
+                    publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&filter=type,eq,${type}&order=last_edit,desc`)
+                }
 
                 dateOperation = new Date(publicationsList.headers.get("date"))
 
@@ -428,14 +434,31 @@ export default class FsDb {
         return ret
     }
 
-    async getPublicationsPublicMode(url, args) {
+    async getPublicationsPublicMode(url, args, type = null, all = false) {
         let ret = {}
         let dateOperation = null
 
         try {
-            const sellerId = args.sellerId
+            let publicationsList, sellerId
 
-            let publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&filter=published,eq,1&order=last_edit,desc`)
+            if(all == false) {
+                sellerId = args.sellerId                
+
+                if(type === null) {
+                    publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&filter=published,eq,1&order=last_edit,desc`)
+                }
+                else {
+                    publicationsList = await fetch(`${url}/publications?filter=seller_id,eq,${sellerId}&filter=enabled,eq,1&filter=published,eq,1&filter=type,eq,${type}&order=last_edit,desc`)
+                }
+            }
+            else {
+                if(type === null) {
+                    publicationsList = await fetch(`${url}/publications?filter=enabled,eq,1&filter=published,eq,1&order=last_edit,desc`)
+                }
+                else {
+                    publicationsList = await fetch(`${url}/publications?filter=enabled,eq,1&filter=published,eq,1&filter=type,eq,${type}&order=last_edit,desc`)
+                }
+            }
 
             dateOperation = new Date(publicationsList.headers.get("date"))
 
