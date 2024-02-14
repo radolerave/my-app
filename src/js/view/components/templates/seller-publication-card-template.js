@@ -95,7 +95,7 @@ let sellerPublicationCardTemplate = {
                 <ion-card class="publication">
                     <ion-card-header>
                         <ion-card-title>
-                            ${typeof fsGlobalVariable.sellerInfos != "undefined" ? fsGlobalVariable.sellerInfos.name : ""}
+                            ${typeof data.name != "undefined" ? data.name : typeof fsGlobalVariable.sellerInfos != "undefined" ? fsGlobalVariable.sellerInfos.name : ""}
                             <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
                                 <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                             </ion-button>

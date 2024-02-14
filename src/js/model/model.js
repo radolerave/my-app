@@ -456,7 +456,20 @@ export default class FsDb {
                     publicationsList = await fetch(`${url}/publications?filter=enabled,eq,1&filter=published,eq,1&order=last_edit,desc`)
                 }
                 else {
-                    publicationsList = await fetch(`${url}/publications?filter=enabled,eq,1&filter=published,eq,1&filter=type,eq,${type}&order=last_edit,desc`)
+                    let formData = new FormData()
+
+                    formData.append("params", JSON.stringify({
+                        where: {
+                            enabled: 1,
+                            published: 1,
+                            type: type
+                        }
+                    }))
+
+                    publicationsList = await fetch(`https://server2.atria.local/findseller/get_publications.php`, {
+                        method: 'POST',
+                        body: formData,
+                    })
                 }
             }
 
