@@ -95,7 +95,8 @@ let sellerPublicationCardTemplate = {
                 <ion-card class="publication">
                     <ion-card-header>
                         <ion-card-title>
-                            ${typeof data.name != "undefined" ? data.name : typeof fsGlobalVariable.sellerInfos != "undefined" ? fsGlobalVariable.sellerInfos.name : ""}
+                            <button class="link-to-seller-details" style="background-color: inherit;">${typeof data.name != "undefined" ? data.name : typeof fsGlobalVariable.sellerInfos != "undefined" ? fsGlobalVariable.sellerInfos.name : ""}</button>
+
                             <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
                                 <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                             </ion-button>
@@ -166,6 +167,7 @@ let sellerPublicationCardTemplate = {
             shortText: shortText,
             selectedMedias: data.publication.selectedMedias,
             publicationId: data.id,
+            sellerId: data.seller_id,
             publicationType: data.type,
             publicationValidity: data.validity
         }

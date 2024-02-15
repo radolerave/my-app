@@ -63,6 +63,41 @@ let sellerPublicationsManagementTemplate = {
                 })
 
                 try {
+                    card.querySelector(".link-to-seller-details").addEventListener("click", async () => {
+                        const navigation = fsGlobalVariable.navigation;
+
+                        let currentPage = await navigation.getActive()
+
+                        // console.log(currentPage)
+
+                        if(currentPage.component == "main-page") {
+                            // alert(data.sellerId)
+
+                            try {
+                                const upToDateSellerInfos = await myFs.getSellerInfos(fsConfig.apiUrl, data.sellerId)
+
+                                upToDateSellerInfos.sellerInfos.id = data.sellerId//important!!!
+                            
+                                console.log(upToDateSellerInfos)
+                            
+                                if(upToDateSellerInfos.ok) {
+                                    navigation.push('seller-details', { data: upToDateSellerInfos.sellerInfos }) 
+                                }
+                                else {
+                                    await Toast.show({
+                                    text: `Impossible de récupérer des informations venant du serveur.`,
+                                    })
+                                }
+                            }
+                            catch(err) {
+                                await Dialog.alert({
+                                    title: 'Erreur',
+                                    message: `Impossible de récupérer des informations venant du serveur.`,
+                                })
+                            }                            
+                        }   
+                    })
+
                     card.querySelector(".see-more-btn").addEventListener("click", () => {
                         let converter = new QuillDeltaToHtmlConverter(data.textToPublish.ops, {});
 

@@ -76,7 +76,7 @@ let sellerMediasManagement = {
       let imageList = [], videoList = []
 
       try {        
-        let files = await fetch("https://server2.atria.local/findseller/dirTree.php?dirname=.\\files\\1")
+        let files = await fetch(`https://server2.atria.local/findseller/dirTree.php?dirname=.\\files\\${fsGlobalVariable.session.seller_id}`)
         files = await files.json()
   
         console.log(files)

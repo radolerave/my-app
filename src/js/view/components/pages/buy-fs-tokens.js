@@ -19,7 +19,7 @@ let buyFsTokens = {
     </style>
   `,
   logic: async () => {
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation;
 
     
   }

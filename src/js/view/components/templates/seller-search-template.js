@@ -174,7 +174,7 @@ let sellerSearchTemplate = {
         includeHiddenColumnsInQuickFilter: true,
         onRowClicked: (e) => {
           // console.log(e)
-          const navigation = document.querySelector("ion-nav#navigation")
+          const navigation = fsGlobalVariable.navigation;
         
           navigation.push('seller-details', e)  
         }
