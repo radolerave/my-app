@@ -4,7 +4,7 @@ export default class Countries {
     }
 
     countriesList () {
-        const list = [ 
+        return [ 
             {name: 'Afghanistan', code: 'AF'}, 
             {name: 'Åland Islands', code: 'AX'}, 
             {name: 'Albania', code: 'AL'}, 
@@ -249,7 +249,5 @@ export default class Countries {
             {name: 'Zambia', code: 'ZM'}, 
             {name: 'Zimbabwe', code: 'ZW'} 
         ]
-        
-        return list
     }
 }

@@ -6,6 +6,7 @@ import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
 import { sellerFormActionsTemplate } from './seller-form-actions-template.js';
 import Formatter from "../../../helpers/formatter.js"
+import { enums } from "../../../helpers/enums-for-json-editor.js"
 
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
@@ -41,6 +42,8 @@ let sellerFormTemplate = {
         const apiUrl = fsConfig.apiUrl  
         let myFs = new Fs(FsDb, Dexie)
         let myFormatter = new Formatter()
+
+        console.log(enums)
 
         sellerFormActionsTemplate.logic()
 
@@ -80,20 +83,10 @@ let sellerFormTemplate = {
                             // 'format': 'choices',
                             'format': 'select',
                             'title': 'Pays',
-                            'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
+                            'enum': enums.countriesList.keys,
                             'default': '',
                             'options': {
-                                'enum_titles': [
-                                    "Madagascar",
-                                    "France",
-                                    "Espagne",
-                                    "États-Unis",
-                                    "Chine",
-                                    "Royaume-Uni",
-                                    "Allemagne",
-                                    "Japon",
-                                    "Je ne sais pas"
-                                ],
+                                'enum_titles': enums.countriesList.values,
                                 // 'choices': {
                                 //     shouldSort: false,
                                 //     allowHTML: true
@@ -113,10 +106,10 @@ let sellerFormTemplate = {
                             // 'format': 'choices',
                             'format': 'select',
                             'title': 'Société ou individu ?',
-                            'enum': [0,1,2],
+                            'enum': enums.whoWhat.keys,
                             'default': 0,
                             'options': {
-                                'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
+                                'enum_titles': enums.whoWhat.values,
                                 // 'choices': {
                                 //     shouldSort: false,
                                 //     allowHTML: true

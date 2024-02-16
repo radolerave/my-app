@@ -1,9 +1,15 @@
 import { Grid } from 'ag-grid-community'
+import { enums } from "../../../helpers/enums-for-json-editor.js"
 
 let sellerSearchTemplate = {
   name: "seller-search-template",
   content: /*html*/`
     <div id="criteria"></div>
+
+    <ion-button id="bigSearchBtn" class="ion-hide" disabled="true" expand="block">
+        <ion-icon name="search" slot="start" size="large"></ion-icon>
+        FIND SELLER
+    </ion-button>
 
     <ion-button id="validateCriteria" class="ion-hide" disabled="true">Allons-y !</ion-button>
     <ion-button id="resetCriteria" class="ion-hide" color="danger" disabled="true">Réinitialiser</ion-button>
@@ -15,6 +21,8 @@ let sellerSearchTemplate = {
   `,
   logic: async (args) => {
     let myFs = args.myFs
+
+    console.log(enums)
 
     const element = document.querySelector('#criteria');
     let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keyword":"" }
@@ -44,20 +52,10 @@ let sellerSearchTemplate = {
                     'type': 'string',
                     "format": "choices",
                     'title': 'Pays',
-                    'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
+                    'enum': enums.countriesList.keys,
                     'default': '',
                     'options': {
-                        'enum_titles': [
-                            "Madagascar",
-                            "France",
-                            "Espagne",
-                            "États-Unis",
-                            "Chine",
-                            "Royaume-Uni",
-                            "Allemagne",
-                            "Japon",
-                            "Je ne sais pas"
-                        ],
+                        'enum_titles': enums.countriesList.values,
                         'choices': {
                             shouldSort: false,
                             allowHTML: true
@@ -72,10 +70,10 @@ let sellerSearchTemplate = {
                     'type': 'integer',
                     "format": "choices",
                     'title': 'Vous recherchez qui/quoi ?',
-                    'enum': [0,1,2],
+                    'enum': enums.whoWhat.keys,
                     'default': 0,
                     'options': {
-                        'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
+                        'enum_titles': enums.whoWhat.values,
                         'choices': {
                             shouldSort: false,
                             allowHTML: true
@@ -137,6 +135,7 @@ let sellerSearchTemplate = {
 
     const results = document.querySelector('#results')
     const validateCriteria = document.querySelector('#validateCriteria')
+    const bigSearchBtn = document.querySelector('#bigSearchBtn')
     const resetCriteria = document.querySelector('#resetCriteria')
     const filterResults = document.querySelector('#filterResults')
 
@@ -259,6 +258,17 @@ let sellerSearchTemplate = {
                 ev.target.dispatchEvent(changeEvent);
             })
         });    
+
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').addEventListener('click', (ev) => {        
+            if(!bigSearchBtn.classList.contains('ion-hide')) {
+                bigSearchBtn.classList.add('ion-hide')
+                bigSearchBtn.setAttribute("disabled", "true")
+            }
+            else {
+                bigSearchBtn.classList.remove('ion-hide')
+                bigSearchBtn.removeAttribute("disabled")
+            }
+        })
     })
 
     criteria.on('change', async () => {    
@@ -338,10 +348,16 @@ let sellerSearchTemplate = {
             results.classList.add('ion-hide')
         }
 
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()
+
         filterResults.value = ""
         gridOptions.api.setQuickFilter("")
         gridOptions.api.resetQuickFilter()
     })
+
+    bigSearchBtn.addEventListener('click', (ev) => {        
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()        
+    })    
 
     document.querySelector('#filterResults').addEventListener("ionInput", (ev) => {
         // console.log(ev.target)
