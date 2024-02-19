@@ -1,4 +1,5 @@
 import { sellerInformationsItemTemplate } from './seller-informations-item-template.js'
+import { enums } from "../../../helpers/enums-for-json-editor.js"
 
 let sellerContactsTemplate = {
   name: "seller-medias-template",
@@ -17,7 +18,7 @@ let sellerContactsTemplate = {
   `,
   logic: async (args) => {
     let data = args
-    const navigation = document.querySelector("ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     let currentPage = await navigation.getActive()
     const componentName = currentPage.component
     
@@ -36,38 +37,67 @@ let sellerContactsTemplate = {
         theSellerContacts += `<h2>${contactType}</h2>`
       
         contactTypeData.forEach(element => {
-          theSellerContacts += `<ion-item button="true"><ion-icon class="ion-no-padding" aria-hidden="true" name="help" slot="end" size="medium"></ion-icon><ion-label>`
+          let icon, title, property, propertyValue, iconTab
 
           if(typeof element.wording != "undefined" && element.wording.length > 0) {
-            theSellerContacts += `<h3>${element.wording}</h3>`
+            title = element.wording
           }
+
+          property = contactType
 
           switch(contactType) {
             case "phones":
               if(typeof element.phone != "undefined" && element.phone.length > 0) {
-                theSellerContacts += `<p>${element.phone}</p>`
+                propertyValue = element.phone
+
+                iconTab = enums.phoneType.icons           
+                
+                if(typeof(element.phoneType) != "undefined") {
+                  icon = iconTab[element.phoneType]
+                }
+                else {
+                  icon = "help-outline"
+                }
               }
               break
 
             case "emails":
               if(typeof element.email != "undefined" && element.email.length > 0) {
-                theSellerContacts += `<p>${element.email}</p>`
+                propertyValue = element.email
+                icon = "at-outline"
               }
               break
 
             case "links":
               if(typeof element.link != "undefined" && element.link.length > 0) {
-                theSellerContacts += `<p>${element.link}</p>`
+                propertyValue = element.link
+                
+                iconTab = enums.linkType.icons
+                
+                if(typeof(element.linkType) != "undefined") {
+                  icon = iconTab[element.linkType]
+                }
+                else {
+                  icon = "help-outline"
+                }
               }
               break
 
             default: 
               break
-          }          
+          }                            
 
-          theSellerContacts += `</ion-label></ion-item>`
+          const template = sellerInformationsItemTemplate.logic({
+            title : title,
+            property : property,
+            propertyValue : propertyValue,
+            iconName: icon,
+            button: true
+          })
+
+          theSellerContacts += template
         });
-
+            
         theSellerContacts += `</ion-label></div>`
       }            
     }

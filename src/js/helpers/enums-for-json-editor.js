@@ -48,7 +48,6 @@ enums.countriesList = countriesList
 const whoWhat = {
     "keys": [0,1,2],
     "values": ['Je ne sais pas', 'Une société', 'Un individu'],
-    "obj": { 0: 'Je ne sais pas', 1: 'Une société', 2: 'Un individu' }, 
 }
 
 enums.whoWhat = whoWhat
@@ -56,12 +55,55 @@ enums.whoWhat = whoWhat
 
 /*SECTORS*/
 const sectors = {
-    "keys": [0,1,2],
-    "values": ['Je ne sais pas', 'Une société', 'Un individu'],
-    "obj": { 0: 'Je ne sais pas', 1: 'Une société', 2: 'Un individu' }, 
+    "keys": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+    "values": [
+        "Je ne sais pas",
+        "Agriculture, Pêche et Élevage",
+        "Alimentation et Restauration",
+        "Art et Culture",
+        "Automobile",
+        "BTP (Bâtiment et Travaux Publics)",
+        "Agroalimentaire",
+        "Commerce",
+        "Divertissement et Médias",
+        "Éducation",
+        "Énergie et Environnement",
+        "Finance et Assurances",
+        "Immobilier",
+        "Industrie manufacturière",
+        "Ingénierie",
+        "Mode et Esthétique",
+        "Publicité et Marketing",
+        "Santé et Pharmaceutique",
+        "Services Financiers et Bancaires",
+        "Services Professionnels",
+        "Technologie, Informatique et Télécommunications",
+        "Tourisme et Hôtellerie",
+        "Transport et Logistique"
+    ]
 }
 
 enums.sectors = sectors
-/*SECTORS mbola diso*/
+/*SECTORS*/
+
+/*PHONES*/
+const phoneType = {
+    "keys": [0,1,2,3,4],
+    "values": ['Autre', 'Mobile', 'Fixe', 'WhatsApp', 'Skype'],
+    "icons": ["call-outline", "phone-portrait-outline", "call-outline", "logo-whatsapp", "logo-skype"],
+}
+
+enums.phoneType = phoneType
+/*PHONES*/
+
+/*LINKS*/
+const linkType = {
+    "keys": [0,1,2,3,4,5],
+    "values": ['Autre', 'Site WEB', 'Facebook', 'Instagram', 'LinkedIn', 'Twitter'],
+    "icons": ["link-outline", "globe-outline", "logo-facebook", "logo-instagram", "logo-linkedin", "logo-twitter"],
+}
+
+enums.linkType = linkType
+/*LINKS*/
 
 export { enums }

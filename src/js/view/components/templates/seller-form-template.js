@@ -186,33 +186,10 @@ let sellerFormTemplate = {
                                         "title": "secteur",
                                         // 'format': 'choices',
                                         'format': 'select',
-                                        "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+                                        "enum": enums.sectors.keys,
                                         // "default": "",
                                         "options": {
-                                            "enum_titles": [
-                                                "Agriculture, Pêche et Élevage",
-                                                "Alimentation et Restauration",
-                                                "Art et Culture",
-                                                "Automobile",
-                                                "BTP (Bâtiment et Travaux Publics)",
-                                                "Agroalimentaire",
-                                                "Commerce",
-                                                "Divertissement et Médias",
-                                                "Éducation",
-                                                "Énergie et Environnement",
-                                                "Finance et Assurances",
-                                                "Immobilier",
-                                                "Industrie manufacturière",
-                                                "Ingénierie",
-                                                "Mode et Esthétique",
-                                                "Publicité et Marketing",
-                                                "Santé et Pharmaceutique",
-                                                "Services Financiers et Bancaires",
-                                                "Services Professionnels",
-                                                "Technologie, Informatique et Télécommunications",
-                                                "Tourisme et Hôtellerie",
-                                                "Transport et Logistique"
-                                            ],
+                                            "enum_titles": enums.sectors.values,
                                             // 'choices': {
                                             //     shouldSort: false,
                                             //     allowHTML: true
@@ -348,10 +325,10 @@ let sellerFormTemplate = {
                                                 // 'format': 'choices',
                                                 'format': 'select',
                                                 'title': 'Type de tél',
-                                                'enum': [0,1,2,3,4],
+                                                'enum': enums.phoneType.keys,
                                                 'default': 0,
                                                 'options': {
-                                                    'enum_titles': ['Mobile', 'Fixe', 'WhatsApp', 'Viber', 'Skype'],
+                                                    'enum_titles': enums.phoneType.values,
                                                     // 'choices': {
                                                     //     shouldSort: false,
                                                     //     allowHTML: true
@@ -405,10 +382,10 @@ let sellerFormTemplate = {
                                                 // 'format': 'choices',
                                                 'format': 'select',
                                                 'title': 'Type de lien',
-                                                'enum': [0,1,2,3,4],
+                                                'enum': enums.linkType.keys,
                                                 'default': 0,
                                                 'options': {
-                                                    'enum_titles': ['Site WEB', 'Facebook', 'Instagram', 'Linkedin', 'Twitter'],
+                                                    'enum_titles': enums.linkType.values,
                                                     // 'choices': {
                                                     //     shouldSort: false,
                                                     //     allowHTML: true

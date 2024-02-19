@@ -9,17 +9,19 @@ let sellerInformationsItemTemplate = {
     const noTitle = typeof args.noTitle != "undefined" && args.noTitle == true ? true : false
     const title = typeof args.title != "undefined" && noTitle == false ? `<h2>${args.title}</h2>` : ""
     const property = typeof args.property != "undefined" ? args.property : ""
+    const propertyValue = typeof args.propertyValue != "undefined" ? args.propertyValue : ""
 
     const icon = typeof iconName == "string" && iconName.length > 0 ? `<ion-icon class="ion-no-padding ion-margin-end" aria-hidden=${iconAriaHidden} name=${iconName} slot=${iconSlot} size=${iconSize}></ion-icon>` : ""
+    const button = typeof args.button != "undefined" && args.button == true ? `button="true"` : `button="false"`
 
 
 
     return /*html*/`
-      <ion-item class="ion-no-padding">
+      <ion-item class="ion-no-padding" ${button}>
         ${icon}
         <ion-label>
           ${title}
-          <p id=${property}></p>
+          <p id=${property}>${propertyValue}</p>
         </ion-label>
       </ion-item>
     `

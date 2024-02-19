@@ -1,4 +1,5 @@
 import { sellerInformationsItemTemplate } from './seller-informations-item-template.js'
+import { enums } from "../../../helpers/enums-for-json-editor.js"
 
 let sellerInformationsTemplate = {
   name: "seller-informations-template",
@@ -9,42 +10,49 @@ let sellerInformationsTemplate = {
           ${sellerInformationsItemTemplate.logic({
             title : "Nom / Raison sociale",
             property : "name",
-            // iconName : "information-circle-outline"
+            iconName : "finger-print-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "Nom Commercial",
             property : "trade_name",
+            iconName : "storefront-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "Pays",
             property : "country",
+            iconName : "earth-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "Société ou individu ?",
             property : "who_what",
+            iconName : "help-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "NIF",
             property : "nif",
+            iconName : "reader-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "STAT",
             property : "stat",
+            iconName : "reader-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "RCS",
             property : "rcs",
+            iconName : "reader-outline",
           })}
 
           ${sellerInformationsItemTemplate.logic({
             title : "CIN",
             property : "cin",
+            iconName : "id-card-outline",
           })}
         </ion-list>
       </ion-card-content>
@@ -56,6 +64,7 @@ let sellerInformationsTemplate = {
           ${sellerInformationsItemTemplate.logic({
             title : "Activités",
             property : "activities",
+            iconName : "magnet-outline",
           })}
         </ion-list>
       </ion-card-content>
@@ -67,6 +76,7 @@ let sellerInformationsTemplate = {
           ${sellerInformationsItemTemplate.logic({
             title : "Secteurs",
             property : "sectors",
+            iconName : "flag-outline",
           })}
         </ion-list>
       </ion-card-content>
@@ -78,6 +88,7 @@ let sellerInformationsTemplate = {
           ${sellerInformationsItemTemplate.logic({
             title : "Horaires",
             property : "hourly",
+            iconName : "time-outline",
           })}
         </ion-list>
       </ion-card-content>
@@ -85,14 +96,14 @@ let sellerInformationsTemplate = {
   `,
   logic: async (args = {}) => {
     let data = args
-    const navigation = document.querySelector("ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     let currentPage = await navigation.getActive()
     const componentName = currentPage.component
 
     document.querySelector(`${componentName} #name`).innerHTML = data.name
     document.querySelector(`${componentName} #trade_name`).innerHTML = data.trade_name
-    document.querySelector(`${componentName} #country`).innerHTML = data.country
-    document.querySelector(`${componentName} #who_what`).innerHTML = data.who_what
+    document.querySelector(`${componentName} #country`).innerHTML = enums.countriesList.obj[data.country]
+    document.querySelector(`${componentName} #who_what`).innerHTML = enums.whoWhat.values[data.who_what]
     document.querySelector(`${componentName} #nif`).innerHTML = data.nif
     document.querySelector(`${componentName} #stat`).innerHTML = data.stat
     document.querySelector(`${componentName} #rcs`).innerHTML = data.rcs
@@ -106,7 +117,7 @@ let sellerInformationsTemplate = {
 
     let theSellerSectors = ""
     for(let i = 0; i < data.sectors.length; i++) {
-      theSellerSectors += `<ion-text class="d-block">${data.sectors[i].sector}</ion-text>`
+      theSellerSectors += `<ion-text class="d-block">${enums.sectors.values[data.sectors[i].sector]}</ion-text>`
     }
     document.querySelector(`${componentName} #sectors`).innerHTML = theSellerSectors
 
@@ -129,11 +140,11 @@ let sellerInformationsTemplate = {
           theSellerHourly += `<p>`
 
           if(typeof element.from != "undefined" && element.from.length > 0) {
-            theSellerHourly += `<ion-text>De ${element.from}</ion-text>`
+            theSellerHourly += `<ion-text>${element.from}</ion-text>`
           }
 
           if(typeof element.to != "undefined" && element.to.length > 0) {
-            theSellerHourly += `<ion-text> à ${element.to}</ion-text>`
+            theSellerHourly += `<ion-text> - ${element.to}</ion-text>`
           }
 
           if(typeof element.description != "undefined" && element.description.length > 0) {
