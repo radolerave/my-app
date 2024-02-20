@@ -13,11 +13,12 @@ let sellerInformationsItemTemplate = {
 
     const icon = typeof iconName == "string" && iconName.length > 0 ? `<ion-icon class="ion-no-padding ion-margin-end" aria-hidden=${iconAriaHidden} name=${iconName} slot=${iconSlot} size=${iconSize}></ion-icon>` : ""
     const button = typeof args.button != "undefined" && args.button == true ? `button="true"` : `button="false"`
+    const parentItemId = typeof args.parentItemId != "undefined" && /^[\w-_]{1,}$/.test(args.parentItemId) ? `id="${args.parentItemId}"` : ""
 
 
 
     return /*html*/`
-      <ion-item class="ion-no-padding" ${button}>
+      <ion-item class="ion-no-padding" ${button} ${parentItemId}>
         ${icon}
         <ion-label>
           ${title}

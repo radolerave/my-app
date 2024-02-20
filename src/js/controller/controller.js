@@ -100,7 +100,7 @@ export default class Fs {
     }
 
     async getSellerInfos(apiUrl, sellerId) {
-        const columns = `activities,contacts,country,keywords,localities,name,sectors,space,credit_tokens,who_what,hourly,calendar,nif,stat,rcs,cin,trade_name,date_add,last_edit`
+        const columns = `activities,contacts,country,keywords,localities,name,sectors,space,credit_tokens,who_what,hourly,calendar,nif,stat,rcs,cin,about,trade_name,date_add,last_edit`
 
         const response = await this.fsDb.getSellerInfos(apiUrl, sellerId, columns)
         

@@ -137,6 +137,11 @@ let sellerFormTemplate = {
                                 }
                             }
                         },
+                        "about": {
+                            "type": "string",
+                            "format": "textarea",
+                            "title": "à propos"
+                        },
                         'activities': {
                             'type': 'array',
                             'format': 'tabs-top',

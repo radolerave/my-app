@@ -53,6 +53,7 @@ let sellerInformationsTemplate = {
             title : "CIN",
             property : "cin",
             iconName : "id-card-outline",
+            parentItemId: "dadyCin"
           })}
         </ion-list>
       </ion-card-content>
@@ -93,12 +94,27 @@ let sellerInformationsTemplate = {
         </ion-list>
       </ion-card-content>
     </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-item class="ion-no-margin ion-no-padding">
+            <ion-icon slot="start" class="ion-no-margin ion-margin-end" name="information-circle-outline"></ion-icon>
+            <ion-label>&Agrave; propos</ion-label>
+          </ion-item>
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content id="about" class="ion-padding" style="white-space: pre-wrap;"></ion-card-content>
+    </ion-card>
   `,
   logic: async (args = {}) => {
     let data = args
     const navigation = fsGlobalVariable.navigation
     let currentPage = await navigation.getActive()
     const componentName = currentPage.component
+
+    console.log(data)
 
     document.querySelector(`${componentName} #name`).innerHTML = data.name
     document.querySelector(`${componentName} #trade_name`).innerHTML = data.trade_name
@@ -107,7 +123,7 @@ let sellerInformationsTemplate = {
     document.querySelector(`${componentName} #nif`).innerHTML = data.nif
     document.querySelector(`${componentName} #stat`).innerHTML = data.stat
     document.querySelector(`${componentName} #rcs`).innerHTML = data.rcs
-    typeof data.cin != "undefined" ? document.querySelector(`${componentName} #cin`).innerHTML = data.cin : ""
+    typeof data.cin != "undefined" && data.who_what == 2 ? document.querySelector(`${componentName} #cin`).innerHTML = data.cin : document.querySelector(`${componentName} #dadyCin`).classList.add("ion-hide")
 
     let theSellerActivities = ""
     for(let i = 0; i < data.activities.length; i++) {
@@ -158,6 +174,7 @@ let sellerInformationsTemplate = {
       }            
     }
     document.querySelector(`${componentName} #hourly`).innerHTML = theSellerHourly
+    document.querySelector(`${componentName} #about`).innerHTML = data.about
   }
 }
 
