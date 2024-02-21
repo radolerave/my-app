@@ -53,7 +53,7 @@ let sellerInformationsTemplate = {
             title : "CIN",
             property : "cin",
             iconName : "id-card-outline",
-            parentItemId: "dadyCin"
+            itemId: "dadyCin"
           })}
         </ion-list>
       </ion-card-content>

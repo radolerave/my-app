@@ -13,18 +13,20 @@ let sellerInformationsItemTemplate = {
 
     const icon = typeof iconName == "string" && iconName.length > 0 ? `<ion-icon class="ion-no-padding ion-margin-end" aria-hidden=${iconAriaHidden} name=${iconName} slot=${iconSlot} size=${iconSize}></ion-icon>` : ""
     const button = typeof args.button != "undefined" && args.button == true ? `button="true"` : `button="false"`
-    const parentItemId = typeof args.parentItemId != "undefined" && /^[\w-_]{1,}$/.test(args.parentItemId) ? `id="${args.parentItemId}"` : ""
+    const itemId = typeof args.itemId != "undefined" && /^[\w-_]{1,}$/.test(args.itemId) ? `id="${args.itemId}"` : ""
+    const nextSiblingContent = typeof args.nextSiblingContent == "string"  ? args.nextSiblingContent : ""
 
 
 
     return /*html*/`
-      <ion-item class="ion-no-padding" ${button} ${parentItemId}>
+      <ion-item class="ion-no-padding" ${button} ${itemId}>
         ${icon}
         <ion-label>
           ${title}
           <p id=${property}>${propertyValue}</p>
         </ion-label>
       </ion-item>
+      ${nextSiblingContent}
     `
   }
 }
