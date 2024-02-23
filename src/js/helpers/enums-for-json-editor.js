@@ -15,7 +15,7 @@ let countriesList = {
     "obj": { "": "Je ne sais pas" },    
 }
 
-const defaultChoices = ["MG", "FR", "ES", "US", "CN", "GB", "DE", "JP"]
+const defaultChoices = ["MG", "FR", "ES", "US", "CN", "GB", "DE", "JP", "IN", "CA", "AU", "BR", "AR", "RU", "TR"]
 
 // Fonction pour récupérer le nom du pays en fournissant le code
 function getCountryNameByCode(completeList, code) {

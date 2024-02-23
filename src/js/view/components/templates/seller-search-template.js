@@ -25,7 +25,7 @@ let sellerSearchTemplate = {
     console.log(enums)
 
     const element = document.querySelector('#criteria');
-    let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keyword":"" }
+    let startVal = { "country":"","search":"","who_what":""/*, "activity":""*/, "sector":0, /*"keyword":""*/ }
 
     // element.innerHTML = ``
 
@@ -43,11 +43,20 @@ let sellerSearchTemplate = {
             'type': 'object',
             // 'required': [
             //     'country',
-            //     'name',
+            //     'search',
             //     'who_what',
             //     'keyword'
             // ],
             'properties': {
+                'search': {
+                    'type': 'string',
+                    'title': 'Recherche',
+                    'options': {
+                        'inputAttributes': {
+                            // 'placeholder': "Recherche"
+                        }
+                    }
+                },
                 'country': {
                     'type': 'string',
                     "format": "choices",
@@ -58,14 +67,11 @@ let sellerSearchTemplate = {
                         'enum_titles': enums.countriesList.values,
                         'choices': {
                             shouldSort: false,
-                            allowHTML: true
+                            allowHTML: true,
+                            position: "bottom"
                         }
                     }
-                },
-                'name': {
-                    'type': 'string',
-                    'title': 'Nom ou Raison sociale'
-                },
+                },                
                 'who_what': {
                     'type': 'integer',
                     "format": "choices",
@@ -80,10 +86,10 @@ let sellerSearchTemplate = {
                         }
                     }
                 },
-                'activity': {
-                    'type': 'string',
-                    'title': 'Activité'
-                },
+                // 'activity': {
+                //     'type': 'string',
+                //     'title': 'Activité'
+                // },
                 "sector": {
                   "type": "integer",
                   "title": "Secteur",
@@ -98,13 +104,13 @@ let sellerSearchTemplate = {
                       }
                   }
               },
-                'keyword': {
-                    'type': 'string',
-                    'title': 'Mot clé',
-                    'description': 'Mot clé',
-                    // 'minLength': 2,
-                    // 'default': 'ordinateur'
-                }
+                // 'keyword': {
+                //     'type': 'string',
+                //     'title': 'Mot clé',
+                //     'description': 'Mot clé',
+                //     // 'minLength': 2,
+                //     // 'default': 'ordinateur'
+                // }
             }
         }
     });
@@ -164,11 +170,11 @@ let sellerSearchTemplate = {
 
         if(
             findCriteria.country == "" 
-            && findCriteria.name == "" 
+            && findCriteria.search == "" 
             && findCriteria.who_what == 0 
-            && findCriteria.activity == "" 
+            // && findCriteria.activity == "" 
             && findCriteria.sector == 0 
-            && findCriteria.keyword == "" 
+            // && findCriteria.keyword == "" 
         ) {
             if(!validateCriteria.classList.contains('ion-hide')) {
                 validateCriteria.classList.add('ion-hide')
@@ -265,11 +271,11 @@ let sellerSearchTemplate = {
         const params = {
             'where': {
                 'country': findCriteria.country,
-                'name': findCriteria.name,
+                'search': findCriteria.search,
                 'who_what': findCriteria.who_what,
-                'activity': findCriteria.activity,
+                // 'activity': findCriteria.activity,
                 'sector': findCriteria.sector,
-                'keyword': findCriteria.keyword
+                // 'keyword': findCriteria.keyword
             }
         }   
 
