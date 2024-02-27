@@ -32,7 +32,7 @@ let mediaPublicationTemplate = {
                 </ion-radio-group>
 
                 <ion-item>
-                    <ion-input id="publication-validity-period" label="Validité : " min="1" placeholder="1" value="1"></ion-input>&nbsp;jours
+                    <ion-input id="publication-validity-period" label="Validité : " placeholder="1" value="1"></ion-input>&nbsp;jours
                 </ion-item>
 
                 <ion-item>
@@ -66,7 +66,7 @@ let mediaPublicationTemplate = {
 
         console.log(args)    
 
-        const navigation = document.querySelector("ion-app ion-nav#navigation")
+        const navigation = fsGlobalVariable.navigation
         navigation.removeEventListener("ionNavDidChange", args.listener)
         
         const publish = document.querySelector("media-publication #publish")
@@ -376,6 +376,17 @@ let mediaPublicationTemplate = {
                         title: "Avertissement",
                         message: "Vous n'avez pas assez de crédits pour cette publication."
                     }) 
+
+                    const confirmation = await Dialog.confirm({
+                        title: 'Achat de crédits',
+                        message: `Voulez-vous créditer votre compte ?`,
+                        okButtonTitle: "oui",
+                        cancelButtonTitle: "non",
+                    })
+        
+                    if(confirmation.value) {
+                        await navigation.push("buy-fs-tokens")
+                    }
     
                     publish.classList.remove("ion-hide")
                 }

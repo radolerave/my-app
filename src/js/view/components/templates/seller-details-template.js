@@ -113,13 +113,15 @@ let sellerDetailsTemplate = {
     fsGlobalVariable.sellerInfos = data
     let myFormatter = new Formatter()
 
+    const localSellerInfos = await myFs.getLocalSellerInfos(data.id)
+
     document.querySelector("seller-details ion-title #title").innerHTML = data.name
     document.querySelector("seller-details #seller-details-last-edit").innerHTML = /*html*/`
       <div id="warn-last-edit" class="ion-hide">
         <ion-icon name="warning-outline"></ion-icon>
       </div>
       <span id="local-last-edit">
-        ${myFormatter.dateFormatter(data.last_edit, true)} <ion-icon name="time-outline"></ion-icon>
+        ${localSellerInfos && localSellerInfos.last_edit != data.last_edit ? myFormatter.dateFormatter(localSellerInfos.last_edit, true) : myFormatter.dateFormatter(data.last_edit, true)} <ion-icon name="time-outline"></ion-icon>
       </span>
       <br>
       <span id="up-to-date-last-edit"></span>
@@ -127,28 +129,33 @@ let sellerDetailsTemplate = {
 
     try {
       // const session = await myFs.getLocalCredentials()
-      const upToDateSellerInfos = await myFs.getSellerInfos(fsConfig.apiUrl, data.id)
+      const upToDateSellerInfos = await myFs.getSellerInfos(fsConfig.apiUrl, data.id)      
 
-      console.log(upToDateSellerInfos)
+      console.log(upToDateSellerInfos, localSellerInfos)
 
       if(upToDateSellerInfos.ok) {
-        if(upToDateSellerInfos.sellerInfos.last_edit != data.last_edit) {
-          document.querySelector("#up-to-date-last-edit").innerHTML = /*html*/`
-            ${myFormatter.dateFormatter(upToDateSellerInfos.sellerInfos.last_edit, true)} <ion-icon name="alarm-outline"></ion-icon>
-          `
+        if((localSellerInfos && upToDateSellerInfos.sellerInfos.last_edit != localSellerInfos.last_edit) 
+        || (upToDateSellerInfos.sellerInfos.last_edit != data.last_edit) 
+        || !localSellerInfos) {
+          if((localSellerInfos && upToDateSellerInfos.sellerInfos.last_edit != localSellerInfos.last_edit) 
+          || (upToDateSellerInfos.sellerInfos.last_edit != data.last_edit)) {
+            document.querySelector("#up-to-date-last-edit").innerHTML = /*html*/`
+              ${myFormatter.dateFormatter(upToDateSellerInfos.sellerInfos.last_edit, true)} <ion-icon name="alarm-outline"></ion-icon>
+            `
 
-          if(!document.querySelector("#local-last-edit").classList.contains("notice")) {
-            document.querySelector("#local-last-edit").classList.add("notice")
+            if(!document.querySelector("#local-last-edit").classList.contains("notice")) {
+              document.querySelector("#local-last-edit").classList.add("notice")
+            }
+
+            if(document.querySelector("#warn-last-edit").classList.contains("ion-hide")) {
+              document.querySelector("#warn-last-edit").classList.remove("ion-hide")
+            }
+
+            await Dialog.alert({
+              title: 'Alert',
+              message: `Une nouvelle version des données de "${data.name}" est disponible. Vous pouvez télécharger ces informations ici. Vous pouvez aussi mettre à jour la totalité de la base de données dans "Plus d'options / Télécharger les données à jour".`,
+            })
           }
-
-          if(document.querySelector("#warn-last-edit").classList.contains("ion-hide")) {
-            document.querySelector("#warn-last-edit").classList.remove("ion-hide")
-          }
-
-          await Dialog.alert({
-            title: 'Alert',
-            message: `Une nouvelle version des données de "${data.name}" est disponible. Vous pouvez télécharger ces informations ici. Vous pouvez aussi mettre à jour la totalité de la base de données dans "Plus d'options / Télécharger les données à jour".`,
-          })
 
           document.querySelector("#updateLocalSellerInfos").parentElement.classList.remove("ion-hide")
 
@@ -174,7 +181,12 @@ let sellerDetailsTemplate = {
 
                 self.logic(args)
 
-                document.querySelector("#resetCriteria").click()
+                try {
+                  document.querySelector("#resetCriteria").click()
+                }
+                catch(err) {
+                  
+                }
               }
               else {
                 await Toast.show({

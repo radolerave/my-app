@@ -52,7 +52,7 @@ let sellerPublicationsManagement = {
     const apiUrl = fsConfig.apiUrl
     let myFs = new Fs(FsDb, Dexie)    
 
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     const newPublicationBtn = document.querySelector("#newPublication")
 
     newPublicationBtn.addEventListener("click", async () => {

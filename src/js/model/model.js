@@ -702,6 +702,28 @@ export default class FsDb {
         return ret
     }
 
+    async getLocalSellerInfos(sellerId) {
+        try {
+            let result = await this.db.sellersList.filter((seller) => {
+                return (seller.id == sellerId)
+            }).toArray()
+
+            console.log(result)
+
+            if(result.length == 1) {
+                return result[0]
+            }
+            else {
+                return false
+            }
+        }
+        catch(err) {
+            console.log(err)
+
+            return false
+        }
+    }
+
     async updateLocalSellerInfos(data, sellerId) {
         let ret = {}
 

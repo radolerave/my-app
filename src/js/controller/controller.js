@@ -107,6 +107,12 @@ export default class Fs {
         return response
     }
 
+    async getLocalSellerInfos(sellerId) {
+        const response = await this.fsDb.getLocalSellerInfos(sellerId)
+        
+        return response
+    }
+
     async updateLocalSellerInfos(data, sellerId) {
         const response = await this.fsDb.updateLocalSellerInfos(data, sellerId)
         
