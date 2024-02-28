@@ -82,7 +82,7 @@ let mediaPublicationTemplate = {
             thousandSeparator: ' ',
             precision: 0,
             max: 3650,
-            min: 0,//will be valued as 1 in the cost calculation
+            min: 1,
         }))
 
         // Call this function when the element is detached from DOM
