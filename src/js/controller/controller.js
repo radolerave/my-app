@@ -131,8 +131,7 @@ export default class Fs {
         return response
     }
 
-
-    async getData(params) {
+    async getData(params) {//local data
         let countrySearchActivated = (params.where.country.length == 0)
         let searchSearchActivated = (params.where.search.length == 0)
         let who_whatSearchActivated = (params.where.who_what == 0)
@@ -142,29 +141,7 @@ export default class Fs {
 
         let doNotFilter = countrySearchActivated && searchSearchActivated && who_whatSearchActivated && /*activitySearchActivated && */sectorSearchActivated /*&& keywordSearchActivated */
 
-        const myDb = await this.db
-        const collection = myDb.sellersList
-        const results = await collection.filter((seller) => {
-            if((params['where'] == undefined) || doNotFilter) {
-                return false
-            }
-            else {                
-                return ((params.where.country.length > 0 && seller.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
-                    &&
-                    (params.where.search.length > 0 && ((((seller.name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 || seller.trade_name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1))) || (seller.keywords.some((item) => { return item.keyword.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 })) || (seller.activities.some((item) => { return item.activity.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 }))) || params.where.search.length == 0)
-                    && 
-                    (params.where.who_what != 0 && seller.who_what == params.where.who_what || params.where.who_what == 0)
-                    && 
-                    (params.where.sector != 0 && seller.sectors.some((item) => { return item.sector == params.where.sector }) || params.where.sector == 0))
-            }         
-        }).toArray()
-
-        // return results.map((record) => {
-        //     return { 
-        //         id: record.id,
-        //         name: record.attributes.name 
-        //     }
-        // });
+        const results = await this.fsDb.getData(params, doNotFilter)
 
         return results
     }

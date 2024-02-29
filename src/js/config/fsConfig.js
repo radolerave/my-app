@@ -12,7 +12,7 @@ let fsConfig = {
     },
     lightGallery: {
         licenseKey: "ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A"
-    }
+    },
 }
 
 export { fsConfig }

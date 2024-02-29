@@ -8,10 +8,10 @@ export default class FsDb {
     dbStructure(initDb, Wrapper) {        
         initDb.version(1).stores({
             session: `&email, password, seller_id, name, userType`,
-			sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, verified, who_what`,
+            sellersList : `&id, *activities, *contacts, country, enabled, *keywords, *localities, name, rank, *sectors, *space, verified, who_what`,
             sellersListLastSyncDate : `id, date`,
             countriesList : `id, *attributes`
-		})        
+        })        
         
         return initDb
     }  
@@ -793,6 +793,34 @@ export default class FsDb {
             ret.date = undefined
             ret.publicationRate = undefined
             ret.error = err
+        }
+
+        return ret
+    }
+
+    async getData(params, doNotFilter) {//local data
+        let ret
+
+        try {
+            ret = await this.db.sellersList.filter((seller) => {
+                if((params['where'] == undefined) || doNotFilter) {
+                    return false
+                }
+                else {                
+                    return ((params.where.country.length > 0 && seller.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
+                        &&
+                        (params.where.search.length > 0 && ((((seller.name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 || seller.trade_name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1))) || (seller.keywords.some((item) => { return item.keyword.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 })) || (seller.activities.some((item) => { return item.activity.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 }))) || params.where.search.length == 0)
+                        && 
+                        (params.where.who_what != 0 && seller.who_what == params.where.who_what || params.where.who_what == 0)
+                        && 
+                        (params.where.sector != 0 && seller.sectors.some((item) => { return item.sector == params.where.sector }) || params.where.sector == 0))
+                }         
+            }).toArray()
+        }
+        catch(err) {
+            console.log(err)
+
+            ret = []
         }
 
         return ret

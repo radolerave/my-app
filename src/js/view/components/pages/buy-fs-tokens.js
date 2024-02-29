@@ -1,3 +1,8 @@
+import { Dexie } from 'dexie'
+import FsDbTransaction from './../../../model/transaction-model.js'
+import FsTransaction from './../../../controller/transaction-controller.js'
+import { fsConfig } from './../../../config/fsConfig.js'
+import FsHelper from "../../../helpers/fsHelper.js"
 import { Maskito, maskitoTransform } from '@maskito/core';
 import { maskitoNumberOptionsGenerator, maskitoParseNumber } from '@maskito/kit';
 
@@ -63,6 +68,12 @@ let buyFsTokens = {
     </style>
   `,
   logic: async () => {
+    const apiUrl = fsConfig.apiUrl
+    const serverUrl = fsConfig.serverUrl
+    let myFsTransaction = new FsTransaction(FsDbTransaction, Dexie)
+    console.log(myFsTransaction)
+    let myFsHelper = new FsHelper()
+
     const navigation = fsGlobalVariable.navigation;
 
     const fstPurchaseQuantity = document.querySelector("#fst-purchase-quantity")
@@ -89,24 +100,86 @@ let buyFsTokens = {
       }
     })
 
-    function paymentProcess() {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(true)
-        }, 2000);
+    function paymentProcess(purchaseDetails) {
+      let createTransaction = () => {
+        return new Promise(async (resolve, reject) => {
+          let response = await myFsTransaction.newTransaction(apiUrl, purchaseDetails)
+          
+          if(response.ok) {
+            resolve(response.pk)
+          }
+          else {
+            reject(response.errorText)
+          }   
+        })
+      }
+
+      let debitTheAccount = () => {
+        return new Promise(async (resolve, reject) => {
+          setTimeout(() => {
+            resolve(true)
+          }, 2000);
+        })
+      }
+
+      let confirmTransaction = (pk) => {
+        return new Promise(async (resolve, reject) => {
+          let response = await myFsTransaction.updateTransaction(apiUrl, {
+            transactionId: pk,
+            updatedData: { status: 1 }
+          })
+          
+          if(response.ok) {
+            resolve(response.nbrOfRows)
+          }
+          else {
+            reject(response.errorText)
+          }   
+        })
+      }
+
+      return new Promise(async (resolve, reject) => {
+        let ret = {}
+
+        try {
+          ret.createTransaction = await createTransaction()
+          ret.debitTheAccount = await debitTheAccount()
+
+          const pk = ret.createTransaction
+
+          ret.confirmTransaction = await confirmTransaction(pk)
+
+          resolve(ret)
+        }
+        catch(err) {
+          reject(err)
+        }
       })
     }
 
     submitPurchaseParameters.addEventListener("click", async () => {
       const purchaseDetails = {
-        quantity: maskitoParseNumber(fstPurchaseQuantity.value, '.'),
-        means: parseInt(meansOfPayment.value),
-        // session: fsGlobalVariable.session,
+          updatedData: {
+              seller_id: fsGlobalVariable.session.seller_id,
+              transaction_type: 1,
+              amount_in_fst: maskitoParseNumber(fstPurchaseQuantity.value, '.'),
+              means_of_payment: parseInt(meansOfPayment.value),
+          }
       }
 
-      const test = await paymentProcess()
+      console.log(purchaseDetails)
+      
+      try {
+        const test = await paymentProcess(purchaseDetails)
 
-      alert(test)
+        alert(JSON.stringify(test, null, "\t"))
+      }
+      catch(err) {
+        console.error(err)
+      }
+      finally {
+
+      }      
     })
   }
 }
