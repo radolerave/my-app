@@ -759,9 +759,26 @@ export default class FsDb {
 
             creditTokens = await creditTokens.json()
 
-            ret.ok = true
-            ret.date = date
-            ret.creditTokens = creditTokens.credit_tokens
+            if(!isNaN(creditTokens.credit_tokens))//number
+            {
+                ret.ok = true
+                ret.date = date
+                ret.creditTokens = creditTokens.credit_tokens
+            }
+            else {//NaN
+                let err
+                if(typeof creditTokens == "object" && typeof creditTokens.message != "undefined") {
+                    err = creditTokens.message
+                }
+                else {
+                    err = "Erreur lors de la récupération de votre solde de crédit."
+                }
+
+                ret.ok = false
+                ret.date = undefined
+                ret.creditTokens = undefined
+                ret.error = err
+            }
         }
         catch(err) {
             ret.ok = false

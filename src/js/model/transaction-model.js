@@ -13,7 +13,7 @@ export default class FsDbTransaction extends FsDb {
             if(await this.silentSignIn(url)) {//credentials must be verified to be able to update anything
                 // Construct the API endpoint URL for creating the item
                 const updateUrl = `${url}/transactions`;
-                const updatedData = args.updatedData
+                const newData = args.newData
 
                 //do a verification process before continuing*********** (credentials)
 
@@ -24,7 +24,7 @@ export default class FsDbTransaction extends FsDb {
                         'Content-Type': 'application/json',
                         // Include any necessary authentication headers here
                     },
-                    body: JSON.stringify(updatedData),
+                    body: JSON.stringify(newData),
                 })
 
                 dateOperation = new Date(createNewTransactionOperation.headers.get("date"))
@@ -33,10 +33,29 @@ export default class FsDbTransaction extends FsDb {
 
                 console.log('Created item:', createdItem);
 
-                ret = {
-                    ok: true,
-                    date: dateOperation,
-                    pk : createdItem
+                if(Number.isInteger(createdItem))
+                {
+                    ret = {
+                        ok: true,
+                        date: dateOperation,
+                        pk : createdItem
+                    }
+                }
+                else {
+                    let err
+                    if(typeof createdItem == "object" && typeof createdItem.message != "undefined") {
+                        err = createdItem.message
+                    }
+                    else {
+                        err = "Erreur sur la transaction."
+                    }
+
+                    ret = {
+                        ok: false,
+                        date: null,
+                        pk: null,
+                        errorText: err
+                    }
                 }
             }
             else {
@@ -212,10 +231,29 @@ export default class FsDbTransaction extends FsDb {
 
                 console.log('Updated item:', updatedItem);
 
-                ret = {
-                    ok: true,
-                    date: dateOperation,
-                    nbrOfRows : updatedItem
+                if(Number.isInteger(updatedItem))
+                {
+                    ret = {
+                        ok: true,
+                        date: dateOperation,
+                        nbrOfRows : updatedItem
+                    }
+                }
+                else {
+                    let err
+                    if(typeof updatedItem == "object" && typeof updatedItem.message != "undefined") {
+                        err = updatedItem.message
+                    }
+                    else {
+                        err = "Erreur sur la transaction."
+                    }
+
+                    ret = {
+                        ok: false,
+                        date: null,
+                        nbrOfRows: null,
+                        errorText: err
+                    }
                 }
             }
             else {

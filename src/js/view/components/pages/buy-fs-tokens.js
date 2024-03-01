@@ -5,6 +5,8 @@ import { fsConfig } from './../../../config/fsConfig.js'
 import FsHelper from "../../../helpers/fsHelper.js"
 import { Maskito, maskitoTransform } from '@maskito/core';
 import { maskitoNumberOptionsGenerator, maskitoParseNumber } from '@maskito/kit';
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
 
 let buyFsTokens = {
   name: "buy-fs-tokens",
@@ -100,11 +102,11 @@ let buyFsTokens = {
       }
     })
 
-    function paymentProcess(purchaseDetails) {
+    function purchasingProcess(purchaseDetails) {
       let createTransaction = () => {
         return new Promise(async (resolve, reject) => {
-          let response = await myFsTransaction.newTransaction(apiUrl, purchaseDetails)
-          
+          let response = await myFsTransaction.newTransaction(apiUrl, purchaseDetails)          
+
           if(response.ok) {
             resolve(response.pk)
           }
@@ -114,11 +116,43 @@ let buyFsTokens = {
         })
       }
 
-      let debitTheAccount = () => {
+      let payment = () => {
         return new Promise(async (resolve, reject) => {
           setTimeout(() => {
             resolve(true)
           }, 2000);
+        })
+      }
+
+      let creditTheAccount = () => {
+        return new Promise(async (resolve, reject) => {
+          const resp = await myFsTransaction.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+          const currentCreditTokens = resp.creditTokens
+          const newCreditTokensValue = currentCreditTokens + purchaseDetails.newData.amount_in_fst
+
+          if(resp.ok) {
+            const response = await myFsTransaction.accountInfosUpdate(apiUrl, {
+              credentials: {
+                "sellerId" : fsGlobalVariable.session.seller_id,
+                "email": fsGlobalVariable.session.email,
+                "password": fsGlobalVariable.session.password,
+                "accountId": fsGlobalVariable.session.id
+              },
+              updatedData: {
+                credit_tokens: newCreditTokensValue
+              }
+            }) 
+                      
+            if(response.ok) {
+              resolve(newCreditTokensValue)
+            }
+            else {
+              reject(response.errorText)              
+            }
+          }
+          else {
+            reject(resp.errorText) 
+          }          
         })
       }
 
@@ -128,7 +162,7 @@ let buyFsTokens = {
             transactionId: pk,
             updatedData: { status: 1 }
           })
-          
+                    
           if(response.ok) {
             resolve(response.nbrOfRows)
           }
@@ -143,43 +177,102 @@ let buyFsTokens = {
 
         try {
           ret.createTransaction = await createTransaction()
-          ret.debitTheAccount = await debitTheAccount()
+          ret.payment = await payment()
+
+          ret.creditTheAccount = await creditTheAccount()
 
           const pk = ret.createTransaction
 
-          ret.confirmTransaction = await confirmTransaction(pk)
+          ret.statusOfTheTransaction = await confirmTransaction(pk)
 
           resolve(ret)
         }
         catch(err) {
           reject(err)
         }
+
+        // createTransaction()
+        // .then((value) => {
+        //   ret.createTransaction = value
+
+        //   payment()
+        //   .then((value) => {
+        //     ret.payment = value
+            
+        //     confirmTransaction(ret.createTransaction)
+        //     .then((value) => {
+        //       ret.statusOfTheTransaction = value
+              
+        //       resolve(ret)
+        //     })
+        //     .catch((err) => {
+        //       reject(err)
+        //     })
+        //   })
+        //   .catch((err) => {
+        //     reject(err)
+        //   })
+        // })
+        // .catch((err) => {
+        //   reject(err)
+        // })
       })
     }
 
     submitPurchaseParameters.addEventListener("click", async () => {
-      const purchaseDetails = {
-          updatedData: {
+      const purchaseQuantity = isNaN(maskitoParseNumber(fstPurchaseQuantity.value, '.')) ? 10 : maskitoParseNumber(fstPurchaseQuantity.value, '.')
+
+      const tab = [
+        "undefined", //0
+        "Mobile money", //1
+        "Carte bancaire", //2
+        "En espèces", //3
+      ]
+
+      const confirmation = await Dialog.confirm({
+        title: 'Achat de crédits',
+        message: `
+          Résumé de votre achat : 
+          Quantité : ${purchaseQuantity} FST
+          Moyen : ${tab[parseInt(meansOfPayment.value)]}
+          
+          Voulez-vous continuer ?
+        `,
+        okButtonTitle: "oui",
+        cancelButtonTitle: "non",
+      })
+
+      if(confirmation.value) {
+        const purchaseDetails = {
+          newData: {
               seller_id: fsGlobalVariable.session.seller_id,
               transaction_type: 1,
-              amount_in_fst: maskitoParseNumber(fstPurchaseQuantity.value, '.'),
+              amount_in_fst: purchaseQuantity,
               means_of_payment: parseInt(meansOfPayment.value),
           }
-      }
+        }
 
-      console.log(purchaseDetails)
-      
-      try {
-        const test = await paymentProcess(purchaseDetails)
+        console.log(purchaseDetails)
+        
+        try {
+          const test = await purchasingProcess(purchaseDetails)
 
-        alert(JSON.stringify(test, null, "\t"))
-      }
-      catch(err) {
-        console.error(err)
-      }
-      finally {
+          await Dialog.alert({
+            "title": `Succès`,
+            "message": JSON.stringify(test, null, "\t")
+          })
+        }
+        catch(err) {
+          await Dialog.alert({
+            "title": `Erreur`,
+            "message": err
+          })
+          // console.error(err)
+        }
+        finally {
 
-      }      
+        }
+      }   
     })
   }
 }
