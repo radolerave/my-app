@@ -156,11 +156,11 @@ let buyFsTokens = {
         })
       }
 
-      let confirmTransaction = (pk) => {
+      let confirmTransaction = (pk, status) => {
         return new Promise(async (resolve, reject) => {
           let response = await myFsTransaction.updateTransaction(apiUrl, {
             transactionId: pk,
-            updatedData: { status: 1 }
+            updatedData: { status: status }
           })
                     
           if(response.ok) {
@@ -176,14 +176,16 @@ let buyFsTokens = {
         let ret = {}
 
         try {
-          ret.createTransaction = await createTransaction()
+          ret.createTransaction = await createTransaction()//initialize the transaction
+
           ret.payment = await payment()
 
-          ret.creditTheAccount = await creditTheAccount()
-
           const pk = ret.createTransaction
+          ret.statusOfTheTransaction = await confirmTransaction(pk, 2)//a pending transaction
 
-          ret.statusOfTheTransaction = await confirmTransaction(pk)
+          ret.creditTheAccount = await creditTheAccount()          
+
+          ret.statusOfTheTransaction = await confirmTransaction(pk, 1)//a successfull transaction
 
           resolve(ret)
         }
@@ -233,6 +235,7 @@ let buyFsTokens = {
         title: 'Achat de crédits',
         message: `
           Résumé de votre achat : 
+          
           Quantité : ${purchaseQuantity} FST
           Moyen : ${tab[parseInt(meansOfPayment.value)]}
           

@@ -68,7 +68,7 @@ export default class FsDbTransaction extends FsDb {
             }
         }
         catch(error) {
-            console.error('Error updating item:', error);
+            console.error('Error creating item:', error);
             // Handle error
 
             ret = {

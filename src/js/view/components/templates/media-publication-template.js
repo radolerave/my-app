@@ -1,6 +1,6 @@
 import { Dexie } from 'dexie'
-import FsDb from './../../../model/model.js'
-import Fs from './../../../controller/controller.js'
+import FsDb from './../../../model/transaction-model.js'
+import Fs from './../../../controller/transaction-controller.js'
 import { fsConfig } from './../../../config/fsConfig.js'
 import FsHelper from "../../../helpers/fsHelper.js"
 
@@ -234,6 +234,8 @@ let mediaPublicationTemplate = {
                 })
             })
 
+            const validity = isNaN(maskitoParseNumber(publicationValidityPeriod.value, '.')) ? 1 : maskitoParseNumber(publicationValidityPeriod.value, '.')
+
             let finalData = {
                 credentials: {
                     "sellerId" : fsGlobalVariable.session.seller_id,
@@ -248,7 +250,7 @@ let mediaPublicationTemplate = {
                         selectedMedias: sMedias
                     }),
                     type: publicationType.value,
-                    validity: publicationValidityPeriod.value
+                    validity: validity
                 },
                 publicationId: publicationId
             }
@@ -310,6 +312,35 @@ let mediaPublicationTemplate = {
                     })
                 }
             }                        
+        }
+
+        let createTransaction = (transactionDetails) => {
+            return new Promise(async (resolve, reject) => {
+                let response = await myFs.newTransaction(apiUrl, transactionDetails)          
+        
+                if(response.ok) {
+                    resolve(response.pk)
+                }
+                else {
+                    reject(response.errorText)
+                }   
+            })
+        }
+
+        let confirmTransaction = (pk, status) => {
+            return new Promise(async (resolve, reject) => {
+                let response = await myFs.updateTransaction(apiUrl, {
+                    transactionId: pk,
+                    updatedData: { status: status }
+                })
+                            
+                if(response.ok) {
+                    resolve(response.nbrOfRows)
+                }
+                else {
+                    reject(response.errorText)
+                }   
+            })
         }
 
         async function backendPaymentOperation(paymentDetails) {
@@ -400,13 +431,33 @@ let mediaPublicationTemplate = {
         
                     if(confirmation.value) {
                         try {
+                            const pk = await createTransaction({//initialize the transaction
+                                newData: {
+                                    seller_id: fsGlobalVariable.session.seller_id,
+                                    transaction_type: 0,//debit
+                                    amount_in_fst: paymentDetails.pubCost,
+                                    means_of_payment: 4,//credit tokens
+                                }
+                            })
+
                             if(await backendPaymentOperation(paymentDetails)) {
                                 try {
+                                    await confirmTransaction(pk, 2)//a pending transaction
+
                                     await publishFn()
+
+                                    try {
+                                        await confirmTransaction(pk, 1)//a successfull transaction
+                                    }
+                                    catch(err) {
+                                        console.error(err)
+                                    }
                                 }
                                 catch(err) {
                                     //rollback ......
                                     await rollBack(paymentDetails)
+
+                                    await confirmTransaction(pk, 0)//a failed transaction
                                     
                                     await Dialog.alert({
                                         title: "Erreur",
@@ -415,6 +466,8 @@ let mediaPublicationTemplate = {
                                 }
                             }
                             else {
+                                await confirmTransaction(pk, 0)//a failed transaction
+
                                 await Dialog.alert({
                                     title: "Erreur",
                                     message: "Une erreur s'est produite!\nLa publication est annulée."
