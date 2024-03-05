@@ -86,7 +86,7 @@ let buyFsTokens = {
       decimalSeparator: '.',
       thousandSeparator: ' ',
       precision: 0,
-      max: 3650,
+      max: 36500,
       min: 10,
     }))
 

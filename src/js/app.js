@@ -17,6 +17,16 @@ window.fsGlobalVariable = {
     navigation : document.querySelector("ion-app ion-nav#navigation")
 }
 
+window.showBackdrop = () => {
+    document.querySelector("#fs-backdrop").classList.remove("ion-hide")
+}
+
+window.hideBackdrop = () => {
+    if(!document.querySelector("#fs-backdrop").classList.contains("ion-hide")) {
+        document.querySelector("#fs-backdrop").classList.add("ion-hide")
+    }
+}
+
 let lastBackButonTimerMs = Date.now()
 let myFsView = new FsView()
 window.addEventListener("load", async (event) => {

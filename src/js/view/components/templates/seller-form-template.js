@@ -410,17 +410,6 @@ let sellerFormTemplate = {
                             "type": "object",
                             "title": "Mon espace",
                             "properties": {
-                                "enable_space": {
-                                    "type": "object",
-                                    "title": "statut de cet espace",
-                                    "properties": {
-                                        "enabled": {
-                                            "type": "boolean",
-                                            "format": "checkbox",
-                                            "title": "activé"
-                                        }
-                                    }
-                                },
                                 "wording": {
                                     "type": "string",
                                     "title": "Nom de mon espace"
