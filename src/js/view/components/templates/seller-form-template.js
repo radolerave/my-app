@@ -576,7 +576,7 @@ let sellerFormTemplate = {
                 "creditTokensCallbackFunction": (jseditor,e) => {
                     let fst
 
-                    fst = `${e.tkn} FST`
+                    fst = `${e.tkn.toLocaleString()} FST`
                     
                     return fst
                 }

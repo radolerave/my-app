@@ -233,14 +233,8 @@ let buyFsTokens = {
 
       const confirmation = await Dialog.confirm({
         title: 'Achat de crédits',
-        message: `
-          Résumé de votre achat : 
-          
-          Quantité : ${purchaseQuantity} FST
-          Moyen : ${tab[parseInt(meansOfPayment.value)]}
-          
-          Voulez-vous continuer ?
-        `,
+        message: 
+          `Résumé de votre achat :\n\nQuantité : ${purchaseQuantity.toLocaleString()} FST\nMoyen : ${tab[parseInt(meansOfPayment.value)]}\n\nVoulez-vous continuer ?`,
         okButtonTitle: "oui",
         cancelButtonTitle: "non",
       })

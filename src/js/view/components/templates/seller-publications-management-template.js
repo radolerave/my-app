@@ -34,7 +34,7 @@ let sellerPublicationsManagementTemplate = {
         let myFs = new Fs(FsDb, Dexie)
         
         const publicationsList = document.querySelector(`${containerId} #publicationsList`)
-        const navigation = document.querySelector("ion-app ion-nav#navigation")        
+        const navigation = fsGlobalVariable.navigation;
 
         if(response.ok) {
             publicationsList.innerHTML = ""
@@ -63,39 +63,76 @@ let sellerPublicationsManagementTemplate = {
                 })
 
                 try {
-                    card.querySelector(".link-to-seller-details").addEventListener("click", async () => {
-                        const navigation = fsGlobalVariable.navigation;
+                    const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")
+                    const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")                    
+                    const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
+                    const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
+                    const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
+                    const fsPublicationMoreOptionsPublish = card.querySelector(".fsPublicationMoreOptionsPublish")
+                    const fsPublicationMoreOptionsUnpublish = card.querySelector(".fsPublicationMoreOptionsUnpublish")
 
+                    const fsPublicationSellerDetailsPopover = card.querySelector(".fsPublicationSellerDetailsPopover")
+                    const fsPublicationSellerDetailsView = card.querySelector(".fsPublicationSellerDetailsView")
+                    const fsPublicationSellerDetailsManage = card.querySelector(".fsPublicationSellerDetailsManage")
+
+                    const fsPublicationAction1 = card.querySelector(".fsPublicationAction1")
+                    const fsPublicationAction2 = card.querySelector(".fsPublicationAction2")
+
+                    card.querySelector(".link-to-seller-details").addEventListener("click", async (e) => {
                         let currentPage = await navigation.getActive()
 
                         // console.log(currentPage)
 
                         if(currentPage.component == "main-page") {
                             // alert(data.sellerId)
-
-                            try {
-                                const upToDateSellerInfos = await myFs.getSellerInfos(fsConfig.apiUrl, data.sellerId)
-
-                                upToDateSellerInfos.sellerInfos.id = data.sellerId//important!!!
-                            
-                                console.log(upToDateSellerInfos)
-                            
-                                if(upToDateSellerInfos.ok) {
-                                    navigation.push('seller-details', { data: upToDateSellerInfos.sellerInfos }) 
-                                }
-                                else {
-                                    await Toast.show({
-                                    text: `Impossible de récupérer des informations venant du serveur.`,
-                                    })
-                                }
+                            if(typeof fsGlobalVariable.session.seller_id != "undefined" && fsGlobalVariable.session.seller_id == data.sellerId) {
+                                fsPublicationSellerDetailsManage.classList.remove("ion-hide")
+                                fsPublicationSellerDetailsManage.setAttribute("disabled", "false")
                             }
-                            catch(err) {
-                                await Dialog.alert({
-                                    title: 'Erreur',
-                                    message: `Impossible de récupérer des informations venant du serveur.`,
-                                })
-                            }                            
+                            else {
+                                fsPublicationSellerDetailsManage.remove()
+                            }
+
+                            fsPublicationSellerDetailsPopover.addEventListener('didDismiss', () => (fsPublicationSellerDetailsPopover.isOpen = false))
+
+                            fsPublicationSellerDetailsPopover.event = e
+                            fsPublicationSellerDetailsPopover.isOpen = true                   
                         }   
+                    })
+
+                    fsPublicationSellerDetailsView.addEventListener("click", async (ev) => {
+                        fsPublicationSellerDetailsPopover.isOpen = false
+
+                        try {
+                            const upToDateSellerInfos = await myFs.getSellerInfos(fsConfig.apiUrl, data.sellerId)
+
+                            upToDateSellerInfos.sellerInfos.id = data.sellerId//important!!!
+                        
+                            console.log(upToDateSellerInfos)
+                        
+                            if(upToDateSellerInfos.ok) {
+                                await navigation.push('seller-details', { data: upToDateSellerInfos.sellerInfos }) 
+                            }
+                            else {
+                                await Toast.show({
+                                text: `Impossible de récupérer des informations venant du serveur.`,
+                                })
+                            }
+                        }
+                        catch(err) {
+                            await Dialog.alert({
+                                title: 'Erreur',
+                                message: `Impossible de récupérer des informations venant du serveur.`,
+                            })
+                        }
+                    })
+
+                    fsPublicationSellerDetailsManage.addEventListener("click", async (ev) => {
+                        fsPublicationSellerDetailsPopover.isOpen = false
+
+                        await navigation.popToRoot()
+                        const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
+                        await mainPageTab.select("my-account")
                     })
 
                     card.querySelector(".see-more-btn").addEventListener("click", () => {
@@ -128,19 +165,9 @@ let sellerPublicationsManagementTemplate = {
                         card.querySelector(".canBeReduced").removeEventListener("click", listener)
 
                         card.querySelector(".canBeReduced").addEventListener("click", listener)
-                    }) 
+                    })                     
 
-                    const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")
-                    const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")
-                    const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
-                    const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
-                    const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
-                    const fsPublicationMoreOptionsPublish = card.querySelector(".fsPublicationMoreOptionsPublish")
-                    const fsPublicationMoreOptionsUnpublish = card.querySelector(".fsPublicationMoreOptionsUnpublish")
-                    const fsPublicationAction1 = card.querySelector(".fsPublicationAction1")
-                    const fsPublicationAction2 = card.querySelector(".fsPublicationAction2")
-
-                    if(typeof response.noControls == "boolean" && response.noControls == true) {
+                    if(typeof response.noControls == "boolean" && response.noControls == true && (typeof fsGlobalVariable.session.seller_id == "undefined" || fsGlobalVariable.session.seller_id != data.sellerId)) {
                         fsPublicationMoreOptions.remove()
                         fsPublicationAction1.remove()
                         fsPublicationAction2.remove()
@@ -244,12 +271,16 @@ let sellerPublicationsManagementTemplate = {
                         })
 
                         fsPublicationMoreOptionsUnpublish.addEventListener("click", async () => {
+                            alert(JSON.stringify(data))
+                            
                             const confirmation = await Dialog.confirm({
                                 title: 'Confirmation',
                                 message: `Voulez-vous vraiment désactiver cette publication ?`,
                                 okButtonTitle: "oui",
                                 cancelButtonTitle: "non",
                             })
+
+                            
 
                             if(confirmation.value) {
                                 const response = await myFs.updatePublication(apiUrl, { 

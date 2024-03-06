@@ -128,6 +128,19 @@ let sellerPublicationCardTemplate = {
                                 </ion-item>
                             </ion-content>
                         </ion-popover>
+
+                        <ion-popover class="fsPublicationSellerDetailsPopover">
+                            <ion-content class="ion-padding">
+                                <ion-item button class="fsPublicationSellerDetailsView">
+                                    <ion-icon name="reader-outline" slot="start"></ion-icon>
+                                    <ion-label>Détails</ion-label>
+                                </ion-item>
+                                <ion-item button class="fsPublicationSellerDetailsManage ion-hide" disabled="true">
+                                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                                    <ion-label>Gérer</ion-label>
+                                </ion-item>
+                            </ion-content>
+                        </ion-popover>
                     </ion-card-header>
                 
                     <ion-card-content class="ion-no-margin ion-no-padding">
