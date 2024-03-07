@@ -3,6 +3,8 @@ import FsDb from './../../../model/transaction-model.js'
 import Fs from './../../../controller/transaction-controller.js'
 import { fsConfig } from './../../../config/fsConfig.js'
 import FsHelper from "../../../helpers/fsHelper.js"
+import { advertisementsTemplate } from './advertisements-template.js'
+import { newsTemplate } from './news-template.js'
 
 import { Maskito, maskitoTransform } from '@maskito/core';
 import { maskitoNumberOptionsGenerator, maskitoParseNumber } from '@maskito/kit';
@@ -92,6 +94,34 @@ let mediaPublicationTemplate = {
         const costs = publicationRateInfos.publicationRate
 
         console.log(costs)
+
+        const fromPage = typeof args.currentPage.params != "undefined" && typeof args.currentPage.params.fromPage != "undefined" ? args.currentPage.params.fromPage : undefined//from which page posts are displayed and actions are executed
+
+        async function goTo() {
+            const tab = document.querySelector("main-page ion-tabs#main-page-tab")
+            const currentTab = await tab.getSelected()
+
+            if(typeof fromPage != "undefined" && fromPage.component == "main-page") {
+                await navigation.popToRoot()
+
+                switch(currentTab) {
+                    case "advertisement": 
+                            await advertisementsTemplate.logic()  
+                        break
+            
+                    case "news": 
+                            await newsTemplate.logic()  
+                        break
+            
+                    default:
+                        break
+                }
+            }
+            else {
+                await navigation.popToRoot()
+                await navigation.push("seller-publications-management")
+            }            
+        }
 
         function costCalculation() {
             let validity = publicationValidityPeriod.value
@@ -275,8 +305,7 @@ let mediaPublicationTemplate = {
             }
 
             if(response.ok) {
-                await navigation.popToRoot()
-                await navigation.push("seller-publications-management")
+                await goTo()
             }
             else {
                 throw new Error(response.errorText)                
