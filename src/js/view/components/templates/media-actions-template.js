@@ -188,6 +188,21 @@ let mediaActionsTemplate = {
             .use(XHR, { 
                 endpoint: `${serverUrl}/upload.php`,
                 fieldName: 'my_fs_file',
+                validateStatus: (status, responseText, response) => {
+                    // console.log(status)
+                    // console.log(responseText)
+                    // console.log(response)
+
+                    try {
+                        const resp = JSON.parse(responseText)
+                        const ok = resp.ok
+
+                        return ok
+                    }
+                    catch(err) {
+                        return false
+                    }
+                }
             });      
 
             uppy.setMeta({
@@ -205,6 +220,17 @@ let mediaActionsTemplate = {
                 
                 await navigation.pop()
                 await navigation.push("seller-medias-management")
+            });
+
+            uppy.on('upload-error', async (file, error, response) => {
+                console.log(response);
+
+                uppy.cancelAll()
+
+                await Dialog.alert({
+                    title: "Erreur",
+                    message: `${response.body.message}`,
+                })
             });
         })
 
