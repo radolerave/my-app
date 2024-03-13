@@ -90,6 +90,14 @@ let sellerPublicationsManagementTemplate = {
                         speed: 500,
                     })
 
+                    card.addEventListener("lgBeforeOpen", () => {
+                        alert('open')
+                    })
+
+                    card.addEventListener("lgBeforeClose", () => {
+                        alert('close')
+                    })
+
                     try {
                         const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")
                         const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")                    
@@ -113,7 +121,7 @@ let sellerPublicationsManagementTemplate = {
 
                             if(currentPage.component == "main-page") {
                                 // alert(data.sellerId)
-                                if(typeof fsGlobalVariable.session.seller_id != "undefined" && fsGlobalVariable.session.seller_id == data.sellerId) {
+                                if(typeof fsGlobalVariable.session != "undefined" && typeof fsGlobalVariable.session.seller_id != "undefined" && fsGlobalVariable.session.seller_id == data.sellerId) {
                                     fsPublicationSellerDetailsManage.classList.remove("ion-hide")
                                     fsPublicationSellerDetailsManage.setAttribute("disabled", "false")
                                 }
@@ -195,7 +203,7 @@ let sellerPublicationsManagementTemplate = {
                             card.querySelector(".canBeReduced").addEventListener("click", listener)
                         })                     
 
-                        if(typeof response.noControls == "boolean" && response.noControls == true && (typeof fsGlobalVariable.session.seller_id == "undefined" || fsGlobalVariable.session.seller_id != data.sellerId)) {
+                        if(typeof response.noControls == "boolean" && response.noControls == true && (typeof fsGlobalVariable.session == "undefined" || typeof fsGlobalVariable.session.seller_id == "undefined" || fsGlobalVariable.session.seller_id != data.sellerId)) {
                             fsPublicationMoreOptions.remove()
                             fsPublicationAction1.remove()
                             fsPublicationAction2.remove()
@@ -349,6 +357,7 @@ let sellerPublicationsManagementTemplate = {
                     }
                     catch(err) {
                         //do nothing :p
+                        console.log(err)
                     }
                 }    
             }        

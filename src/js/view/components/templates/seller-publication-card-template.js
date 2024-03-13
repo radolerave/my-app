@@ -16,14 +16,7 @@ let sellerPublicationCardTemplate = {
     logic: async (args) => {
         let data = args
         const myCloudName = fsConfig.cloudinary.cloudName
-        let myFormatter = new Formatter()
-
-        // Create a Cloudinary instance and set your cloud name.    
-        const cld = new Cloudinary({
-            cloud: {
-            cloudName: myCloudName
-            }
-        }); 
+        let myFormatter = new Formatter()        
 
         let cfg = {};
 
