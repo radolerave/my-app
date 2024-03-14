@@ -1,3 +1,4 @@
+import { fsConfig } from './../../../config/fsConfig.js';
 // import Swiper bundle with all modules installed
 import Swiper from 'swiper/bundle';
 
@@ -158,6 +159,8 @@ let landingPageTemplate = {
         //     myWidget.open();
         //     }, false);
 
+        const varoboba = document.querySelector("#swiper-wrapper-varoboba")
+        const envogue = document.querySelector("#swiper-wrapper-envogue")
 
         const swiper = new Swiper(".mySwiper", {
             slidesPerView: (document.querySelector("#main-content").offsetWidth/150),
@@ -187,16 +190,23 @@ let landingPageTemplate = {
             const imgElement = document.createElement('img');
             swiperSlide.appendChild(imgElement);
 
-            document.querySelector("#swiper-wrapper-varoboba").appendChild(swiperSlide)
+            varoboba.appendChild(swiperSlide)
 
             imgElement.src = myImage.toURL();
         }      
         
-        lightGallery(document.getElementById('swiper-wrapper-varoboba'), {
+        const plugin1 = lightGallery(varoboba, {
             plugins: [lgZoom, lgThumbnail],
-            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+            licenseKey: fsConfig.lightGallery.licenseKey,
             speed: 500
         });
+
+        varoboba.addEventListener("lgBeforeOpen", () => {
+            fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+            fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+                plugin1.closeGallery()
+            }
+        })
         
         let data = await fetch("https://res.cloudinary.com/dtu8h2u98/image/list/fs.json")
         data = await data.json()
@@ -221,16 +231,23 @@ let landingPageTemplate = {
             const imgElement = document.createElement('img');
             swiperSlide.appendChild(imgElement);
 
-            document.querySelector("#swiper-wrapper-envogue").appendChild(swiperSlide)
+            envogue.appendChild(swiperSlide)
 
             imgElement.src = myImage.toURL();
         }      
         
-        lightGallery(document.getElementById('swiper-wrapper-envogue'), {
+        const plugin2 = lightGallery(envogue, {
             plugins: [lgZoom, lgThumbnail],
-            licenseKey: 'ABE7EA7B-5B1E-47FE-B473-F5F98AE41D9A',
+            licenseKey: fsConfig.lightGallery.licenseKey,
             speed: 500
         }); 
+
+        envogue.addEventListener("lgBeforeOpen", () => {
+            fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+            fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+                plugin2.closeGallery()
+            }
+        })
     }
 }
 

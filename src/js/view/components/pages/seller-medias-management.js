@@ -171,10 +171,17 @@ let sellerMediasManagement = {
         document.querySelector("#sellerMediaManagementContent").appendChild(document.createElement("br"))
       }
 
-      lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
+      lightGalleryForImages = lightGallery(imagesContainer, {
         plugins: [lgZoom, lgThumbnail],
         licenseKey: fsConfig.lightGallery.licenseKey,
         speed: 500
+      })
+
+      imagesContainer.addEventListener("lgBeforeOpen", () => {
+        fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+        fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+          lightGalleryForImages.closeGallery()
+        }
       })
 
       for(let i=0; i<videoList.length; i++) {        
@@ -239,13 +246,20 @@ let sellerMediasManagement = {
         document.querySelector("#sellerMediaManagementContent").appendChild(plusVideos)
       }
 
-      lightGalleryForVideos = lightGallery(document.getElementById('videos-container'), {
+      lightGalleryForVideos = lightGallery(videosContainer, {
         plugins: [lgVideo],
         licenseKey: fsConfig.lightGallery.licenseKey,
         videojs: true,
         videojsOptions: {
             muted: false,
         },
+      })
+
+      videosContainer.addEventListener("lgBeforeOpen", () => {
+        fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+        fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+          lightGalleryForVideos.closeGallery()
+        }
       })
 
       let plusImagesBtn = document.querySelector("#plusImages")

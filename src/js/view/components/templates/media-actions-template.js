@@ -137,19 +137,36 @@ let mediaActionsTemplate = {
                     })
                     
                     if(prevNbr == 0) {
-                        lightGalleryForImages = lightGallery(document.getElementById('images-container'), {
+                        const imagesContainer = document.getElementById('images-container')
+                        const videosContainer = document.getElementById('videos-container')
+
+                        lightGalleryForImages = lightGallery(imagesContainer, {
                             plugins: [lgZoom, lgThumbnail],
                             licenseKey: fsConfig.lightGallery.licenseKey,
                             speed: 500
                         })
 
-                        lightGalleryForVideos = lightGallery(document.getElementById('videos-container'), {
+                        imagesContainer.addEventListener("lgBeforeOpen", () => {
+                            fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+                            fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+                                lightGalleryForImages.closeGallery()
+                            }
+                          })
+
+                        lightGalleryForVideos = lightGallery(videosContainer, {
                             plugins: [lgVideo],
                             licenseKey: fsConfig.lightGallery.licenseKey,
                             videojs: true,
                             videojsOptions: {
                                 muted: false,
                             },
+                        })
+
+                        videosContainer.addEventListener("lgBeforeOpen", () => {
+                            fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+                            fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+                                lightGalleryForVideos.closeGallery()
+                            }
                         })
 
                         allMylightGalleries = [lightGalleryForImages, lightGalleryForVideos]

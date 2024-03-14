@@ -79,7 +79,7 @@ let sellerPublicationsManagementTemplate = {
 
                     publicationsList.appendChild(card)
 
-                    lightGallery(card, {
+                    const plugin = lightGallery(card, {
                         selector: ".fs-media",
                         plugins: [lgVideo, lgZoom, lgThumbnail],
                         licenseKey: fsConfig.lightGallery.licenseKey,
@@ -88,15 +88,24 @@ let sellerPublicationsManagementTemplate = {
                             muted: false,
                         },
                         speed: 500,
-                    })
+                    })                    
 
                     card.addEventListener("lgBeforeOpen", () => {
-                        alert('open')
+                        fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
+                        fsGlobalVariable.ionBackButtonHandler.fn = async () => {
+                            plugin.closeGallery()
+                        }
+
+                        // alert('open')
                     })
 
-                    card.addEventListener("lgBeforeClose", () => {
-                        alert('close')
-                    })
+                    // card.addEventListener("lgAfterOpen", () => {
+                    //     fsGlobalVariable.ionBackButtonHandler.fn()
+                    // })
+
+                    // card.addEventListener("lgBeforeClose", () => {
+                    //     // alert('close')
+                    // })
 
                     try {
                         const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")

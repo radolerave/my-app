@@ -14,7 +14,11 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 
 window.fsGlobalVariable = {
-    navigation : document.querySelector("ion-app ion-nav#navigation")
+    navigation: document.querySelector("ion-app ion-nav#navigation"),
+    ionBackButtonHandler: {
+        canProcessNextHandler: true,
+        fn: async () => {}
+    }
 }
 
 window.showBackdrop = () => {
@@ -68,29 +72,57 @@ window.addEventListener("load", async (event) => {
 })
 
 document.addEventListener('ionBackButton', async (ev) => {
-    let timer = (Date.now() - lastBackButonTimerMs)
-    
-    const navigation = fsGlobalVariable.navigation
-    const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
-    
-    if(timer < 500)
-    {
-        // if(this.appConf.doubleTapHardwareBackButtonToQuit)
-        App.exitApp();	
-    } 
-    else {
-        const activeNav = await navigation.getActive()
-        const activeNavName = activeNav.component
-        
-        if(activeNavName == "main-page" && await mainPageTab.getSelected() != "landing") {
-            await mainPageTab.select("landing")
-        }
-        else 
-        {
-            navigation.pop()
-        }    
-    }
+    ev.detail.register(0, async () => {})
 
-    lastBackButonTimerMs = Date.now()
+    ev.detail.register(100, async (processNextHandler) => {
+        let timer = (Date.now() - lastBackButonTimerMs)
+    
+        const navigation = fsGlobalVariable.navigation
+        const mainPageTab = document.querySelector("main-page ion-tabs#main-page-tab")
+
+        if(timer < 500)
+        {
+            // if(this.appConf.doubleTapHardwareBackButtonToQuit)
+            App.exitApp();	
+        } 
+        else {
+            const activeNav = await navigation.getActive()
+            const activeNavName = activeNav.component
+            
+            if(activeNavName == "main-page" && await mainPageTab.getSelected() != "landing") {
+                await mainPageTab.select("landing")
+            }
+            else 
+            {
+                navigation.pop()
+            }    
+        }
+
+        lastBackButonTimerMs = Date.now()  
+        
+        // processNextHandler()
+    })    
+
+    ev.detail.register(100, async (processNextHandler) => {
+        const canProcessNextHandler = typeof fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler != "undefined" ? fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler : true
+
+        try {
+            if(typeof fsGlobalVariable.ionBackButtonHandler.fn == "function") {
+                await fsGlobalVariable.ionBackButtonHandler.fn()
+            }
+        }
+        catch(err) {
+            console.log(err)
+        }
+
+        fsGlobalVariable.ionBackButtonHandler = {
+            canProcessNextHandler: true,
+            fn: async () => {}
+        }
+
+        if(canProcessNextHandler) {
+            processNextHandler()
+        }
+    })
 })
   
