@@ -72,8 +72,6 @@ window.addEventListener("load", async (event) => {
 })
 
 document.addEventListener('ionBackButton', async (ev) => {
-    ev.detail.register(0, async () => {})
-
     ev.detail.register(100, async (processNextHandler) => {
         let timer = (Date.now() - lastBackButonTimerMs)
     
@@ -87,15 +85,29 @@ document.addEventListener('ionBackButton', async (ev) => {
         } 
         else {
             const activeNav = await navigation.getActive()
-            const activeNavName = activeNav.component
-            
-            if(activeNavName == "main-page" && await mainPageTab.getSelected() != "landing") {
-                await mainPageTab.select("landing")
+            const activeNavName = activeNav.component      
+
+            switch(true) {
+                case (await navigation.canGoBack()):
+                    await navigation.pop()
+                    break
+                    
+                case (await document.querySelector("ion-menu[menu-id='menu']").isOpen()): 
+                    await document.querySelector("ion-menu[menu-id='menu']").close()
+                    break
+
+                case (await document.querySelector("ion-menu[menu-id='menu2']").isOpen()): 
+                    await document.querySelector("ion-menu[menu-id='menu2']").close()
+                    break                            
+
+                case (activeNavName == "main-page" && await mainPageTab.getSelected() != "landing"):
+                    await mainPageTab.select("landing")
+                    break
+
+                default: 
+                    processNextHandler()
+                    break
             }
-            else 
-            {
-                navigation.pop()
-            }    
         }
 
         lastBackButonTimerMs = Date.now()  
