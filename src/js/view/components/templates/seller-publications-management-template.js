@@ -111,10 +111,11 @@ let sellerPublicationsManagementTemplate = {
                         const fsPublicationMoreOptions = card.querySelector(".fsPublicationMoreOptions")
                         const fsPublicationMoreOptionsPopover = card.querySelector(".fsPublicationMoreOptionsPopover")                    
                         const fsPublicationMoreOptionsEdit = card.querySelector(".fsPublicationMoreOptionsEdit")
-                        const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")
-                        const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
+                        const fsPublicationMoreOptionsDelete = card.querySelector(".fsPublicationMoreOptionsDelete")                        
                         const fsPublicationMoreOptionsPublish = card.querySelector(".fsPublicationMoreOptionsPublish")
                         const fsPublicationMoreOptionsUnpublish = card.querySelector(".fsPublicationMoreOptionsUnpublish")
+                        const fsPublicationMoreOptionsAddValidity = card.querySelector(".fsPublicationMoreOptionsAddValidity")
+                        const fsPublicationMoreOptionsInformations = card.querySelector(".fsPublicationMoreOptionsInformations")
 
                         const fsPublicationSellerDetailsPopover = card.querySelector(".fsPublicationSellerDetailsPopover")
                         const fsPublicationSellerDetailsView = card.querySelector(".fsPublicationSellerDetailsView")
@@ -348,6 +349,34 @@ let sellerPublicationsManagementTemplate = {
                                 }
                                 else {
                                     fsPublicationMoreOptionsPopover.isOpen = false
+                                }
+                            })
+
+                            fsPublicationMoreOptionsAddValidity.addEventListener("click", async () => {     
+                                const confirmation = await Dialog.confirm({
+                                    title: 'Confirmation',
+                                    message: `Voulez-vous étendre la validité de cette publication ?`,
+                                    okButtonTitle: "oui",
+                                    cancelButtonTitle: "non",
+                                })
+
+                                if(confirmation.value) {
+                                    fsPublicationMoreOptionsPopover.isOpen = false
+
+                                    fsGlobalVariable.textToPublish = data.textToPublish
+
+                                    await navigation.push("media-publication", {
+                                        selectedMedias: card.querySelectorAll("media"),
+                                        operationType: "extendValidity",
+                                        publicationId: data.publicationId,
+                                        publicationType: data.publicationType,
+                                        publicationValidity: data.publicationValidity,
+                                        fromPage: fromPage
+                                    })
+
+                                    let currentPage = await navigation.getActive()
+
+                                    console.log(currentPage)
                                 }
                             })
 

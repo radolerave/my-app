@@ -115,6 +115,10 @@ let sellerPublicationCardTemplate = {
                                     <ion-icon name="contract-outline" slot="start"></ion-icon>
                                     <ion-label>Dé-publier</ion-label>
                                 </ion-item>
+                                <ion-item button class="fsPublicationMoreOptionsAddValidity">
+                                    <ion-icon name="hourglass-outline" slot="start"></ion-icon>
+                                    <ion-label>Validité suppl.</ion-label>
+                                </ion-item>
                                 <ion-item button class="fsPublicationMoreOptionsInformations">
                                     <ion-icon name="information-outline" slot="start"></ion-icon>
                                     <ion-label>Informations</ion-label>

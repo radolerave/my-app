@@ -197,16 +197,41 @@ let mediaPublicationTemplate = {
         const mediaList = document.querySelector("#media-list")
         let nbrOfSelectedMedias = selectedMedias.length
 
-        if(operationType == "update") {
-            publicationType.setAttribute("value", publicationTypeValue)
-            publicationValidityPeriod.setAttribute("value", publicationValidityValue)
-            
-            costCalculation()
+        switch(operationType) {
+            case "update": 
+                publicationType.setAttribute("value", publicationTypeValue)
+                publicationValidityPeriod.setAttribute("value", publicationValidityValue)
+                
+                costCalculation()
 
-            console.log(publicationTypeValue)
-        }
-        else {
-            publicationSettings.removeAttribute("disabled")
+                console.log(publicationTypeValue)
+                break
+
+            case "extendValidity": 
+                publicationType.setAttribute("value", publicationTypeValue)
+                
+                publicationSettings.removeAttribute("disabled")
+                
+                publicationType.querySelectorAll("ion-radio").forEach((value, key) => {
+                    value.setAttribute("disabled", "true")
+                })                
+
+                publicationValidityPeriod.setAttribute("value", 1)
+
+                document.querySelector("#text-editor").classList.add('ion-hide')
+                document.querySelector("#addMedias").classList.add('ion-hide')
+                document.querySelector("#media-list").classList.add('ion-hide')
+                document.querySelector("media-publication .ql-toolbar").classList.add("ion-hide")
+                document.querySelector("media-publication #publish").innerHTML = /*html*/`<ion-icon name="hourglass-outline"></ion-icon> étendre`
+                
+                costCalculation()
+
+                console.log(publicationTypeValue)
+                break
+
+            default: 
+                publicationSettings.removeAttribute("disabled")
+                break
         }
 
         selectedMedias.forEach((element, key) => {
@@ -298,6 +323,15 @@ let mediaPublicationTemplate = {
 
                     response = await myFs.updatePublication(apiUrl, finalData)
                     break;
+
+                case "extendValidity":
+                    delete finalData.updatedData.type//will not be considered
+                    delete finalData.updatedData.publication//will not be considered
+
+                    finalData.updatedData.validity = publicationValidityValue + validity
+                    
+                    response = await myFs.updatePublication(apiUrl, finalData)
+                    break
 
                 default:
                     response = await myFs.newPublication(apiUrl, finalData)
@@ -430,7 +464,7 @@ let mediaPublicationTemplate = {
                 "pubCost" : cost
             }         
             
-            if(operationType != "update") {//new publication
+            if(operationType != "update") {//new publication or validity extension
                 if(parseFloat(myCreditTokens) < parseFloat(cost)) {
                     await Dialog.alert({
                         title: "Avertissement",
@@ -453,7 +487,7 @@ let mediaPublicationTemplate = {
                 else {
                     const confirmation = await Dialog.confirm({
                         title: 'Confirmation de paiement',
-                        message: `Le coût de cette publication est de : ${paymentDetails.pubCost} FST.\nVotre solde de crédit est de : ${paymentDetails.credit} FST\n\nVoulez-vous confirmer cette action ?`,
+                        message: `Votre solde de crédit actuel est de : ${paymentDetails.credit} FST.\nLe coût de cette publication/opération est de : ${paymentDetails.pubCost} FST.\n\nVoulez-vous confirmer cette action ?`,
                         okButtonTitle: "oui",
                         cancelButtonTitle: "non",
                     })

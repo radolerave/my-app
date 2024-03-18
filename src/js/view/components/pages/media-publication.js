@@ -52,7 +52,7 @@ let mediaPublication = {
     const theTagName = fsConfig.cloudinary.defaultTag
     const myUploadPreset = fsConfig.cloudinary.uploadPreset   
 
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
 
     const listener = async () => {
       let currentPage = await navigation.getActive()
