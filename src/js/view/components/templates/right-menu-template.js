@@ -87,9 +87,9 @@ let rightMenuTemplate = {
     let text = ""
 
     try {
-      const sellersListLastSyncDate = myFormatter.dateFormatter(await myFs.getSellersListLastSyncDate(), true)
+      const sellersListLastSyncDate = await myFs.getSellersListLastSyncDate()
       if(typeof sellersListLastSyncDate != "undefined") {
-        text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate}`
+        text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate.toLocaleString("fr-FR")}`
       }
     }
     catch(err) {
@@ -116,7 +116,7 @@ let rightMenuTemplate = {
 
           const lastSync = response.date
 
-          document.querySelector("#lastSync").innerHTML = `<ion-icon name="sync-outline"></ion-icon> ${String(lastSync.getDate()).padStart(2, '0')}/${String(lastSync.getMonth() + 1).padStart(2, '0')}/${lastSync.getFullYear()} ${String(lastSync.getHours()).padStart(2, '0')}:${String(lastSync.getMinutes()).padStart(2, '0')}:${String(lastSync.getSeconds()).padStart(2, '0')}`
+          document.querySelector("#lastSync").innerHTML = `<ion-icon name="sync-outline"></ion-icon> ${lastSync.toLocaleString("fr-FR")}`
 
           await Toast.show({
             text: "Base de données téléchargée avec succès sur votre appareil.",

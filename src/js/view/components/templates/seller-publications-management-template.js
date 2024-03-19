@@ -250,6 +250,7 @@ let sellerPublicationsManagementTemplate = {
                                     publicationId: data.publicationId,
                                     publicationType: data.publicationType,
                                     publicationValidity: data.publicationValidity,
+                                    modified_x_times: data.modified_x_times,
                                     fromPage: fromPage
                                 })
 

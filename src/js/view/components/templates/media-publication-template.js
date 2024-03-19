@@ -43,6 +43,8 @@ let mediaPublicationTemplate = {
             </ion-card-content>
         </ion-card>
 
+        <div id="additional-validity" class="text-success ion-hide"><h3>Validité supplémentaire</h3></div>
+
         <div id="text-editor"></div>
 
         <div id="addMedias">
@@ -70,6 +72,34 @@ let mediaPublicationTemplate = {
 
         const navigation = fsGlobalVariable.navigation
         navigation.removeEventListener("ionNavDidChange", args.listener)
+
+        let toolbarOptions = [
+            [{ 'header': 1 }, { 'header': 2 }], // custom button values
+            // [{ 'align': [] }],
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            // [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            // [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],              
+            // ['blockquote', 'code-block'],
+            // [{ 'direction': 'rtl' }],                         // text direction          
+            // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],          
+            // [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            // [{ 'font': [] }],                      
+            ['clean']                                         // remove formatting button
+        ]
+
+        fsGlobalVariable.quill = new Quill('#text-editor', {
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        })
+
+        if(typeof args.currentPage.params == "undefined") {
+            args.currentPage.params = {}
+            args.currentPage.params.selectedMedias = []
+        }
         
         const publish = document.querySelector("media-publication #publish")
         const publicationSettings = document.querySelector("#publication-settings")
@@ -96,6 +126,16 @@ let mediaPublicationTemplate = {
         console.log(costs)
 
         const fromPage = typeof args.currentPage.params != "undefined" && typeof args.currentPage.params.fromPage != "undefined" ? args.currentPage.params.fromPage : undefined//from which page posts are displayed and actions are executed
+
+        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias
+        const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
+        const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
+        const publicationTypeValue = typeof args.currentPage.params.publicationType != "undefined" ? args.currentPage.params.publicationType : 1
+        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 0
+        const modified_x_times = typeof args.currentPage.params.modified_x_times != "undefined" ? args.currentPage.params.modified_x_times : 0
+        let selectedMedias = fsGlobalVariable.selectedMedias
+        const mediaList = document.querySelector("#media-list")
+        let nbrOfSelectedMedias = selectedMedias.length
 
         async function goTo() {
             const tab = document.querySelector("main-page ion-tabs#main-page-tab")
@@ -158,44 +198,7 @@ let mediaPublicationTemplate = {
 
         publicationValidityPeriod.addEventListener("ionInput", (e) => {
             costCalculation()
-        })
-
-        let toolbarOptions = [
-            [{ 'header': 1 }, { 'header': 2 }], // custom button values
-            [{ 'align': [] }],
-            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],              
-            ['blockquote', 'code-block'],                                                                      
-            // [{ 'direction': 'rtl' }],                         // text direction          
-            // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-            // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],          
-            // [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-            // [{ 'font': [] }],                      
-            ['clean']                                         // remove formatting button
-        ]
-
-        fsGlobalVariable.quill = new Quill('#text-editor', {
-            modules: {
-                toolbar: toolbarOptions
-            },
-            theme: 'snow'
-        })
-
-        if(typeof args.currentPage.params == "undefined") {
-            args.currentPage.params = {}
-            args.currentPage.params.selectedMedias = []
-        }
-
-        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias
-        const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
-        const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
-        const publicationTypeValue = typeof args.currentPage.params.publicationType != "undefined" ? args.currentPage.params.publicationType : 1
-        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 0
-        let selectedMedias = fsGlobalVariable.selectedMedias
-        const mediaList = document.querySelector("#media-list")
-        let nbrOfSelectedMedias = selectedMedias.length
+        })                
 
         switch(operationType) {
             case "update": 
@@ -218,6 +221,7 @@ let mediaPublicationTemplate = {
 
                 publicationValidityPeriod.setAttribute("value", 1)
 
+                document.querySelector("#additional-validity").classList.remove('ion-hide')
                 document.querySelector("#text-editor").classList.add('ion-hide')
                 document.querySelector("#addMedias").classList.add('ion-hide')
                 document.querySelector("#media-list").classList.add('ion-hide')
@@ -320,6 +324,8 @@ let mediaPublicationTemplate = {
                 case "update":
                     delete finalData.updatedData.type//will not be considered
                     delete finalData.updatedData.validity//will not be considered
+
+                    finalData.updatedData.modified_x_times = modified_x_times + 1
 
                     response = await myFs.updatePublication(apiUrl, finalData)
                     break;
@@ -447,125 +453,80 @@ let mediaPublicationTemplate = {
             return paymentOk
         }
 
-        publish.addEventListener("click", async () => {
-            publish.classList.add("ion-hide")
+        async function publishWithPayment(publishBtn, paymentDetails) {
+            if(parseFloat(paymentDetails.credit) < parseFloat(paymentDetails.pubCost)) {
+                await Dialog.alert({
+                    title: "Avertissement",
+                    message: "Vous n'avez pas assez de crédits pour cette publication."
+                }) 
 
-            const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
-            let myCreditTokens = undefined
-
-            if(typeof ct.creditTokens == "number") {
-                myCreditTokens = ct.creditTokens
-            }
-
-            const cost = costCalculation()
-
-            const paymentDetails = {
-                "credit" : myCreditTokens,
-                "pubCost" : cost
-            }         
-            
-            if(operationType != "update") {//new publication or validity extension
-                if(parseFloat(myCreditTokens) < parseFloat(cost)) {
-                    await Dialog.alert({
-                        title: "Avertissement",
-                        message: "Vous n'avez pas assez de crédits pour cette publication."
-                    }) 
-
-                    const confirmation = await Dialog.confirm({
-                        title: 'Achat de crédits',
-                        message: `Voulez-vous créditer votre compte ?`,
-                        okButtonTitle: "oui",
-                        cancelButtonTitle: "non",
-                    })
-        
-                    if(confirmation.value) {
-                        await navigation.push("buy-fs-tokens")
-                    }
-    
-                    publish.classList.remove("ion-hide")
-                }
-                else {
-                    const confirmation = await Dialog.confirm({
-                        title: 'Confirmation de paiement',
-                        message: `Votre solde de crédit actuel est de : ${paymentDetails.credit} FST.\nLe coût de cette publication/opération est de : ${paymentDetails.pubCost} FST.\n\nVoulez-vous confirmer cette action ?`,
-                        okButtonTitle: "oui",
-                        cancelButtonTitle: "non",
-                    })
-        
-                    if(confirmation.value) {
-                        try {
-                            const pk = await createTransaction({//initialize the transaction
-                                newData: {
-                                    seller_id: fsGlobalVariable.session.seller_id,
-                                    transaction_type: 0,//debit
-                                    amount_in_fst: paymentDetails.pubCost,
-                                    means_of_payment: 4,//credit tokens
-                                }
-                            })
-
-                            if(await backendPaymentOperation(paymentDetails)) {
-                                try {
-                                    await confirmTransaction(pk, 2)//a pending transaction
-
-                                    await publishFn()
-
-                                    try {
-                                        await confirmTransaction(pk, 1)//a successfull transaction
-                                    }
-                                    catch(err) {
-                                        console.error(err)
-                                    }
-                                }
-                                catch(err) {
-                                    //rollback ......
-                                    await rollBack(paymentDetails)
-
-                                    await confirmTransaction(pk, 0)//a failed transaction
-                                    
-                                    await Dialog.alert({
-                                        title: "Erreur",
-                                        message: "Une erreur s'est produite!\nLe paiement a été annulé."
-                                    })                                    
-                                }
-                            }
-                            else {
-                                await confirmTransaction(pk, 0)//a failed transaction
-
-                                await Dialog.alert({
-                                    title: "Erreur",
-                                    message: "Une erreur s'est produite!\nLa publication est annulée."
-                                })                                
-                            }
-                        }
-                        catch(err) {
-                            await Dialog.alert({
-                                title: "Erreur",
-                                message: err
-                            }) 
-                        }
-                    }
-                    else {
-                        publish.classList.remove("ion-hide")
-                        
-                        await Toast.show({
-                            text: `Action annulée!`
-                        })
-                    }
-                }
-            }
-            else {                
                 const confirmation = await Dialog.confirm({
-                    title: 'Modification',
-                    message: `Voulez-vous confirmer cette action ?`,
+                    title: 'Achat de crédits',
+                    message: `Voulez-vous créditer votre compte ?`,
+                    okButtonTitle: "oui",
+                    cancelButtonTitle: "non",
+                })
+    
+                if(confirmation.value) {
+                    await navigation.push("buy-fs-tokens")
+                }
+
+                publishBtn.classList.remove("ion-hide")
+            }
+            else {
+                const confirmation = await Dialog.confirm({
+                    title: 'Confirmation de paiement',
+                    message: `Votre solde de crédit actuel est de : ${paymentDetails.credit} FST.\nLe coût de cette publication/opération est de : ${paymentDetails.pubCost} FST.\n\nVoulez-vous confirmer cette action ?`,
                     okButtonTitle: "oui",
                     cancelButtonTitle: "non",
                 })
     
                 if(confirmation.value) {
                     try {
-                        await publishFn()
+                        const pk = await createTransaction({//initialize the transaction
+                            newData: {
+                                seller_id: fsGlobalVariable.session.seller_id,
+                                transaction_type: 0,//debit
+                                amount_in_fst: paymentDetails.pubCost,
+                                means_of_payment: 4,//credit tokens
+                            }
+                        })
+
+                        if(await backendPaymentOperation(paymentDetails)) {
+                            try {
+                                await confirmTransaction(pk, 2)//a pending transaction
+
+                                await publishFn()
+
+                                try {
+                                    await confirmTransaction(pk, 1)//a successfull transaction
+                                }
+                                catch(err) {
+                                    console.error(err)
+                                }
+                            }
+                            catch(err) {
+                                //rollback ......
+                                await rollBack(paymentDetails)
+
+                                await confirmTransaction(pk, 0)//a failed transaction
+                                
+                                await Dialog.alert({
+                                    title: "Erreur",
+                                    message: "Une erreur s'est produite!\nLe paiement a été annulé."
+                                })                                    
+                            }
+                        }
+                        else {
+                            await confirmTransaction(pk, 0)//a failed transaction
+
+                            await Dialog.alert({
+                                title: "Erreur",
+                                message: "Une erreur s'est produite!\nLa publication est annulée."
+                            })                                
+                        }
                     }
-                    catch(err) {//no need to rollback
+                    catch(err) {
                         await Dialog.alert({
                             title: "Erreur",
                             message: err
@@ -573,9 +534,92 @@ let mediaPublicationTemplate = {
                     }
                 }
                 else {
-                    publish.classList.remove("ion-hide")
-                }            
-            }             
+                    publishBtn.classList.remove("ion-hide")
+                    
+                    await Toast.show({
+                        text: `Action annulée!`
+                    })
+                }
+            }
+        }
+
+        async function publishWithoutPayment(publishBtn) {
+            const confirmation = await Dialog.confirm({
+                title: 'Modification',
+                message: `Voulez-vous confirmer cette action ?`,
+                okButtonTitle: "oui",
+                cancelButtonTitle: "non",
+            })
+
+            if(confirmation.value) {
+                try {
+                    await publishFn()
+                }
+                catch(err) {//no need to rollback
+                    await Dialog.alert({
+                        title: "Erreur",
+                        message: err
+                    }) 
+                }
+            }
+            else {
+                publishBtn.classList.remove("ion-hide")
+            } 
+        }
+
+        publish.addEventListener("click", async () => {
+            try {
+                publish.classList.add("ion-hide")
+
+                const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+                let myCreditTokens = undefined
+
+                if(typeof ct.creditTokens == "number") {
+                    myCreditTokens = ct.creditTokens
+                }
+
+                const cost = costCalculation()
+
+                const paymentDetails = {
+                    "credit" : myCreditTokens,
+                    "pubCost" : cost
+                }         
+                
+                if(operationType != "update") {//new publication or validity extension
+                    await publishWithPayment(publish, paymentDetails)
+                }
+                else {                
+                    if(modified_x_times >= 5) {//modifying the publication more than 5 times is a paid operation - the cost is the unit price of the publication according to its type
+                        const confirmation = await Dialog.confirm({
+                            title: 'Modification',
+                            message: `Vous avez épuisé vos droits de modification. Désormais, chaque mise à jour sur cette publication sera payante.\n\nVoulez-vous continuer ?`,
+                            okButtonTitle: "oui",
+                            cancelButtonTitle: "non",
+                        })
+            
+                        if(confirmation.value) {
+                            const rate = costs.find(element => element.id === parseInt(publicationType.value))
+                            const cost = rate.unit_price
+
+                            paymentDetails.pubCost = cost
+
+                            await publishWithPayment(publish, paymentDetails)
+                        }
+                        else {
+                            publish.classList.remove("ion-hide")
+                        }
+                    }
+                    else {
+                        await publishWithoutPayment(publish)
+                    }
+                }
+            }
+            catch(err) {
+                await Dialog.alert({
+                    title: "Erreur",
+                    message: err
+                })
+            }
         })
 
         fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
