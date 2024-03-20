@@ -1,6 +1,7 @@
 import { Toast } from '@capacitor/toast'
 import { Dialog } from '@capacitor/dialog';
 import { myAccountTemplate } from './my-account-template.js';
+import { fsConfig } from './../../../config/fsConfig.js';
 import Formatter from "../../../helpers/formatter.js"
 
 let rightMenuTemplate = {
@@ -87,9 +88,9 @@ let rightMenuTemplate = {
     let text = ""
 
     try {
-      const sellersListLastSyncDate = await myFs.getSellersListLastSyncDate()
+      const sellersListLastSyncDate = myFormatter.dateFormatter(await myFs.getSellersListLastSyncDate(), fsConfig.formats.dateFormat)
       if(typeof sellersListLastSyncDate != "undefined") {
-        text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate.toLocaleString("fr-FR")}`
+        text = `<ion-icon name="sync-outline"></ion-icon> ${sellersListLastSyncDate}`
       }
     }
     catch(err) {
@@ -116,7 +117,7 @@ let rightMenuTemplate = {
 
           const lastSync = response.date
 
-          document.querySelector("#lastSync").innerHTML = `<ion-icon name="sync-outline"></ion-icon> ${lastSync.toLocaleString("fr-FR")}`
+          document.querySelector("#lastSync").innerHTML = `<ion-icon name="sync-outline"></ion-icon> ${myFormatter.dateFormatter(lastSync, fsConfig.formats.dateFormat)}`
 
           await Toast.show({
             text: "Base de données téléchargée avec succès sur votre appareil.",

@@ -121,7 +121,7 @@ let sellerDetailsTemplate = {
         <ion-icon name="warning-outline"></ion-icon>
       </div>
       <span id="local-last-edit">
-        ${localSellerInfos && localSellerInfos.last_edit != data.last_edit ? myFormatter.dateFormatter(localSellerInfos.last_edit, true) : myFormatter.dateFormatter(data.last_edit, true)} <ion-icon name="time-outline"></ion-icon>
+        ${localSellerInfos && localSellerInfos.last_edit != data.last_edit ? myFormatter.dateFormatter(localSellerInfos.last_edit, fsConfig.formats.dateFormat) : myFormatter.dateFormatter(data.last_edit, fsConfig.formats.dateFormat)} <ion-icon name="time-outline"></ion-icon>
       </span>
       <br>
       <span id="up-to-date-last-edit"></span>
@@ -140,7 +140,7 @@ let sellerDetailsTemplate = {
           if((localSellerInfos && upToDateSellerInfos.sellerInfos.last_edit != localSellerInfos.last_edit) 
           || (upToDateSellerInfos.sellerInfos.last_edit != data.last_edit)) {
             document.querySelector("#up-to-date-last-edit").innerHTML = /*html*/`
-              ${myFormatter.dateFormatter(upToDateSellerInfos.sellerInfos.last_edit, true)} <ion-icon name="alarm-outline"></ion-icon>
+              ${myFormatter.dateFormatter(upToDateSellerInfos.sellerInfos.last_edit, fsConfig.formats.dateFormat)} <ion-icon name="alarm-outline"></ion-icon>
             `
 
             if(!document.querySelector("#local-last-edit").classList.contains("notice")) {

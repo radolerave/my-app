@@ -640,7 +640,7 @@ let sellerFormTemplate = {
 
                     myAccountContent.classList.remove("ion-hide")
 
-                    const lastModificationDate = myFormatter.dateFormatter(lastEdit.replace(" ", "T"), true)
+                    const lastModificationDate = myFormatter.dateFormatter(lastEdit.replace(" ", "T"), fsConfig.formats.dateFormat)
 
                     console.log(lastModificationDate)
 
@@ -858,7 +858,7 @@ let sellerFormTemplate = {
                     if(response.ok) {
                         sellerInfos = form.getValue()
 
-                        const lastModificationDate = myFormatter.dateFormatter(response.date, true)
+                        const lastModificationDate = myFormatter.dateFormatter(response.date, fsConfig.formats.dateFormat)
 
                         document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
 

@@ -95,7 +95,7 @@ let sellerPublicationCardTemplate = {
                             </ion-button>
                         </ion-card-title>
 
-                        <ion-card-subtitle>${data.date_add}</ion-card-subtitle>
+                        <ion-card-subtitle>${myFormatter.dateFormatter(data.date_add, fsConfig.formats.dateFormat)}</ion-card-subtitle>
 
                         <ion-popover class="fsPublicationMoreOptionsPopover">
                             <ion-content class="ion-padding">

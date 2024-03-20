@@ -1,36 +1,39 @@
+import { DateTime } from 'luxon';
+
 export default class Formatter {
     constructor() {
 
     }
 
-    dateFormatter(theDate, preformatted = false) {
+    dateFormatter(theDate, params = { locale: "fr-FR", preset: "DATETIME_SHORT_WITH_SECONDS" }) {
+        let effectiveParams = {}
+
+        try{
+            effectiveParams.locale = params.locale
+            effectiveParams.preset = params.preset
+        }
+        catch(err) {
+            effectiveParams = { locale: "fr-FR", preset: "DATETIME_SHORT_WITH_SECONDS" }
+        }
+
         const dateObj = (theDate.constructor.toString().indexOf("Date") > -1) ? 
             theDate
             :
             new Date(theDate)
         
-        let day = String(dateObj.getDate()).padStart(2, '0'), 
-        month = String(dateObj.getMonth() + 1).padStart(2, '0'), 
-        year = dateObj.getFullYear(), 
-        hours = String(dateObj.getHours()).padStart(2, '0'), 
-        minutes = String(dateObj.getMinutes()).padStart(2, '0'), 
-        seconds = String(dateObj.getSeconds()).padStart(2, '0'), 
-        milliseconds = String(dateObj.getMilliseconds()).padStart(3, '0')
+        let year = dateObj.getFullYear(), 
+        month = dateObj.getMonth() + 1,
+        day = dateObj.getDate(), 
+        hours = dateObj.getHours(), 
+        minutes = dateObj.getMinutes(), 
+        seconds = dateObj.getSeconds(), 
+        milliseconds = dateObj.getMilliseconds()
+
+        const dt = DateTime.local(year, month, day, hours, minutes, seconds, milliseconds);
+
+        // console.log(locale)
         
-        if(preformatted) {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
-        }
-        else {
-            return {
-                day: day,
-                month: month,
-                year: year,
-                hours: hours,
-                minutes: minutes,
-                seconds: seconds,
-                milliseconds: milliseconds
-            }
-        }
+        return dt.setLocale(effectiveParams.locale).toLocaleString(DateTime[effectiveParams.preset])
     }
 
     htmlStripTag(html, replaceBy = "") {

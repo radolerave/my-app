@@ -4,6 +4,7 @@ import { Dexie } from 'dexie'
 import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { fsConfig } from './../../../config/fsConfig.js';
+import Formatter from './../../../helpers/formatter.js';
 
 import { DateTime } from "luxon"
 
@@ -29,6 +30,8 @@ let sellerPublicationsManagementTemplate = {
     logic: async (args, containerId) => {
         let response = args
         console.log(response)
+
+        let myFormatter = new Formatter()  
 
         const apiUrl = fsConfig.apiUrl
         let myFs = new Fs(FsDb, Dexie)
@@ -387,7 +390,7 @@ let sellerPublicationsManagementTemplate = {
                                 
                                 await Dialog.alert({
                                     "title": `Informations`,
-                                    "message": `Etat : ${value.published ? "publié" : "non publié"}\nDate d'ajout : ${value.date_add}\nDate limite : ${deadline}\nDernière mise à jour : ${value.last_edit}`
+                                    "message": `Etat : ${value.published ? "publié" : "non publié"}\nDate d'ajout : ${myFormatter.dateFormatter(value.date_add, fsConfig.formats.dateFormat)}\nDate limite : ${myFormatter.dateFormatter(deadline, fsConfig.formats.dateFormat)}\nDernière mise à jour : ${myFormatter.dateFormatter(value.last_edit, fsConfig.formats.dateFormat)}`
                                 })
 
                                 fsPublicationMoreOptionsPopover.isOpen = false
