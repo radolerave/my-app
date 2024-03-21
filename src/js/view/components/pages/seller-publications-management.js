@@ -55,8 +55,7 @@ let sellerPublicationsManagement = {
     const navigation = fsGlobalVariable.navigation
     const newPublicationBtn = document.querySelector("#newPublication")
 
-    newPublicationBtn.addEventListener("click", async () => {
-      fsGlobalVariable.textToPublish = [{ insert: '\n' }]
+    newPublicationBtn.addEventListener("click", async () => {      
       await navigation.push("media-publication")
     })
 

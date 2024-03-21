@@ -18,7 +18,9 @@ window.fsGlobalVariable = {
     ionBackButtonHandler: {
         canProcessNextHandler: true,
         fn: async () => {}
-    }
+    },
+    textToPublish: [{ insert: '\n' }],
+    textToPublishDrat: [{ insert: '\n' }],
 }
 
 window.showBackdrop = () => {
@@ -91,7 +93,7 @@ document.addEventListener('ionBackButton', async (ev) => {
                 case (await navigation.canGoBack()):
                     await navigation.pop()
                     break
-                    
+
                 case (await document.querySelector("ion-menu[menu-id='menu']").isOpen()): 
                     await document.querySelector("ion-menu[menu-id='menu']").close()
                     break

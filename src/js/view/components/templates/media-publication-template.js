@@ -226,7 +226,8 @@ let mediaPublicationTemplate = {
                 document.querySelector("#addMedias").classList.add('ion-hide')
                 document.querySelector("#media-list").classList.add('ion-hide')
                 document.querySelector("media-publication .ql-toolbar").classList.add("ion-hide")
-                document.querySelector("media-publication #publish").innerHTML = /*html*/`<ion-icon name="hourglass-outline"></ion-icon> étendre`
+                publish.innerHTML = /*html*/`<ion-icon name="hourglass-outline"></ion-icon> étendre`
+                publish.classList.remove("ion-hide")
                 
                 costCalculation()
 
@@ -234,6 +235,7 @@ let mediaPublicationTemplate = {
                 break
 
             default: 
+                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft
                 publicationSettings.removeAttribute("disabled")
                 break
         }
@@ -345,6 +347,7 @@ let mediaPublicationTemplate = {
             }
 
             if(response.ok) {
+                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft = [{ insert: '\n' }]
                 await goTo()
             }
             else {
@@ -620,11 +623,15 @@ let mediaPublicationTemplate = {
                     message: err
                 })
             }
-        })
+        })        
 
-        fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
-
-        if(operationType != "update") { showHidePublishBtn() }
+        if(operationType == "update" || operationType == "extendValidity") { 
+            fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
+        }
+        else {
+            fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublishDraft)
+            showHidePublishBtn() 
+        }
 
         fsGlobalVariable.quill.on('editor-change', function(eventName, ...args) {
             // if (eventName === 'text-change') {
@@ -637,7 +644,13 @@ let mediaPublicationTemplate = {
 
             if(eventName === 'text-change') { 
                 console.log(content)
-                fsGlobalVariable.textToPublish = content
+                if(operationType == "update") { 
+                    fsGlobalVariable.textToPublish = content
+                }
+                else {
+                    fsGlobalVariable.textToPublishDraft = content
+                }
+                
                 showHidePublishBtn() 
             }
         })
