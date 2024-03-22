@@ -76,6 +76,10 @@ let mainPage = {
               <ion-icon name="search-circle" size="large" color="primary"></ion-icon>
             </ion-button>
 
+            <ion-button id="newPublication" fill="outline" color="primary">
+              + <ion-icon name="share-outline"></ion-icon>
+            </ion-button>
+
             <ion-button id="notification">
                 <ion-icon name="notifications-outline"></ion-icon>
                 <ion-badge color="danger">7</ion-badge>
@@ -161,6 +165,20 @@ let mainPage = {
     args["myFs"] = myFs
 
     const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const newPublicationBtn = document.querySelector("main-page #newPublication")
+
+    newPublicationBtn.addEventListener("click", async () => {     
+      try {
+        const isConnected = await myFs.silentSignIn(apiUrl)
+
+        if(isConnected) {
+          await navigation.push("media-publication")
+        }
+      }
+      catch(err) {
+        alert(err)
+      }
+    })
 
     leftMenuTemplate.logic()
 

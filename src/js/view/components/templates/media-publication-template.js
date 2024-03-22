@@ -67,6 +67,7 @@ let mediaPublicationTemplate = {
         const serverUrl = fsConfig.serverUrl
         let myFs = new Fs(FsDb, Dexie)
         let myFsHelper = new FsHelper()
+        let finalTextToPublish = [{ insert: '\n' }]
 
         console.log(args)    
 
@@ -297,6 +298,13 @@ let mediaPublicationTemplate = {
 
             const validity = isNaN(maskitoParseNumber(publicationValidityPeriod.value, '.')) ? 1 : maskitoParseNumber(publicationValidityPeriod.value, '.')
 
+            if(operationType == "update") { 
+                finalTextToPublish = fsGlobalVariable.textToPublish
+            }
+            else {
+                finalTextToPublish = fsGlobalVariable.textToPublishDraft
+            }
+
             let finalData = {
                 credentials: {
                     "sellerId" : fsGlobalVariable.session.seller_id,
@@ -307,7 +315,7 @@ let mediaPublicationTemplate = {
                 updatedData: {
                     seller_id: fsGlobalVariable.session.seller_id,
                     publication: JSON.stringify({
-                        textToPublish: fsGlobalVariable.textToPublish,
+                        textToPublish: finalTextToPublish,
                         selectedMedias: sMedias
                     }),
                     type: publicationType.value,
@@ -645,10 +653,10 @@ let mediaPublicationTemplate = {
             if(eventName === 'text-change') { 
                 console.log(content)
                 if(operationType == "update") { 
-                    fsGlobalVariable.textToPublish = content
+                    finalTextToPublish = fsGlobalVariable.textToPublish = content
                 }
                 else {
-                    fsGlobalVariable.textToPublishDraft = content
+                    finalTextToPublish = fsGlobalVariable.textToPublishDraft = content
                 }
                 
                 showHidePublishBtn() 

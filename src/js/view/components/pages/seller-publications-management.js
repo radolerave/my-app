@@ -53,7 +53,7 @@ let sellerPublicationsManagement = {
     let myFs = new Fs(FsDb, Dexie)    
 
     const navigation = fsGlobalVariable.navigation
-    const newPublicationBtn = document.querySelector("#newPublication")
+    const newPublicationBtn = document.querySelector("seller-publications-management #newPublication")
 
     newPublicationBtn.addEventListener("click", async () => {      
       await navigation.push("media-publication")
