@@ -147,6 +147,8 @@ let rightMenuTemplate = {
 
       if(result.value) {
         if(await myFs.signOut()) {
+          fsGlobalVariable.sellerInfos = fsGlobalVariable.session = undefined
+          
           await Toast.show({
             text: "Déconnecté(e) avec succès",
             position: "bottom"

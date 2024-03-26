@@ -580,6 +580,7 @@ let mediaPublicationTemplate = {
 
         publish.addEventListener("click", async () => {
             try {
+                showBackdrop()
                 publish.classList.add("ion-hide")
 
                 const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
@@ -630,6 +631,9 @@ let mediaPublicationTemplate = {
                     title: "Erreur",
                     message: err
                 })
+            }
+            finally {
+                hideBackdrop()
             }
         })        
 

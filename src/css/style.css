@@ -65,13 +65,24 @@ ion-backdrop {
   margin: 5px 0;
 }
 
+.fsMediasList {
+  display: grid;
+
+  /* define the number of grid columns */
+  grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+}
+
 #publicationsList ion-card ion-card-content media {
-  display: inline-flex;
-  /* margin: 2%; */
-  vertical-align: top;
+  /*display: inline-flex;*/
+  margin-bottom: 2%;
+  /*vertical-align: top;*/
   /* border: solid grey 1px; */
   /* border-radius: 5px; */
-  max-width: 49%;
+  max-width: 100%;
+}
+
+#publicationsList ion-card ion-card-content media:nth-child(2n+1) {
+  margin-right: 2%;
 }
 
 #publicationsList ion-card ion-card-content media video,

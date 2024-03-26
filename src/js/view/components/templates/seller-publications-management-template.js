@@ -27,7 +27,7 @@ let sellerPublicationsManagementTemplate = {
             This is the content for my Seller publications management.
         </div>
     `,  
-    logic: async (args, containerId) => {
+    logic: async (args, containerId, sellerName = undefined) => {
         let response = args
         console.log(response)
 
@@ -76,7 +76,7 @@ let sellerPublicationsManagementTemplate = {
 
                     const card = document.createElement("div")
 
-                    const data = await sellerPublicationCardTemplate.logic(value)
+                    const data = await sellerPublicationCardTemplate.logic(value, sellerName)
 
                     card.innerHTML = data.html
 
@@ -271,6 +271,7 @@ let sellerPublicationsManagementTemplate = {
                                 })
 
                                 if(confirmation.value) {
+                                    showBackdrop()
                                     const response = await myFs.deletePublication(apiUrl, data.publicationId)
 
                                     if(response.ok) {
@@ -284,6 +285,7 @@ let sellerPublicationsManagementTemplate = {
                                             "message": `${response.errorText}`
                                         })
                                     }
+                                    hideBackdrop()
                                 }
                                 else {
                                     fsPublicationMoreOptionsPopover.isOpen = false
@@ -299,6 +301,7 @@ let sellerPublicationsManagementTemplate = {
                                 })
 
                                 if(confirmation.value) {
+                                    showBackdrop()
                                     const response = await myFs.updatePublication(apiUrl, { 
                                         updatedData: {
                                             published: 1
@@ -317,6 +320,7 @@ let sellerPublicationsManagementTemplate = {
                                             "message": `${response.errorText}`
                                         })
                                     }
+                                    hideBackdrop()
                                 }
                                 else {
                                     fsPublicationMoreOptionsPopover.isOpen = false
@@ -332,6 +336,7 @@ let sellerPublicationsManagementTemplate = {
                                 })
 
                                 if(confirmation.value) {
+                                    showBackdrop()
                                     const response = await myFs.updatePublication(apiUrl, { 
                                         updatedData: {
                                             published: 0
@@ -350,6 +355,7 @@ let sellerPublicationsManagementTemplate = {
                                             "message": `${response.errorText}`
                                         })
                                     }
+                                    hideBackdrop()
                                 }
                                 else {
                                     fsPublicationMoreOptionsPopover.isOpen = false

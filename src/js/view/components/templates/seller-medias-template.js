@@ -13,16 +13,19 @@ let sellerMediasTemplate = {
     </div>
   `,
   logic: async (args) => {
+    const data = args
     const apiUrl = fsConfig.apiUrl
     let myFs = new Fs(FsDb, Dexie)
 
+    console.log(data)
+
     let response = await myFs.getPublicationsPublicMode(apiUrl, {
-      sellerId : fsGlobalVariable.sellerInfos.id
+      sellerId : data.id
     })
 
     console.log(response)
 
-    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsList")
+    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsList", data.name)
   }
 }
 

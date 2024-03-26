@@ -13,10 +13,29 @@ let sellerPublicationCardTemplate = {
     content: /*html*/`
 
     `,
-    logic: async (args) => {
+    logic: async (args, sellerName = undefined) => {
         let data = args
         const myCloudName = fsConfig.cloudinary.cloudName
-        let myFormatter = new Formatter()        
+        let myFormatter = new Formatter()   
+        
+        let theSellerName = ""
+
+        switch(true) {            
+            case (sellerName != undefined):
+                theSellerName = sellerName
+                break
+            
+            case (typeof data.name != "undefined"):
+                theSellerName = data.name
+                break
+            
+            case (typeof fsGlobalVariable.sellerInfos != "undefined"):
+                theSellerName = fsGlobalVariable.sellerInfos.name
+                break            
+
+            default:
+                break
+        }
 
         let cfg = {};
 
@@ -88,7 +107,7 @@ let sellerPublicationCardTemplate = {
                 <ion-card class="publication">
                     <ion-card-header>
                         <ion-card-title>
-                            <button class="link-to-seller-details" style="background-color: inherit; font-weight: bold;">${typeof data.name != "undefined" ? data.name : typeof fsGlobalVariable.sellerInfos != "undefined" ? fsGlobalVariable.sellerInfos.name : ""}</button>
+                            <button class="link-to-seller-details" style="background-color: inherit; font-weight: bold;">${theSellerName}</button>
 
                             <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
                                 <ion-icon name="ellipsis-vertical-outline"></ion-icon>

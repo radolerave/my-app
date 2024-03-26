@@ -26,7 +26,7 @@ let advertisementsTemplate = {
 
     console.log(response)
 
-    sellerPublicationsManagementTemplate.logic(response, "#sellerAdvertisementsList")
+    await sellerPublicationsManagementTemplate.logic(response, "#sellerAdvertisementsList")
   }
 }
 

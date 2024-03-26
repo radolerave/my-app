@@ -12,6 +12,9 @@ import { newsTemplate } from './../templates/news-template.js'
 import { myAccountTemplate } from './../templates/my-account-template.js';
 import { fsConfig } from './../../../config/fsConfig.js'
 
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
+
 let mainPage = {
   name: "main-page",
   content: /*html*/`
@@ -169,14 +172,52 @@ let mainPage = {
 
     newPublicationBtn.addEventListener("click", async () => {     
       try {
-        const isConnected = await myFs.silentSignIn(apiUrl)
+        if(typeof fsGlobalVariable.sellerInfos == "undefined" || typeof fsGlobalVariable.session == "undefined" || !await myFs.silentSignIn(apiUrl)) {
+          const isConnected = await myFs.silentSignIn(apiUrl)
 
-        if(isConnected) {
+          if(isConnected) {
+            const localCredentials = await myFs.getLocalCredentials()
+
+            if(localCredentials != undefined) {
+              fsGlobalVariable.session = localCredentials
+
+              const si = await myFs.getSellerInfos(apiUrl, localCredentials.seller_id)
+
+              // console.log(si)
+
+              if(si.ok) {
+                const sellerInfos = si.sellerInfos
+
+                fsGlobalVariable.sellerInfos = sellerInfos
+
+                await navigation.push("media-publication")
+              }
+              else {
+                await Toast.show({
+                  text: "Impossible de récuperer les informations nécessaires à la publication."
+                })
+              }
+            }
+            else {
+              await Toast.show({
+                text: "Veuillez vous connecter!"
+              })
+            }          
+          }
+          else {
+            await Toast.show({
+              text: "Veuillez vous connecter!"
+            })
+          }
+        }
+        else {
           await navigation.push("media-publication")
         }
       }
       catch(err) {
-        alert(err)
+        await Toast.show({
+          text: err
+        })
       }
     })
 
@@ -206,6 +247,7 @@ let mainPage = {
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")
 
     tab.addEventListener('ionTabsDidChange', async () => {
+      showBackdrop()
       const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
         
       // console.log(localCredentials)
@@ -237,6 +279,8 @@ let mainPage = {
         default:
           break
       }
+
+      hideBackdrop()
     })
 
     document.querySelector("#search-seller").addEventListener("click", async () => {

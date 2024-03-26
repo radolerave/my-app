@@ -110,7 +110,7 @@ let sellerDetailsTemplate = {
     navigation.removeEventListener("ionNavDidChange", args.listener)
 
     const data = args.currentPage.params.data
-    fsGlobalVariable.sellerInfos = data
+    // fsGlobalVariable.sellerInfos = data
     let myFormatter = new Formatter()
 
     const localSellerInfos = await myFs.getLocalSellerInfos(data.id)
@@ -289,7 +289,7 @@ let sellerDetailsTemplate = {
 
       if(currentTab == "medias") {
         if(document.querySelector("#sellerPublicationsList").getAttribute("first-load") == "true") {
-          await sellerMediasTemplate.logic()
+          await sellerMediasTemplate.logic(data)
           document.querySelector("#sellerPublicationsList").setAttribute("first-load", "false")
         }
       }

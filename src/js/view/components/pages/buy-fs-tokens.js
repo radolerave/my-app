@@ -221,7 +221,7 @@ let buyFsTokens = {
       })
     }
 
-    submitPurchaseParameters.addEventListener("click", async () => {
+    submitPurchaseParameters.addEventListener("click", async () => {      
       const purchaseQuantity = isNaN(maskitoParseNumber(fstPurchaseQuantity.value, '.')) ? 10 : maskitoParseNumber(fstPurchaseQuantity.value, '.')
 
       const tab = [
@@ -240,6 +240,8 @@ let buyFsTokens = {
       })
 
       if(confirmation.value) {
+        showBackdrop()
+        
         const purchaseDetails = {
           newData: {
               seller_id: fsGlobalVariable.session.seller_id,
@@ -267,7 +269,7 @@ let buyFsTokens = {
           // console.error(err)
         }
         finally {
-
+          hideBackdrop()
         }
       }   
     })
