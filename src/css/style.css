@@ -74,15 +74,11 @@ ion-backdrop {
 
 #publicationsList ion-card ion-card-content media {
   /*display: inline-flex;*/
-  margin-bottom: 2%;
+  margin: 1%;
   /*vertical-align: top;*/
-  /* border: solid grey 1px; */
+  border: solid grey 1px;
   /* border-radius: 5px; */
   max-width: 100%;
-}
-
-#publicationsList ion-card ion-card-content media:nth-child(2n+1) {
-  margin-right: 2%;
 }
 
 #publicationsList ion-card ion-card-content media video,
@@ -96,6 +92,13 @@ ion-backdrop {
 #publicationsList .fsPublicationMoreOptions {
   position: absolute;
   right: 0;
+}
+
+#publicationsList .publication-card-more-medias {
+  font-weight: bold;
+  position: absolute;
+  display: block;
+  border: solid red 1px;
 }
 
 .fsUsersInterations {

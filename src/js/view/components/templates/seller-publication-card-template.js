@@ -48,12 +48,16 @@ let sellerPublicationCardTemplate = {
         let mediasToPublish = ""
 
         selectedMedias.forEach(async (value, key) => {
+            const nbr = selectedMedias.length
+            const hideOrNot = (key > 3) ? "ion-hide" : ""
+
             try {
                 switch(value.mediaType) {
                     case "image": 
                         mediasToPublish += /*html*/`
-                            <media class="fs-media" data-src="${value.src}" public_id="${value.publicId}" media-type="${value.mediaType}" format="${value.format}">
+                            <media class="fs-media ${hideOrNot}" data-src="${value.src}" public_id="${value.publicId}" media-type="${value.mediaType}" format="${value.format}">
                                 <img src="${value.src}" />
+                                ${(key == 3 && nbr > 4) ? "<span class='publication-card-more-medias'>+" + (nbr - (key + 1)) + " autres...</span>" : ""}
                             </media>
                         `                        
                         break
