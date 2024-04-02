@@ -13,6 +13,9 @@ let sellerSearchTemplate = {
 
     <ion-button id="validateCriteria" class="ion-hide" disabled="true">Allons-y !</ion-button>
     <ion-button id="resetCriteria" class="ion-hide" color="danger" disabled="true">Réinitialiser</ion-button>
+    <ion-button id="collapseCriteria" color="dark" disabled="false">
+        <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-button>
 
     <!-- <div id="criteria_value"></div> -->
     
@@ -120,6 +123,7 @@ let sellerSearchTemplate = {
     const bigSearchBtn = document.querySelector('#bigSearchBtn')
     const resetCriteria = document.querySelector('#resetCriteria')
     const filterResults = document.querySelector('#filterResults')
+    const collapseCriteria = document.querySelector('#collapseCriteria')
 
     results.innerHTML = ``
 
@@ -245,10 +249,16 @@ let sellerSearchTemplate = {
             if(!bigSearchBtn.classList.contains('ion-hide')) {
                 bigSearchBtn.classList.add('ion-hide')
                 bigSearchBtn.setAttribute("disabled", "true")
+
+                collapseCriteria.classList.remove('ion-hide')
+                collapseCriteria.removeAttribute("disabled")
             }
             else {
                 bigSearchBtn.classList.remove('ion-hide')
                 bigSearchBtn.removeAttribute("disabled")
+
+                collapseCriteria.classList.add('ion-hide')
+                collapseCriteria.setAttribute("disabled", "true")                
             }
         })
     })
@@ -339,7 +349,11 @@ let sellerSearchTemplate = {
 
     bigSearchBtn.addEventListener('click', (ev) => {        
         document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()        
-    })    
+    })   
+    
+    collapseCriteria.addEventListener('click', (ev) => {
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()
+    })
 
     document.querySelector('#filterResults').addEventListener("ionInput", (ev) => {
         // console.log(ev.target)

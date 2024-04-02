@@ -76,7 +76,7 @@ ion-backdrop {
   /*display: inline-flex;*/
   margin: 1%;
   /*vertical-align: top;*/
-  border: solid grey 1px;
+  /* border: solid grey 1px; */
   /* border-radius: 5px; */
   max-width: 100%;
 }
@@ -96,9 +96,12 @@ ion-backdrop {
 
 #publicationsList .publication-card-more-medias {
   font-weight: bold;
-  position: absolute;
+  /* position: absolute; */
+  width: 100%;
+  font-size: large;
   display: block;
-  border: solid red 1px;
+  text-align: right;
+  /* border: solid red 1px; */
 }
 
 .fsUsersInterations {
