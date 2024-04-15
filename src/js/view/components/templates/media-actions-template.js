@@ -264,7 +264,7 @@ let mediaActionsTemplate = {
         })
 
         mediaPublishBtn.addEventListener("click", async () => {   
-            const selectedMedias = selectedMediasDetails()
+            let selectedMedias = selectedMediasDetails()
             const previousPage = await navigation.getPrevious()
 
             console.log(previousPage)
@@ -277,6 +277,14 @@ let mediaActionsTemplate = {
                 if(currentPage.component == "media-publication") {
                     const mediaList = document.querySelector("media-publication #media-publication-content #media-list")
                     const publish = document.querySelector("media-publication #publish")
+                    const publicationType = document.querySelector("#publication-type")
+
+                    if(publicationType.value == 4) {//varoboba                        
+                        if(selectedMedias.length > 0) {
+                            selectedMedias = [selectedMedias[0]]//just one media allowed
+                            mediaList.innerHTML = ""
+                        }
+                    }
 
                     selectedMedias.forEach((element, key) => {
                         const copyOfTheElement = document.importNode(element, true)
@@ -320,10 +328,37 @@ let mediaActionsTemplate = {
                 }
             }
             else {
-                await navigation.push('media-publication', { 
-                    selectedMedias: selectedMedias
-                })    
-            } 
+                if(typeof fsGlobalVariable.publicationTypeValue != "undefined") {
+                    if(fsGlobalVariable.publicationTypeValue == 4) {//varoboba  
+                        await navigation.push('media-publication', { 
+                            selectedMedias: [selectedMedias[0]]//just one media allowed
+                        })
+                    }
+                    else {
+                        await navigation.push('media-publication', { 
+                            selectedMedias: selectedMedias
+                        })
+                    }
+
+                    const publicationType = document.querySelector("#publication-type")
+
+                    publicationType.setAttribute("value", fsGlobalVariable.publicationTypeValue)
+
+                    if(fsGlobalVariable.publicationTypeValue == 4) {
+                        if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
+                        if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
+                    }
+                    else {
+                        document.querySelector("#text-editor").classList.remove('ion-hide')
+                        document.querySelector("#text-editor").previousElementSibling.classList.remove('ion-hide')//toolbar
+                    }
+                }
+                else {
+                    await navigation.push('media-publication', { 
+                        selectedMedias: selectedMedias
+                    })
+                }
+            }
         })    
 
         mediaDeleteBtn.addEventListener("click", async () => {

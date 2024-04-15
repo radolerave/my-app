@@ -42,7 +42,7 @@ let sellerPublicationsManagementTemplate = {
         
         const publicationsList = document.querySelector(`${containerId} #publicationsList`)
         const navigation = fsGlobalVariable.navigation;
-        let fromPage = await navigation.getActive()//from which page posts are displayed and actions are executed   
+        let fromPage = await navigation.getActive()//from which page posts are displayed and actions were executed   
         
         let start = 0
         const nbr = 2

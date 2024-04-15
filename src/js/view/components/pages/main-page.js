@@ -241,7 +241,7 @@ let mainPage = {
     const myAccountPage = document.querySelector('#my-account-page');
     myAccountNav.root = myAccountPage;
 
-    landingPageTemplate.logic()
+    await landingPageTemplate.logic()
     // sellerSearchTemplate.logic(args)
 
     const tab = document.querySelector("main-page ion-tabs#main-page-tab")

@@ -332,7 +332,7 @@ let sellerMediasManagement = {
       console.log(err)
     }
 
-    mediaActionsTemplate.logic({
+    await mediaActionsTemplate.logic({
       allMylightGalleries: [lightGalleryForImages, lightGalleryForVideos],
       renderMedia: async () => {
         try {

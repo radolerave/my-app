@@ -1,4 +1,5 @@
 import { fsConfig } from './../../../config/fsConfig.js';
+import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
 // import Swiper bundle with all modules installed
 import Swiper from 'swiper/bundle';
 
@@ -18,6 +19,7 @@ import lightGallery from 'lightgallery';
 // Plugins
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
+import lgVideo from 'lightgallery/plugins/video'
 
 
 let landingPageTemplate = {
@@ -40,7 +42,12 @@ let landingPageTemplate = {
                 height: 25vh;             
             }
 
-            #main-content .swiper-slide img {
+            #main-content .swiper-slide media {                
+                width: 100%;
+                height: 100%;
+            }
+
+            #main-content .swiper-slide img, #main-content .swiper-slide video {
                 display: block;
                 object-fit: cover;
                 border: solid grey 1px;
@@ -71,96 +78,11 @@ let landingPageTemplate = {
                 <div class="swiper-wrapper" id="swiper-wrapper-varoboba"></div>
             </div>
         </div>
-
-        <div id="fs-en-vogue-slide" class="fs-slide">
-            <ion-grid class="ion-no-padding">
-                <ion-row class="ion-align-items-center">
-                    <ion-col size="10"><h5>En vogue</h5></ion-col>
-                    <ion-col size="2"><ion-button class="ion-no-margin" fill="clear" expand="block"><ion-icon name="arrow-forward-outline" color="dark"></ion-icon></ion-button></ion-col>
-                </ion-row>
-                
-            </ion-grid>
-            
-            <!-- Swiper -->
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper" id="swiper-wrapper-envogue"></div>
-            </div>
-        </div>
-
-        <div id="fs-new-seller-slide" class="fs-slide">
-            <ion-grid class="ion-no-padding">
-                <ion-row class="ion-align-items-center">
-                    <ion-col size="10"><h5>Nouveaux</h5></ion-col>
-                    <ion-col size="2"><ion-button class="ion-no-margin" fill="clear" expand="block"><ion-icon name="arrow-forward-outline" color="dark"></ion-icon></ion-button></ion-col>
-                </ion-row>
-                
-            </ion-grid>
-            
-            <!-- Swiper -->
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">Slide 1</div>
-                    <div class="swiper-slide">Slide 2</div>
-                    <div class="swiper-slide">Slide 3</div>
-                    <div class="swiper-slide">Slide 4</div>
-                    <div class="swiper-slide">Slide 5</div>
-                    <div class="swiper-slide">Slide 6</div>
-                    <div class="swiper-slide">Slide 7</div>
-                    <div class="swiper-slide">Slide 8</div>
-                    <div class="swiper-slide">Slide 9</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="fs-recently-viewed-slide" class="fs-slide">
-            <ion-grid class="ion-no-padding">
-                <ion-row class="ion-align-items-center">
-                    <ion-col size="10"><h5>Vu récemment</h5></ion-col>
-                    <ion-col size="2"><ion-button class="ion-no-margin" fill="clear" expand="block"><ion-icon name="arrow-forward-outline" color="dark"></ion-icon></ion-button></ion-col>
-                </ion-row>
-                
-            </ion-grid>
-            
-            <!-- Swiper -->
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">Slide 1</div>
-                    <div class="swiper-slide">Slide 2</div>
-                    <div class="swiper-slide">Slide 3</div>
-                    <div class="swiper-slide">Slide 4</div>
-                    <div class="swiper-slide">Slide 5</div>
-                    <div class="swiper-slide">Slide 6</div>
-                    <div class="swiper-slide">Slide 7</div>
-                    <div class="swiper-slide">Slide 8</div>
-                    <div class="swiper-slide">Slide 9</div>
-                </div>
-            </div>
-        </div>
     `,
     logic: async () => {        
-        // let myWidget = window.cloudinary.openUploadWidget({
-        //     cloudName: 'dtu8h2u98', 
-        //     uploadPreset: 'ml_default',
-        //     prepareUploadParams: (cb, params) => {
-        //         params = { tags : ["fs"] }
-
-        //         cb(params)
-        //     }
-        //     // cropping: true
-        // }, 
-        //     (error, result) => { 
-        //       if (!error && result && result.event === "success") { 
-        //         console.log('Done! Here is the media info: ', result.info); 
-        //       }
-        //     }
-        // )
-          
-        //   document.getElementById("upload_widget").addEventListener("click", function(){
-        //     myWidget.open();
-        //     }, false);
+        let fileTypeIdentifier = new FileTypeIdentifier()
 
         const varoboba = document.querySelector("#swiper-wrapper-varoboba")
-        const envogue = document.querySelector("#swiper-wrapper-envogue")
 
         const swiper = new Swiper(".mySwiper", {
             slidesPerView: (document.querySelector("#main-content").offsetWidth/150),
@@ -168,84 +90,79 @@ let landingPageTemplate = {
             freeMode: true,
         });
 
-        // Create a Cloudinary instance and set your cloud name.
-        const cld = new Cloudinary({
-            cloud: {
-                cloudName: 'dtu8h2u98'
-            }
-        });        
+        let files = await fetch(`https://server2.atria.local/findseller/dirTree.php?dirname=.\\files\\varoboba`)
+        files = await files.json()
+  
+        console.log(files)    
 
-        for(let i=0; i<6; i++) {
-            // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
-            const myImage = cld.image('cld-sample-' + i);             
+        for(let i=0; i<files.length; i++) {
+            let file = files[i]      
+            let media    
 
             // Render the image in an 'img' element.
             const swiperSlide = document.createElement('a')
             swiperSlide.classList.add("swiper-slide")
-            swiperSlide.setAttribute("href", myImage.toURL())
+            swiperSlide.setAttribute("href", file.infos.url)
 
-            // Resize to 250 x 250 pixels using the 'fill' crop mode.
-            myImage.resize(fill().width(150).height(267));
+            switch(fileTypeIdentifier.identify(file.infos.mime_type)) {
+                case "image": 
+                    media = /*html*/`
+                        <media class="fs-media" data-src="${file.infos.url}" media-type="image" format="${file.infos.extension}">
+                            <img src="${file.infos.url}" />
+                        </media>
+                    `                        
+                    break
 
-            const imgElement = document.createElement('img');
-            swiperSlide.appendChild(imgElement);
+                case "video": 
+                    media = /*html*/`
+                        <media class="fs-media" media-type="video" format="${file.infos.extension}" data-video=${
+                            JSON.stringify(
+                                {
+                                    "source": [{
+                                        "src": file.infos.url,
+                                        "type": `video/${file.infos.extension}`
+                                    }],
+                                    "attributes": {
+                                        "preload": false,
+                                        "playsinline": true,
+                                        "controls": true
+                                    }              
+                                }
+                            )
+                        }>
+                            <video>
+                                <source src="${file.infos.url}"></source>
+                            </video>
+                        </media>
+                    `
+                    break
+
+                default:
+                    break
+            }
+
+            swiperSlide.innerHTML = media
 
             varoboba.appendChild(swiperSlide)
 
-            imgElement.src = myImage.toURL();
+            // media.src = file.infos.url
         }      
         
         const plugin1 = lightGallery(varoboba, {
-            plugins: [lgZoom, lgThumbnail],
+            selector: ".fs-media",
+            plugins: [lgVideo, lgZoom, lgThumbnail],
             licenseKey: fsConfig.lightGallery.licenseKey,
-            speed: 500
+            videojs: true,
+            videojsOptions: {
+                muted: false,
+            },
+            speed: 500,
         });
 
         varoboba.addEventListener("lgBeforeOpen", () => {
             fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
             fsGlobalVariable.ionBackButtonHandler.fn = async () => {
                 plugin1.closeGallery()
-            }
-        })
-        
-        let data = await fetch("https://res.cloudinary.com/dtu8h2u98/image/list/fs.json")
-        data = await data.json()
-        // console.log(data)
-
-        let mediaList = data.resources
-
-        console.log(mediaList)
-
-        for(let i=0; i<mediaList.length; i++) {
-            // Instantiate a CloudinaryImage object for the image with the public ID, 'cld-sample-5'.
-            const myImage = cld.image(mediaList[i].public_id); 
-
-            // Render the image in an 'img' element.
-            const swiperSlide = document.createElement('a')
-            swiperSlide.classList.add("swiper-slide")
-            swiperSlide.setAttribute("href", myImage.toURL())
-
-            // Resize to 250 x 250 pixels using the 'fill' crop mode.
-            myImage.resize(fill().width(150).height(267));
-
-            const imgElement = document.createElement('img');
-            swiperSlide.appendChild(imgElement);
-
-            envogue.appendChild(swiperSlide)
-
-            imgElement.src = myImage.toURL();
-        }      
-        
-        const plugin2 = lightGallery(envogue, {
-            plugins: [lgZoom, lgThumbnail],
-            licenseKey: fsConfig.lightGallery.licenseKey,
-            speed: 500
-        }); 
-
-        envogue.addEventListener("lgBeforeOpen", () => {
-            fsGlobalVariable.ionBackButtonHandler.canProcessNextHandler = false
-            fsGlobalVariable.ionBackButtonHandler.fn = async () => {
-                plugin2.closeGallery()
             }
         })
     }

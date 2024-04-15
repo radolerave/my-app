@@ -41,6 +41,7 @@ let mediasOrPublicationsChoice = {
 
     mediasManagementBtn.addEventListener("click", async () => {
       fsGlobalVariable.textToPublish = [{ insert: '\n' }]
+      fsGlobalVariable.publicationTypeValue = undefined
       await navigation.push("seller-medias-management")
     })
 

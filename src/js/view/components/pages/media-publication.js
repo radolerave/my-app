@@ -60,7 +60,7 @@ let mediaPublication = {
       console.log(currentPage)
 
       if(currentPage.component == "media-publication") {
-        mediaPublicationTemplate.logic({"currentPage": currentPage, "listener": listener})
+        await mediaPublicationTemplate.logic({"currentPage": currentPage, "listener": listener})
       }
     }        
 

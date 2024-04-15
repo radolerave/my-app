@@ -20,14 +20,17 @@ let mediaPublicationTemplate = {
                 <ion-radio-group id="publication-type" value="1">
                     <ion-grid class="">
                         <ion-row>
-                            <ion-col class="ion-text-left" size="4">
+                            <ion-col class="ion-text-left" size="3">
                                 <ion-radio value="1" label-placement="end">Publication</ion-radio>
                             </ion-col>
-                            <ion-col class="ion-text-center" size="4">
+                            <ion-col class="ion-text-center" size="3">
                                 <ion-radio value="2" label-placement="end">Annonce</ion-radio>
                             </ion-col>
-                            <ion-col class="ion-text-right" size="4">
+                            <ion-col class="ion-text-center" size="3">
                                 <ion-radio value="3" label-placement="end">Actualité</ion-radio>
+                            </ion-col>
+                            <ion-col class="ion-text-right" size="3">
+                                <ion-radio value="4" label-placement="end">Varoboba</ion-radio>
                             </ion-col>
                         </ion-row>
                     </ion-grid>                    
@@ -45,6 +48,27 @@ let mediaPublicationTemplate = {
 
         <div id="additional-validity" class="text-success ion-hide"><h3>Validité supplémentaire</h3></div>
 
+        <div id="text-editor-toolbar">
+            <button class="ql-header" value="1"></button>
+            <button class="ql-header" value="2"></button>
+            <!-- Add font size dropdown -->
+            <select class="ql-size">
+                <option value="small"></option>
+                <!-- Note a missing, thus falsy value, is used to reset to default -->
+                <option selected></option>
+                <!--<option value="large"></option>
+                <option value="huge"></option>-->
+            </select>
+            <!-- Add a bold button -->
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+            <!-- Add subscript and superscript buttons -->
+            <button class="ql-script" value="sub"></button>
+            <button class="ql-script" value="super"></button>
+            <button class="ql-clean"></button>
+        </div>
         <div id="text-editor"></div>
 
         <div id="addMedias">
@@ -74,25 +98,11 @@ let mediaPublicationTemplate = {
         const navigation = fsGlobalVariable.navigation
         navigation.removeEventListener("ionNavDidChange", args.listener)
 
-        let toolbarOptions = [
-            [{ 'header': 1 }, { 'header': 2 }], // custom button values
-            // [{ 'align': [] }],
-            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-            // [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-            // [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],              
-            // ['blockquote', 'code-block'],
-            // [{ 'direction': 'rtl' }],                         // text direction          
-            // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-            // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],          
-            // [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-            // [{ 'font': [] }],                      
-            ['clean']                                         // remove formatting button
-        ]
-
         fsGlobalVariable.quill = new Quill('#text-editor', {
             modules: {
-                toolbar: toolbarOptions
+                toolbar: {
+                    container: "#text-editor-toolbar",
+                }
             },
             theme: 'snow'
         })
@@ -194,6 +204,21 @@ let mediaPublicationTemplate = {
         }
 
         publicationType.addEventListener("ionChange", (e) => {
+            if(publicationType.value == 4) {
+                if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
+                if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
+
+                while(mediaList.childNodes.length > 1) {//just one media allowed
+                    mediaList.removeChild(mediaList.lastChild)
+                }
+            }
+            else {
+                document.querySelector("#text-editor").classList.remove('ion-hide')
+                document.querySelector("#text-editor").previousElementSibling.classList.remove('ion-hide')//toolbar
+            }
+
+            fsGlobalVariable.publicationTypeValue = publicationType.value
+
             costCalculation()
         })
 
@@ -203,6 +228,15 @@ let mediaPublicationTemplate = {
 
         switch(operationType) {
             case "update": 
+                if(publicationTypeValue == 4) {
+                    if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
+                    if(!document.querySelector("#text-editor").previousSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousSibling.classList.add('ion-hide')//toolbar
+                }
+                // else {
+                //     document.querySelector("#text-editor").classList.remove('ion-hide')
+                //     document.querySelector("#text-editor").previousSibling.classList.remove('ion-hide')//toolbar
+                // }
+
                 publicationType.setAttribute("value", publicationTypeValue)
                 publicationValidityPeriod.setAttribute("value", publicationValidityValue)
                 
@@ -243,6 +277,12 @@ let mediaPublicationTemplate = {
 
         selectedMedias.forEach((element, key) => {
             const copyOfTheElement = document.importNode(element, true)
+
+            copyOfTheElement.classList.remove("ion-hide")
+
+            if(copyOfTheElement.querySelector(".publication-card-more-medias") != null) {
+                copyOfTheElement.querySelector(".publication-card-more-medias").classList.add("ion-hide")
+            }
 
             const deleteBtn = document.createElement("ion-button")
             deleteBtn.innerHTML = `<ion-icon name="close-outline"></ion-icon> enlever`
