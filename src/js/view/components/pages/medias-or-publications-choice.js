@@ -40,13 +40,13 @@ let mediasOrPublicationsChoice = {
     const publicationsManagementBtn = document.querySelector("#publicationsManagementBtn")    
 
     mediasManagementBtn.addEventListener("click", async () => {
-      fsGlobalVariable.textToPublish = [{ insert: '\n' }]
+      fsGlobalVariable.textToPublish = { "ops": [{ insert: '\n' }] }
       fsGlobalVariable.publicationTypeValue = undefined
       await navigation.push("seller-medias-management")
     })
 
     publicationsManagementBtn.addEventListener("click", async () => {
-      fsGlobalVariable.textToPublish = [{ insert: '\n' }]
+      fsGlobalVariable.textToPublish = { "ops": [{ insert: '\n' }] }
       await navigation.push("seller-publications-management")
     })
   }

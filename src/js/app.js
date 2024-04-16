@@ -19,8 +19,8 @@ window.fsGlobalVariable = {
         canProcessNextHandler: true,
         fn: async () => {}
     },
-    textToPublish: [{ insert: '\n' }],
-    textToPublishDrat: [{ insert: '\n' }],
+    textToPublish: { "ops": [{ insert: '\n' }] },
+    textToPublishDrat: { "ops": [{ insert: '\n' }] },
 }
 
 window.showBackdrop = () => {

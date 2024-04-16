@@ -91,7 +91,7 @@ let mediaPublicationTemplate = {
         const serverUrl = fsConfig.serverUrl
         let myFs = new Fs(FsDb, Dexie)
         let myFsHelper = new FsHelper()
-        let finalTextToPublish = [{ insert: '\n' }]
+        let finalTextToPublish = { "ops": [{ insert: '\n' }] }
 
         console.log(args)    
 
@@ -208,8 +208,15 @@ let mediaPublicationTemplate = {
                 if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
                 if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
 
-                while(mediaList.childNodes.length > 1) {//just one media allowed
-                    mediaList.removeChild(mediaList.lastChild)
+                try {
+                    while(mediaList.childNodes.length > 1) {//just one media allowed
+                        mediaList.removeChild(mediaList.lastChild)
+                    }
+    
+                    fsGlobalVariable.selectedMedias = mediaList.querySelectorAll("media")
+                }
+                catch(err) {
+                    console.error(err)
                 }
             }
             else {
@@ -230,11 +237,11 @@ let mediaPublicationTemplate = {
             case "update": 
                 if(publicationTypeValue == 4) {
                     if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
-                    if(!document.querySelector("#text-editor").previousSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousSibling.classList.add('ion-hide')//toolbar
+                    if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
                 }
                 // else {
                 //     document.querySelector("#text-editor").classList.remove('ion-hide')
-                //     document.querySelector("#text-editor").previousSibling.classList.remove('ion-hide')//toolbar
+                //     document.querySelector("#text-editor").previousElementSibling.classList.remove('ion-hide')//toolbar
                 // }
 
                 publicationType.setAttribute("value", publicationTypeValue)
@@ -326,7 +333,7 @@ let mediaPublicationTemplate = {
 
         async function publishFn() {
             let sMedias = []
-
+console.log(fsGlobalVariable.selectedMedias)
             fsGlobalVariable.selectedMedias.forEach((element, index) => {
                 sMedias.push({
                     mediaType: element.getAttribute("media-type"),
@@ -339,10 +346,10 @@ let mediaPublicationTemplate = {
             const validity = isNaN(maskitoParseNumber(publicationValidityPeriod.value, '.')) ? 1 : maskitoParseNumber(publicationValidityPeriod.value, '.')
 
             if(operationType == "update") { 
-                finalTextToPublish = fsGlobalVariable.textToPublish
+                finalTextToPublish = typeof fsGlobalVariable.textToPublish == "undefined" ? { "ops": [{ insert: '\n' }] } : fsGlobalVariable.textToPublish
             }
             else {
-                finalTextToPublish = fsGlobalVariable.textToPublishDraft
+                finalTextToPublish = typeof fsGlobalVariable.textToPublishDraft == "undefined" ? { "ops": [{ insert: '\n' }] } : fsGlobalVariable.textToPublishDraft
             }
 
             let finalData = {
@@ -395,7 +402,7 @@ let mediaPublicationTemplate = {
             }
 
             if(response.ok) {
-                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft = [{ insert: '\n' }]
+                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft = { "ops": [{ insert: '\n' }] }
                 await goTo()
             }
             else {
@@ -561,7 +568,7 @@ let mediaPublicationTemplate = {
                                 await rollBack(paymentDetails)
 
                                 await confirmTransaction(pk, 0)//a failed transaction
-                                
+                                console.error(err)
                                 await Dialog.alert({
                                     title: "Erreur",
                                     message: "Une erreur s'est produite!\nLe paiement a été annulé."
