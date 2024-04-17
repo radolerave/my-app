@@ -17,24 +17,14 @@ let mediaPublicationTemplate = {
     content: /*html*/`
         <ion-card id="publication-settings" disabled="true">
             <ion-card-content>
-                <ion-radio-group id="publication-type" value="1">
-                    <ion-grid class="">
-                        <ion-row>
-                            <ion-col class="ion-text-left" size="3">
-                                <ion-radio value="1" label-placement="end">Publication</ion-radio>
-                            </ion-col>
-                            <ion-col class="ion-text-center" size="3">
-                                <ion-radio value="2" label-placement="end">Annonce</ion-radio>
-                            </ion-col>
-                            <ion-col class="ion-text-center" size="3">
-                                <ion-radio value="3" label-placement="end">Actualité</ion-radio>
-                            </ion-col>
-                            <ion-col class="ion-text-right" size="3">
-                                <ion-radio value="4" label-placement="end">Varoboba</ion-radio>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>                    
-                </ion-radio-group>
+                <ion-item class="ion-no-padding ion-no-margin">
+                    <ion-select id="publication-type" value="1" label="Type de publication" placeholder="Choix du type de publication">
+                        <ion-select-option value="1">Publication</ion-select-option>
+                        <ion-select-option value="2">Annonce</ion-select-option>
+                        <ion-select-option value="3">Actualité</ion-select-option>
+                        <ion-select-option value="4">Varoboba</ion-select-option>
+                    </ion-select>
+                </ion-item>
 
                 <ion-item>
                     <ion-input id="publication-validity-period" label="Validité : " placeholder="1" value="1"></ion-input>&nbsp;jours
@@ -148,6 +138,33 @@ let mediaPublicationTemplate = {
         const mediaList = document.querySelector("#media-list")
         let nbrOfSelectedMedias = selectedMedias.length
 
+        const showHidePublishBtn = () => {
+            if(publicationType.value == 4) {//varoboba
+                if(fsGlobalVariable.selectedMedias.length < 1) {
+                    if(!publish.classList.contains("ion-hide")) {
+                        publish.classList.add("ion-hide")
+                    }
+                }
+                else {
+                    if(publish.classList.contains("ion-hide")) {
+                        publish.classList.remove("ion-hide")
+                    }                               
+                }
+            }
+            else {
+                if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
+                    if(!publish.classList.contains("ion-hide")) {
+                        publish.classList.add("ion-hide")
+                    }
+                }
+                else {
+                    if(publish.classList.contains("ion-hide")) {
+                        publish.classList.remove("ion-hide")
+                    }                               
+                }
+            }
+        }
+
         async function goTo() {
             const tab = document.querySelector("main-page ion-tabs#main-page-tab")
             const currentTab = await tab.getSelected()
@@ -200,6 +217,8 @@ let mediaPublicationTemplate = {
                 postfix: ' FST',
             }))
 
+            // showHidePublishBtn()
+
             return cost
         }
 
@@ -227,6 +246,7 @@ let mediaPublicationTemplate = {
             fsGlobalVariable.publicationTypeValue = publicationType.value
 
             costCalculation()
+            showHidePublishBtn()
         })
 
         publicationValidityPeriod.addEventListener("ionInput", (e) => {
@@ -277,12 +297,15 @@ let mediaPublicationTemplate = {
                 break
 
             default: 
+                publicationValidityPeriod.setAttribute("value", publicationValidityValue)
                 fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft
                 publicationSettings.removeAttribute("disabled")
+                costCalculation()
                 break
         }
 
         selectedMedias.forEach((element, key) => {
+            console.log(element, selectedMedias)
             const copyOfTheElement = document.importNode(element, true)
 
             copyOfTheElement.classList.remove("ion-hide")
@@ -316,20 +339,7 @@ let mediaPublicationTemplate = {
             })
 
             mediaList.appendChild(copyOfTheElement)
-        })        
-
-        const showHidePublishBtn = () => {
-            if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
-                if(!publish.classList.contains("ion-hide")) {
-                    publish.classList.add("ion-hide")
-                }
-            }
-            else {
-                if(publish.classList.contains("ion-hide")) {
-                    publish.classList.remove("ion-hide")
-                }
-            }
-        }
+        })                
 
         async function publishFn() {
             let sMedias = []
@@ -362,7 +372,7 @@ console.log(fsGlobalVariable.selectedMedias)
                 updatedData: {
                     seller_id: fsGlobalVariable.session.seller_id,
                     publication: JSON.stringify({
-                        textToPublish: finalTextToPublish,
+                        textToPublish: publicationType.value == 4/*varoboba*/ ? { "ops": [{ insert: '\n' }] } : finalTextToPublish,
                         selectedMedias: sMedias
                     }),
                     type: publicationType.value,
@@ -718,6 +728,8 @@ console.log(fsGlobalVariable.selectedMedias)
 
         addMediasBtn.addEventListener("click", async () => {
             const previousPage = await navigation.getPrevious()
+            fsGlobalVariable.publicationTypeValue = publicationType.value
+            fsGlobalVariable.publicationValidity = publicationValidityPeriod.value
 
             console.log(previousPage)
 

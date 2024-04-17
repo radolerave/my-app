@@ -281,7 +281,7 @@ let mediaActionsTemplate = {
 
                     if(publicationType.value == 4) {//varoboba                        
                         if(selectedMedias.length > 0) {
-                            selectedMedias = [selectedMedias[0]]//just one media allowed
+                            selectedMedias = typeof selectedMedias[0] != "undefined" ? [selectedMedias[0]] : []//just one media allowed
                             mediaList.innerHTML = ""
                         }
                     }
@@ -312,14 +312,28 @@ let mediaActionsTemplate = {
                     fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
 
                     const showHidePublishBtn = () => {
-                        if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
-                            if(!publish.classList.contains("ion-hide")) {
-                                publish.classList.add("ion-hide")
+                        if(publicationType.value == 4) {//varoboba
+                            if(fsGlobalVariable.selectedMedias.length < 1) {
+                                if(!publish.classList.contains("ion-hide")) {
+                                    publish.classList.add("ion-hide")
+                                }
+                            }
+                            else {
+                                if(publish.classList.contains("ion-hide")) {
+                                    publish.classList.remove("ion-hide")
+                                }                               
                             }
                         }
                         else {
-                            if(publish.classList.contains("ion-hide")) {
-                                publish.classList.remove("ion-hide")
+                            if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
+                                if(!publish.classList.contains("ion-hide")) {
+                                    publish.classList.add("ion-hide")
+                                }
+                            }
+                            else {
+                                if(publish.classList.contains("ion-hide")) {
+                                    publish.classList.remove("ion-hide")
+                                }                               
                             }
                         }
                     }
@@ -331,12 +345,16 @@ let mediaActionsTemplate = {
                 if(typeof fsGlobalVariable.publicationTypeValue != "undefined") {
                     if(fsGlobalVariable.publicationTypeValue == 4) {//varoboba  
                         await navigation.push('media-publication', { 
-                            selectedMedias: [selectedMedias[0]]//just one media allowed
+                            selectedMedias: typeof selectedMedias[0] != "undefined" ? [selectedMedias[0]] : [],//just one media allowed
+                            publicationValidity: fsGlobalVariable.publicationValidity,
+                            publicationType: fsGlobalVariable.publicationTypeValue
                         })
                     }
                     else {
                         await navigation.push('media-publication', { 
-                            selectedMedias: selectedMedias
+                            selectedMedias: selectedMedias,
+                            publicationValidity: fsGlobalVariable.publicationValidity,
+                            publicationType: fsGlobalVariable.publicationTypeValue
                         })
                     }
 
