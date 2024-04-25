@@ -14,6 +14,7 @@ import { fsConfig } from './../../../config/fsConfig.js'
 
 import { Dialog } from '@capacitor/dialog';
 import { Toast } from '@capacitor/toast'
+import { cat } from '@cloudinary/url-gen/qualifiers/focusOn';
 
 let mainPage = {
   name: "main-page",
@@ -62,6 +63,34 @@ let mainPage = {
           border-width: 0;
           background-color: rgb(12, 180, 12);
         }
+
+        .ion-content-scroll-host {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    border: solid red 1px;
+  }
+
+  .ion-content-scroll-host::before,
+  .ion-content-scroll-host::after {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    content: '';
+  }
+
+  .ion-content-scroll-host::before {
+    bottom: -1px;
+  }
+
+  .ion-content-scroll-host::after {
+    top: -1px;
+  }
     </style>
 
     ${leftMenuTemplate.content}
@@ -96,196 +125,290 @@ let mainPage = {
           <ion-title>Find Seller<ion-text id="network-status"></ion-text></ion-title>
         </ion-toolbar>        
       </ion-header>
-      <ion-content class="ion-padding">          
-        <ion-tabs id="main-page-tab">
-            <ion-tab tab="landing">
-                <ion-nav id="landing-nav"></ion-nav>
-                <div id="landing-page">
-                    <ion-content>
-                        <div id="landing-page-content" class="">${landingPageTemplate.content}</div>
-                    </ion-content>
-                </div>
-            </ion-tab>
+      <ion-content class="ion-padding" scroll-y="false">              
+        <div>
+          <ion-tabs id="main-page-tab">
+              <ion-tab tab="landing">
+                  <ion-nav id="landing-nav"></ion-nav>
+                  <div id="landing-page">
+                      <ion-content>
+                        <ion-refresher slot="fixed">
+                          <ion-refresher-content></ion-refresher-content>
+                        </ion-refresher>
+                        
+                        <div id="landing-page-content" class="ion-content-scroll-host">${landingPageTemplate.content}</div>
+                      </ion-content>
+                  </div>
+              </ion-tab>
 
-            <ion-tab tab="advertisement">
-                <ion-nav id="advertisement-nav"></ion-nav>
-                <div id="advertisement-page">
-                    <ion-content>
-                        <div id="advertisement-page-content" class="">${advertisementsTemplate.content}</div>
-                    </ion-content>
-                </div>
-            </ion-tab>
+              <ion-tab tab="advertisement">
+                  <ion-nav id="advertisement-nav"></ion-nav>
+                  <div id="advertisement-page">
+                      <ion-content>
+                        <ion-refresher slot="fixed">
+                          <ion-refresher-content></ion-refresher-content>
+                        </ion-refresher>
 
-            <ion-tab tab="news">
-                <ion-nav id="news-nav"></ion-nav>
-                <div id="news-page">
-                    <ion-content>
-                        <div id="news-page-content" class="">${newsTemplate.content}</div>
-                    </ion-content>
-                </div>
-            </ion-tab>
+                        <div id="advertisement-page-content" class="ion-content-scroll-host">${advertisementsTemplate.content}</div>
+                      </ion-content>
+                  </div>
+              </ion-tab>
 
-            <ion-tab tab="my-account">
-                <ion-nav id="my-account-nav"></ion-nav>
-                <div id="my-account-page">
-                    <ion-content>
-                        <div id="my-account-content" class="">${myAccountTemplate.content}</div>
-                    </ion-content>
-                </div>
-            </ion-tab>                     
+              <ion-tab tab="news">
+                  <ion-nav id="news-nav"></ion-nav>
+                  <div id="news-page">
+                      <ion-content>
+                        <ion-refresher slot="fixed">
+                          <ion-refresher-content></ion-refresher-content>
+                        </ion-refresher>
+                        
+                        <div id="news-page-content" class="ion-content-scroll-host">${newsTemplate.content}</div>
+                      </ion-content>
+                  </div>
+              </ion-tab>
 
-            <ion-tab-bar slot="bottom">
-                <ion-tab-button tab="landing">
-                    <ion-icon name="home"></ion-icon>
-                    Accueil
-                </ion-tab-button>                
+              <ion-tab tab="my-account">
+                  <ion-nav id="my-account-nav"></ion-nav>
+                  <div id="my-account-page">
+                      <ion-content>
+                        <ion-refresher slot="fixed">
+                          <ion-refresher-content></ion-refresher-content>
+                        </ion-refresher>
+                        
+                        <div id="my-account-content" class="ion-content-scroll-host">${myAccountTemplate.content}</div>
+                      </ion-content>
+                  </div>
+              </ion-tab>                     
 
-                <ion-tab-button tab="advertisement">
-                    <ion-icon name="megaphone"></ion-icon>
-                    Annonces
-                </ion-tab-button>
+              <ion-tab-bar slot="bottom">
+                  <ion-tab-button tab="landing">
+                      <ion-icon name="home"></ion-icon>
+                      Accueil
+                  </ion-tab-button>                
 
-                <ion-tab-button tab="news">
-                    <ion-icon name="newspaper"></ion-icon>
-                    Actualités
-                </ion-tab-button>
+                  <ion-tab-button tab="advertisement">
+                      <ion-icon name="megaphone"></ion-icon>
+                      Annonces
+                  </ion-tab-button>
 
-                <ion-tab-button tab="my-account">
-                  <ion-icon name="person-circle-outline"></ion-icon>
-                    Compte
-                </ion-tab-button>
-            </ion-tab-bar>
-        </ion-tabs>
+                  <ion-tab-button tab="news">
+                      <ion-icon name="newspaper"></ion-icon>
+                      Actualités
+                  </ion-tab-button>
+
+                  <ion-tab-button tab="my-account">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                      Compte
+                  </ion-tab-button>
+              </ion-tab-bar>
+          </ion-tabs>
+        </div>
       </ion-content>
     </div>
     `,
-  logic: async () => {
-    const apiUrl = fsConfig.apiUrl
-    let myFs = new Fs(FsDb, Dexie)
-    console.log(myFs)
+  logic: async () => {    
+    try {      
+      showBackdrop()
 
-    let args = {}
-    args["myFs"] = myFs
+      const apiUrl = fsConfig.apiUrl
+      let myFs = new Fs(FsDb, Dexie)
+      console.log(myFs)
 
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
-    const newPublicationBtn = document.querySelector("main-page #newPublication")
+      let args = {}
+      args["myFs"] = myFs
 
-    newPublicationBtn.addEventListener("click", async () => {     
-      try {
-        if(typeof fsGlobalVariable.sellerInfos == "undefined" || typeof fsGlobalVariable.session == "undefined" || !await myFs.silentSignIn(apiUrl)) {
-          const isConnected = await myFs.silentSignIn(apiUrl)
+      const navigation = document.querySelector("ion-app ion-nav#navigation")
+      const newPublicationBtn = document.querySelector("main-page #newPublication")
+      const searchSeller = document.querySelector("#search-seller")
+      const tab = document.querySelector("main-page ion-tabs#main-page-tab")
 
-          if(isConnected) {
-            const localCredentials = await myFs.getLocalCredentials()
+      const landingNav = document.querySelector('#landing-nav');
+      const landingP = document.querySelector('#landing-page');
+      landingNav.root = landingP;
 
-            if(localCredentials != undefined) {
-              fsGlobalVariable.session = localCredentials
+      const advertisementNav = document.querySelector('#advertisement-nav');
+      const advertisementPage = document.querySelector('#advertisement-page');
+      advertisementNav.root = advertisementPage;
 
-              const si = await myFs.getSellerInfos(apiUrl, localCredentials.seller_id)
+      const newsNav = document.querySelector('#news-nav');
+      const newsPage = document.querySelector('#news-page');
+      newsNav.root = newsPage;
 
-              // console.log(si)
+      const myAccountNav = document.querySelector('#my-account-nav');
+      const myAccountPage = document.querySelector('#my-account-page');
+      myAccountNav.root = myAccountPage;
 
-              if(si.ok) {
-                const sellerInfos = si.sellerInfos
+      const landingPRefresher = landingP.querySelector("ion-refresher")
+      const advertisementPageRefresher = advertisementPage.querySelector("ion-refresher")
+      const newsPageRefresher = newsPage.querySelector("ion-refresher")
+      const myAccountPageRefresher = myAccountPage.querySelector("ion-refresher")
 
-                fsGlobalVariable.sellerInfos = sellerInfos
+      const refresherFn = async (refresher) => {
+        try {
+          const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+          
+          // console.log(localCredentials)
 
-                await navigation.push("media-publication")
+          fsGlobalVariable.session = localCredentials
+
+          // console.log(fsGlobalVariable)
+
+          let currentTab = await tab.getSelected()
+
+          switch(currentTab) {
+            case "my-account": 
+              if(localCredentials != undefined) {                    
+                await myAccountTemplate.logic(true)          
+              }
+              else {
+                await myAccountTemplate.logic(false)
+              }
+              break
+            
+            case "advertisement": 
+              await advertisementsTemplate.logic()  
+              break
+
+            case "news": 
+              await newsTemplate.logic()  
+              break
+
+            default:
+              leftMenuTemplate.logic()
+              rightMenuTemplate.logic(args)
+              await landingPageTemplate.logic()
+              break
+          }
+        }
+        catch(err) {
+          console.log(err)
+        }
+        finally {
+          refresher.complete();
+        }
+      }
+
+      landingPRefresher.addEventListener('ionRefresh', async () => {
+        await refresherFn(landingPRefresher)
+      });      
+
+      advertisementPageRefresher.addEventListener('ionRefresh', async () => {
+        await refresherFn(advertisementPageRefresher)
+      });
+
+      newsPageRefresher.addEventListener('ionRefresh', async () => {
+        await refresherFn(newsPageRefresher)
+      });
+
+      myAccountPageRefresher.addEventListener('ionRefresh', async () => {
+        await refresherFn(myAccountPageRefresher)
+      });
+
+      searchSeller.addEventListener("click", async () => {
+        await navigation.push("seller-search", args)
+      })
+
+      newPublicationBtn.addEventListener("click", async () => {     
+        try {
+          if(typeof fsGlobalVariable.sellerInfos == "undefined" || typeof fsGlobalVariable.session == "undefined" || !await myFs.silentSignIn(apiUrl)) {
+            const isConnected = await myFs.silentSignIn(apiUrl)
+
+            if(isConnected) {
+              const localCredentials = await myFs.getLocalCredentials()
+
+              if(localCredentials != undefined) {
+                fsGlobalVariable.session = localCredentials
+
+                const si = await myFs.getSellerInfos(apiUrl, localCredentials.seller_id)
+
+                // console.log(si)
+
+                if(si.ok) {
+                  const sellerInfos = si.sellerInfos
+
+                  fsGlobalVariable.sellerInfos = sellerInfos
+
+                  await navigation.push("media-publication")
+                }
+                else {
+                  await Toast.show({
+                    text: "Impossible de récuperer les informations nécessaires à la publication."
+                  })
+                }
               }
               else {
                 await Toast.show({
-                  text: "Impossible de récuperer les informations nécessaires à la publication."
+                  text: "Veuillez vous connecter!"
                 })
-              }
+              }          
             }
             else {
               await Toast.show({
                 text: "Veuillez vous connecter!"
               })
-            }          
+            }
           }
           else {
-            await Toast.show({
-              text: "Veuillez vous connecter!"
-            })
+            await navigation.push("media-publication")
           }
         }
-        else {
-          await navigation.push("media-publication")
+        catch(err) {
+          await Toast.show({
+            text: err
+          })
         }
-      }
-      catch(err) {
-        await Toast.show({
-          text: err
-        })
-      }
-    })
+      })
 
-    leftMenuTemplate.logic()
+      leftMenuTemplate.logic()
 
-    rightMenuTemplate.logic(args)
+      rightMenuTemplate.logic(args)      
 
-    const landingNav = document.querySelector('#landing-nav');
-    const landingP = document.querySelector('#landing-page');
-    landingNav.root = landingP;
+      await landingPageTemplate.logic()
+      // sellerSearchTemplate.logic(args)      
 
-    const advertisementNav = document.querySelector('#advertisement-nav');
-    const advertisementPage = document.querySelector('#advertisement-page');
-    advertisementNav.root = advertisementPage;
+      tab.addEventListener('ionTabsDidChange', async () => {
+        showBackdrop()
+        const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
+          
+        // console.log(localCredentials)
 
-    const newsNav = document.querySelector('#news-nav');
-    const newsPage = document.querySelector('#news-page');
-    newsNav.root = newsPage;
+        fsGlobalVariable.session = localCredentials
 
-    const myAccountNav = document.querySelector('#my-account-nav');
-    const myAccountPage = document.querySelector('#my-account-page');
-    myAccountNav.root = myAccountPage;
+        // console.log(fsGlobalVariable)
 
-    await landingPageTemplate.logic()
-    // sellerSearchTemplate.logic(args)
+        let currentTab = await tab.getSelected()
 
-    const tab = document.querySelector("main-page ion-tabs#main-page-tab")
+        switch(currentTab) {
+          case "my-account": 
+            if(localCredentials != undefined) {                    
+              await myAccountTemplate.logic(true)          
+            }
+            else {
+              await myAccountTemplate.logic(false)
+            }
+            break
+          
+          case "advertisement": 
+            await advertisementsTemplate.logic()  
+            break
 
-    tab.addEventListener('ionTabsDidChange', async () => {
-      showBackdrop()
-      const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
-        
-      // console.log(localCredentials)
+          case "news": 
+            await newsTemplate.logic()  
+            break
 
-      fsGlobalVariable.session = localCredentials
+          default:
+            break
+        }
 
-      // console.log(fsGlobalVariable)
-
-      let currentTab = await tab.getSelected()
-
-      switch(currentTab) {
-        case "my-account": 
-          if(localCredentials != undefined) {                    
-            await myAccountTemplate.logic(true)          
-          }
-          else {
-            await myAccountTemplate.logic(false)
-          }
-          break
-        
-        case "advertisement": 
-          await advertisementsTemplate.logic()  
-          break
-
-        case "news": 
-          await newsTemplate.logic()  
-          break
-
-        default:
-          break
-      }
-
+        hideBackdrop()
+      })
+    }
+    catch(err) {
+      console.log(err)
+    }
+    finally {
       hideBackdrop()
-    })
-
-    document.querySelector("#search-seller").addEventListener("click", async () => {
-      await navigation.push("seller-search", args)
-    })
+    }
   }
 }
 

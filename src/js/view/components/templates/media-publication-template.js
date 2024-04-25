@@ -132,7 +132,7 @@ let mediaPublicationTemplate = {
         const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
         const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
         const publicationTypeValue = typeof args.currentPage.params.publicationType != "undefined" ? args.currentPage.params.publicationType : 1
-        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 0
+        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 1
         const modified_x_times = typeof args.currentPage.params.modified_x_times != "undefined" ? args.currentPage.params.modified_x_times : 0
         let selectedMedias = fsGlobalVariable.selectedMedias
         const mediaList = document.querySelector("#media-list")
