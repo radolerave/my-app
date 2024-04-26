@@ -68,7 +68,7 @@ let leftMenuTemplate = {
             </ion-footer>
         </ion-menu>
     `,
-    logic: () => {
+    logic: async () => {
 
     }
 }

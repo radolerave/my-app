@@ -71,7 +71,7 @@ let mainPage = {
     height: 100%;
     width: 100%;
     overflow-y: auto;
-    border: solid red 1px;
+    /*border: solid red 1px;*/
   }
 
   .ion-content-scroll-host::before,
@@ -149,7 +149,7 @@ let mainPage = {
                           <ion-refresher-content></ion-refresher-content>
                         </ion-refresher>
 
-                        <div id="advertisement-page-content" class="ion-content-scroll-host">${advertisementsTemplate.content}</div>
+                        <div id="advertisements-page-content" class="ion-content-scroll-host">${advertisementsTemplate.content}</div>
                       </ion-content>
                   </div>
               </ion-tab>
@@ -206,15 +206,22 @@ let mainPage = {
       </ion-content>
     </div>
     `,
-  logic: async () => {    
+  logic: async () => {
+    let args = {}
+    let lastTimeDataRefresh = {
+      landingPage: 0,
+      advertisementPage: 0,
+      newsPage: 0,
+      myAccountPage: 0,
+    }
+    
     try {      
       showBackdrop()
 
       const apiUrl = fsConfig.apiUrl
       let myFs = new Fs(FsDb, Dexie)
       console.log(myFs)
-
-      let args = {}
+      
       args["myFs"] = myFs
 
       const navigation = document.querySelector("ion-app ion-nav#navigation")
@@ -257,6 +264,8 @@ let mainPage = {
 
           switch(currentTab) {
             case "my-account": 
+              document.querySelector("#my-account-content").innerHTML = myAccountTemplate.content
+
               if(localCredentials != undefined) {                    
                 await myAccountTemplate.logic(true)          
               }
@@ -266,16 +275,20 @@ let mainPage = {
               break
             
             case "advertisement": 
+              document.querySelector("#advertisements-page-content").innerHTML = advertisementsTemplate.content
+
               await advertisementsTemplate.logic()  
               break
 
             case "news": 
+              document.querySelector("#news-page-content").innerHTML = newsTemplate.content
+
               await newsTemplate.logic()  
               break
 
             default:
-              leftMenuTemplate.logic()
-              rightMenuTemplate.logic(args)
+              document.querySelector("#landing-page-content").innerHTML = landingPageTemplate.content
+
               await landingPageTemplate.logic()
               break
           }
@@ -288,19 +301,19 @@ let mainPage = {
         }
       }
 
-      landingPRefresher.addEventListener('ionRefresh', async () => {
+      landingPRefresher.addEventListener('ionRefresh', async () => {        
         await refresherFn(landingPRefresher)
       });      
 
-      advertisementPageRefresher.addEventListener('ionRefresh', async () => {
+      advertisementPageRefresher.addEventListener('ionRefresh', async () => {        
         await refresherFn(advertisementPageRefresher)
       });
 
-      newsPageRefresher.addEventListener('ionRefresh', async () => {
+      newsPageRefresher.addEventListener('ionRefresh', async () => {        
         await refresherFn(newsPageRefresher)
       });
 
-      myAccountPageRefresher.addEventListener('ionRefresh', async () => {
+      myAccountPageRefresher.addEventListener('ionRefresh', async () => {        
         await refresherFn(myAccountPageRefresher)
       });
 
@@ -357,56 +370,53 @@ let mainPage = {
             text: err
           })
         }
-      })
-
-      leftMenuTemplate.logic()
-
-      rightMenuTemplate.logic(args)      
+      })            
 
       await landingPageTemplate.logic()
       // sellerSearchTemplate.logic(args)      
 
       tab.addEventListener('ionTabsDidChange', async () => {
-        showBackdrop()
-        const localCredentials = await myFs.getLocalCredentials()//signIn mode : device <=> localDb
-          
-        // console.log(localCredentials)
-
-        fsGlobalVariable.session = localCredentials
-
-        // console.log(fsGlobalVariable)
-
         let currentTab = await tab.getSelected()
+        const izao = Date.now()
 
         switch(currentTab) {
           case "my-account": 
-            if(localCredentials != undefined) {                    
-              await myAccountTemplate.logic(true)          
-            }
-            else {
-              await myAccountTemplate.logic(false)
-            }
+            if(izao - lastTimeDataRefresh.myAccountPage > 300000) {//5 minutes
+              lastTimeDataRefresh.myAccountPage = izao
+              await refresherFn(myAccountPageRefresher)
+            }            
             break
           
           case "advertisement": 
-            await advertisementsTemplate.logic()  
+            if(izao - lastTimeDataRefresh.advertisementPage > 300000) {//5 minutes
+              lastTimeDataRefresh.advertisementPage = izao
+              await refresherFn(advertisementPageRefresher)
+            }
             break
 
           case "news": 
-            await newsTemplate.logic()  
+            if(izao - lastTimeDataRefresh.newsPage > 300000) {//5 minutes
+              lastTimeDataRefresh.newsPage = izao
+              await refresherFn(newsPageRefresher)
+            }
             break
 
-          default:
+          default: 
+            if(izao - lastTimeDataRefresh.landingPage > 300000) {//5 minutes
+              lastTimeDataRefresh.landingPage = izao
+              await refresherFn(landingPRefresher)
+            }
             break
         }
-
-        hideBackdrop()
       })
     }
     catch(err) {
       console.log(err)
     }
     finally {
+      await leftMenuTemplate.logic()
+      await rightMenuTemplate.logic(args)
+
       hideBackdrop()
     }
   }
