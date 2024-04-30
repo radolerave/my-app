@@ -280,17 +280,22 @@ let sellerDetailsTemplate = {
     const firstSelectedTab = await tab.getSelected()
     generatTabTitle(firstSelectedTab)
 
+    let lastTimeMediasListRefresh = 0
+
     tab.addEventListener('ionTabsDidChange', async () => {
       let currentTab = await tab.getSelected()
+      const izao = Date.now()
 
       // console.log(currentTab)
 
       generatTabTitle(currentTab)
 
       if(currentTab == "medias") {
-        if(document.querySelector("#sellerPublicationsList").getAttribute("first-load") == "true") {
+        if(izao - lastTimeMediasListRefresh > 300000) {//5 minutes
+          lastTimeMediasListRefresh = izao
+
+          document.querySelector("#mediasDetails").innerHTML = sellerMediasTemplate.content
           await sellerMediasTemplate.logic(data)
-          document.querySelector("#sellerPublicationsList").setAttribute("first-load", "false")
         }
       }
     })

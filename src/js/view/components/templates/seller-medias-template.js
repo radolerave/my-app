@@ -8,7 +8,7 @@ import { sellerPublicationsManagementTemplate } from './../templates/seller-publ
 let sellerMediasTemplate = {
   name: "seller-medias-template",
   content: /*html*/`
-    <div id="sellerPublicationsList" first-load="true">
+    <div id="sellerPublicationsList">
       ${sellerPublicationsManagementTemplate.content}
     </div>
   `,

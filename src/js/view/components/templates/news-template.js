@@ -10,7 +10,7 @@ import { newsTemplate as self } from './news-template.js'
 let newsTemplate = {
   name: "news-template",
   content: /*html*/`
-    <div id="sellerNewsList" first-load="true">
+    <div id="sellerNewsList">
       ${sellerPublicationsManagementTemplate.content}
     </div>
   `,

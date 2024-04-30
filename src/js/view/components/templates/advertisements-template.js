@@ -10,7 +10,7 @@ import { advertisementsTemplate as self } from './advertisements-template.js'
 let advertisementsTemplate = {
   name: "advertisements-template",
   content: /*html*/`
-    <div id="sellerAdvertisementsList" first-load="true">
+    <div id="sellerAdvertisementsList">
       ${sellerPublicationsManagementTemplate.content}
     </div>
   `,
