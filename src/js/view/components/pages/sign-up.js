@@ -2,6 +2,7 @@ import FsDb from './../../../model/model.js'
 import Fs from './../../../controller/controller.js'
 import { Dexie } from 'dexie'
 import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast';
 
 import { myAccountTemplate } from './../templates/my-account-template.js';
 import FormValidators from "../../../helpers/form-validators.js"
@@ -84,6 +85,12 @@ let signUp = {
             )
 
             console.log(signUpResult)
+
+            if(!signUpResult.ok) {
+                await Toast.show({
+                    text: signUpResult.errorText
+                })
+            }
         })
 
         function validateThisInput() {

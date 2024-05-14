@@ -66,43 +66,83 @@ export default class FsDb {
             const urlSellers = `${apiUrl}/sellers`;
             let dataSellers = {}
 
-            // console.log(dataAccounts)
+            console.log(dataAccounts)
 
-            let createSellerOperation = await fetch(urlSellers, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include any necessary authentication headers here
-                },
-                body: JSON.stringify(dataSellers),
-            })
+            let testIfEmailAlreadyExists = await fetch(`${apiUrl}/accounts?filter=email,eq,${dataAccounts.email}`)
+            testIfEmailAlreadyExists = await testIfEmailAlreadyExists.json()
 
-            let createdSeller = await createSellerOperation.json()
+            if(testIfEmailAlreadyExists.records.length > 0) {
+                ret = {
+                    ok: false,
+                    date: null,
+                    pk : null,
+                    errorText: "Attention, le mail que vous essayez d'enregistrer est déjà pris!"
+                }
+            }
+            else {
+                let formData = new FormData()
 
-            if(typeof createdSeller == "number") {
-                dataAccounts.seller_id = createdSeller
+                formData.append("params", JSON.stringify({
+                    pwd: dataAccounts.password
+                }))
 
-                // Send a POST request to create the item
-                let signUpOperation = await fetch(urlAccounts, {
+                const encryptionDetails = await fetch(`https://server2.atria.local/findseller/encrypt.php`, {
+                    method: 'POST',
+                    body: formData,
+                })
+
+                const encrypted = await encryptionDetails.json()
+
+                dataAccounts.password = encrypted.encrypted
+                dataAccounts.initialisation_vector = encrypted.iv
+
+                console.log(dataAccounts)
+
+                let createSellerOperation = await fetch(urlSellers, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         // Include any necessary authentication headers here
                     },
-                    body: JSON.stringify(dataAccounts),
+                    body: JSON.stringify(dataSellers),
                 })
 
-                dateOperation = new Date(signUpOperation.headers.get("date"))
+                let createdSeller = await createSellerOperation.json()
 
-                let createdItem = await signUpOperation.json()
+                if(typeof createdSeller == "number") {
+                    dataAccounts.seller_id = createdSeller
 
-                if(typeof createdItem == "number") {
-                    console.log('Created item:', createdItem);
+                    // Send a POST request to create the item
+                    let signUpOperation = await fetch(urlAccounts, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include any necessary authentication headers here
+                        },
+                        body: JSON.stringify(dataAccounts),
+                    })
 
-                    ret = {
-                        ok: true,
-                        date: dateOperation,
-                        pk : createdItem
+                    dateOperation = new Date(signUpOperation.headers.get("date"))
+
+                    let createdItem = await signUpOperation.json()
+
+                    if(typeof createdItem == "number") {
+                        console.log('Created item:', createdItem);
+
+                        ret = {
+                            ok: true,
+                            date: dateOperation,
+                            pk : createdItem
+                        }
+                    }
+                    else {
+                        ret = {
+                            ok: false,
+                            date: dateOperation,
+                            pk: null,
+                            errorCode: createdItem.code,
+                            errorText: createdItem.message
+                        }
                     }
                 }
                 else {
@@ -110,20 +150,11 @@ export default class FsDb {
                         ok: false,
                         date: dateOperation,
                         pk: null,
-                        errorCode: createdItem.code,
-                        errorText: createdItem.message
+                        errorCode: createdSeller.code,
+                        errorText: createdSeller.message
                     }
                 }
-            }
-            else {
-                ret = {
-                    ok: false,
-                    date: dateOperation,
-                    pk: null,
-                    errorCode: createdSeller.code,
-                    errorText: createdSeller.message
-                }
-            }
+            }            
         }
         catch(error) {
             console.error('Error updating item:', error);
@@ -205,29 +236,53 @@ export default class FsDb {
         try {            
             let email = credentials.email
             let password = credentials.password
+            let decryptedPassword
 
-            //proceed to authentication
-            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
+            //get the initialisation vector (and serverSideCredentials - the password is supposed to be encrypted)
+            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}`)
             serverSideCredentials = await serverSideCredentials.json()
             serverSideCredentials = serverSideCredentials.records
 
             console.log(serverSideCredentials)
 
+            //decrypt password
+            let formData = new FormData()
+
+            if(serverSideCredentials.length == 1) {//must be 1 because email is unique
+                formData.append("params", JSON.stringify({
+                    pwd: serverSideCredentials[0].password,
+                    initialisation_vector: serverSideCredentials[0].initialisation_vector
+                }))
+    
+                const decryptionDetails = await fetch(`https://server2.atria.local/findseller/decrypt.php`, {
+                    method: 'POST',
+                    body: formData,
+                })
+    
+                const decrypted = await decryptionDetails.json()
+    
+                if(decrypted.ok) {
+                    decryptedPassword = decrypted.decrypted
+                }
+                else {
+                    throw new Error(decrypted.message)
+                }
+            }
+            else {
+                return false
+            }            
+
+            //proceed to authentication            
             let mustBeTrue = () => {
                 try {
-                    if(serverSideCredentials.length == 1) {//must be 1 because email is unique
-                        return (
-                            String(serverSideCredentials[0].email) != "undefined"
-                            && String(serverSideCredentials[0].password) != "undefined"
-                            && String(email) != "undefined"
-                            && String(password) != "undefined"
-                            && serverSideCredentials[0].email == email
-                            && serverSideCredentials[0].password == password
-                        )
-                    }
-                    else {
-                        return false
-                    }
+                    return (
+                        String(serverSideCredentials[0].email) != "undefined"
+                        && String(serverSideCredentials[0].password) != "undefined"
+                        && String(email) != "undefined"
+                        && String(password) != "undefined"
+                        && serverSideCredentials[0].email == email
+                        && decryptedPassword == password
+                    )
                 }
                 catch(err) {
                     return false
