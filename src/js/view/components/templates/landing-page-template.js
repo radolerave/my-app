@@ -62,6 +62,17 @@ let landingPageTemplate = {
                 padding: 10px 5px;
                 background-color: white;
             }
+
+            #main-content .varoboba-seller-name {
+                position: absolute; 
+                bottom:0; 
+                left:0; 
+                margin: 5px; 
+                font-size: 0.7em; 
+                color: white;
+                -webkit-text-stroke: 1px transparent;
+	            text-shadow: 0px 1px 4px black;
+            }
         </style>
 
         <div id="fs-varoboba-slide" class="fs-slide">
@@ -90,37 +101,59 @@ let landingPageTemplate = {
             freeMode: true,
         });
 
-        let files = await fetch(`https://server2.atria.local/findseller/dirTree.php?dirname=.\\files\\varoboba`)
-        files = await files.json()
+        // let files = await fetch(`https://server2.atria.local/findseller/dirTree.php?dirname=.\\files\\varoboba`)
+        // files = await files.json()
   
-        console.log(files)    
+        // console.log(files)    
 
-        for(let i=0; i<files.length; i++) {
-            let file = files[i]      
+        let formData = new FormData()
+
+        formData.append("params", JSON.stringify({
+            where: {
+                enabled: 1,
+                published: 1,
+                type: 4
+            }
+        }))
+
+        publicationsList = await fetch(`https://server2.atria.local/findseller/get_publications.php`, {
+            method: 'POST',
+            body: formData,
+        })
+
+        publicationsList = await publicationsList.json()
+        publicationsList = publicationsList.records
+
+        console.log(publicationsList)
+
+        for(let i=0; i<publicationsList.length; i++) {
+            let sellerName = publicationsList[i].name
+            let file = publicationsList[i].publication.selectedMedias[0]
             let media    
 
             // Render the image in an 'img' element.
             const swiperSlide = document.createElement('a')
             swiperSlide.classList.add("swiper-slide")
-            swiperSlide.setAttribute("href", file.infos.url)
+            swiperSlide.setAttribute("href", file.src)
 
-            switch(fileTypeIdentifier.identify(file.infos.mime_type)) {
+            switch(file.mediaType) {
                 case "image": 
                     media = /*html*/`
-                        <media class="fs-media" data-src="${file.infos.url}" media-type="image" format="${file.infos.extension}">
-                            <img src="${file.infos.url}" />
+                        <media class="fs-media" data-src="${file.src}" media-type="image" format="${file.format}" data-sub-html="<ion-button class='varoboba-seller-details'>btn</ion-button>${sellerName}">
+                            <img src="${file.src}" />
+                            <div class="varoboba-seller-name">${sellerName}</div>
                         </media>
                     `                        
                     break
 
                 case "video": 
                     media = /*html*/`
-                        <media class="fs-media" media-type="video" format="${file.infos.extension}" data-video=${
+                        <media class="fs-media" media-type="video" format="${file.format}"  data-sub-html="${sellerName}" data-video=${
                             JSON.stringify(
                                 {
                                     "source": [{
-                                        "src": file.infos.url,
-                                        "type": `video/${file.infos.extension}`
+                                        "src": file.src,
+                                        "type": `video/${file.format}`
                                     }],
                                     "attributes": {
                                         "preload": false,
@@ -131,8 +164,9 @@ let landingPageTemplate = {
                             )
                         }>
                             <video>
-                                <source src="${file.infos.url}"></source>
+                                <source src="${file.src}"></source>
                             </video>
+                            <div class="varoboba-seller-name">${sellerName}</div>
                         </media>
                     `
                     break
@@ -146,8 +180,8 @@ let landingPageTemplate = {
             varoboba.appendChild(swiperSlide)
 
             // media.src = file.infos.url
-        }      
-        
+        }              
+            
         const plugin1 = lightGallery(varoboba, {
             selector: ".fs-media",
             plugins: [lgVideo, lgZoom, lgThumbnail],

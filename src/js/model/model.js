@@ -83,7 +83,7 @@ export default class FsDb {
                 let formData = new FormData()
 
                 formData.append("params", JSON.stringify({
-                    pwd: dataAccounts.password
+                    string_to_encrypt: dataAccounts.password
                 }))
 
                 const encryptionDetails = await fetch(`https://server2.atria.local/findseller/encrypt.php`, {
@@ -188,7 +188,7 @@ export default class FsDb {
             }
 
             //proceed to authentication
-            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}&filter=password,eq,${password}`)
+            let serverSideCredentials = await fetch(`${apiUrl}/accounts?filter=email,eq,${email}`)
             serverSideCredentials = await serverSideCredentials.json()
             serverSideCredentials = serverSideCredentials.records
 
@@ -250,7 +250,7 @@ export default class FsDb {
 
             if(serverSideCredentials.length == 1) {//must be 1 because email is unique
                 formData.append("params", JSON.stringify({
-                    pwd: serverSideCredentials[0].password,
+                    string_to_decrypt: serverSideCredentials[0].password,
                     initialisation_vector: serverSideCredentials[0].initialisation_vector
                 }))
     

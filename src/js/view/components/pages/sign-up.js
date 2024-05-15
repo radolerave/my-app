@@ -84,9 +84,17 @@ let signUp = {
                 userType
             )
 
-            console.log(signUpResult)
+            // console.log(signUpResult)
 
-            if(!signUpResult.ok) {
+            if(signUpResult.ok) {
+                await navigation.pop()
+                
+                await Dialog.alert({
+                    title: "Succès",
+                    message: "Inscription effectuée avec succès.\nVeuillez vous connecter maintenant."
+                })
+            }
+            else {
                 await Toast.show({
                     text: signUpResult.errorText
                 })
