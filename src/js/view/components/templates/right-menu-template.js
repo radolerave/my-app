@@ -80,7 +80,7 @@ let rightMenuTemplate = {
     </ion-menu>
   `,
   logic: async (args) => {
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     const menu = document.querySelector('ion-menu[menu-id="menu2"]')
     let myFs = args.myFs
     let myFormatter = new Formatter()

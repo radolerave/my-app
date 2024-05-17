@@ -27,7 +27,7 @@ let myAccountTemplate = {
         const signedIn = conn
 
 
-        const navigation = document.querySelector("ion-app ion-nav#navigation")
+        const navigation = fsGlobalVariable.navigation
         
         // const connected = await promesse()
 

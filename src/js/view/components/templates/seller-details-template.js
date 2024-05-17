@@ -106,7 +106,7 @@ let sellerDetailsTemplate = {
 
     console.log(args)    
 
-    const navigation = document.querySelector("ion-app ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     navigation.removeEventListener("ionNavDidChange", args.listener)
 
     const data = args.currentPage.params.data

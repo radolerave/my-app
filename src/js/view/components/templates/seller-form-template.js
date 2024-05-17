@@ -506,7 +506,7 @@ let sellerFormTemplate = {
             JSONEditor.defaults.callbacks = {
                 "button" : {
                     "manageSellerMedia" : async function (jseditor, e) {
-                        const navigation = document.querySelector("ion-nav#navigation") 
+                        const navigation = fsGlobalVariable.navigation 
                         await navigation.push("medias-or-publications-choice")
 
                         fsGlobalVariable.sellerInfos = form.getValue()
@@ -550,7 +550,7 @@ let sellerFormTemplate = {
                         }
                     },
                     "addFsTokens" : async function (jseditor, e) {
-                        const navigation = document.querySelector("ion-nav#navigation") 
+                        const navigation = fsGlobalVariable.navigation
                         await navigation.push("buy-fs-tokens")
 
                         fsGlobalVariable.sellerInfos = form.getValue()

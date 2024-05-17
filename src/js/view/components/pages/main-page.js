@@ -224,7 +224,7 @@ let mainPage = {
       
       args["myFs"] = myFs
 
-      const navigation = document.querySelector("ion-app ion-nav#navigation")
+      const navigation = fsGlobalVariable.navigation
       const newPublicationBtn = document.querySelector("main-page #newPublication")
       const searchSeller = document.querySelector("#search-seller")
       const tab = document.querySelector("main-page ion-tabs#main-page-tab")

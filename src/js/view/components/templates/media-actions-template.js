@@ -82,7 +82,7 @@ let mediaActionsTemplate = {
         </style>
     `,
     logic: async (args) => {
-        const navigation = document.querySelector("ion-app ion-nav#navigation")
+        const navigation = fsGlobalVariable.navigation
         const serverUrl = fsConfig.serverUrl
 
         let allMylightGalleries = args.allMylightGalleries

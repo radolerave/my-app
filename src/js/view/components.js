@@ -12,6 +12,7 @@ import { sellerSettings } from './components/pages/seller-settings.js'
 import { sellerPreferences } from './components/pages/seller-preferences.js'
 import { sellerSearch } from './components/pages/seller-search.js'
 import { buyFsTokens } from './components/pages/buy-fs-tokens.js'
+import { varoboba } from './components/pages/all-varoboba.js'
 
 let components = {}
 
@@ -29,5 +30,6 @@ components.sellerSettings = sellerSettings
 components.sellerPreferences = sellerPreferences
 components.sellerSearch = sellerSearch
 components.buyFsTokens = buyFsTokens
+components.varoboba = varoboba
 
 export { components }

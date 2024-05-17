@@ -35,7 +35,7 @@ let sellerDetails = {
         </style>
     `,
     logic: async () => {
-        const navigation = document.querySelector("ion-app ion-nav#navigation")
+        const navigation = fsGlobalVariable.navigation
         const sellerDetailsContent = document.querySelector("#sellerDetailsContent")
 
         sellerDetailsContent.innerHTML = sellerDetailsTemplate.content
