@@ -20,6 +20,44 @@ let allVarobobaTemplate = {
     name: "all-varoboba-template",
     content: /*html*/`
         <div id="varoboba"></div>
+
+        <style>
+            all-varoboba #varoboba {
+                text-align: center;
+            }
+
+            all-varoboba .one-varoboba {      
+                display: inline-block;        
+                vertical-align: bottom;
+                width: 100px;
+                height: 100px;
+                /* border: solid red 1px; */
+                margin: 10px 5px;
+            }
+
+            all-varoboba media img, all-varoboba media video {
+                display: block;
+                object-fit: cover;
+                border: solid grey 1px;
+                border-radius: 5px;
+                width: 100%;
+                height: 100%;
+            }
+
+            all-varoboba .varoboba-seller-name {
+                position: absolute; 
+                width: 100px;
+                height: 15px;
+                overflow: hidden;
+                /* bottom:0;  */
+                /* left:0;  */
+                /* margin: 5px;  */
+                font-size: 0.7em; 
+                color: black;
+                -webkit-text-stroke: 1px transparent;
+                text-shadow: 0px 1px 4px grey;
+            }
+        </style>
     `,
     logic: async (args) => {        
         let myFs = new Fs(FsDb, Dexie)
@@ -38,9 +76,9 @@ let allVarobobaTemplate = {
             let media    
 
             // Render the image in an 'img' element.
-            const swiperSlide = document.createElement('a')
-            swiperSlide.classList.add("swiper-slide")
-            swiperSlide.setAttribute("href", file.src)
+            const oneVaroboba = document.createElement('div')
+            oneVaroboba.classList.add("one-varoboba")
+            // oneVaroboba.setAttribute("href", file.src)
 
             // Render the seller details in sub html
             const captions = document.createElement('div')
@@ -92,10 +130,10 @@ let allVarobobaTemplate = {
                     break
             }
 
-            swiperSlide.innerHTML = media
-            swiperSlide.appendChild(captions)
+            oneVaroboba.innerHTML = media
+            oneVaroboba.appendChild(captions)
 
-            varoboba.appendChild(swiperSlide)            
+            varoboba.appendChild(oneVaroboba)            
         }                      
 
         const customButton = `<div><button id="seller-details-btn" class="lg-custom-button" style="padding: 0 5px; background: none; color: white; -webkit-text-stroke: 1px transparent; text-shadow: 0px 1px 4px black;">Seller details</button></div>`;
@@ -169,12 +207,6 @@ let allVarobobaTemplate = {
 
             plugin1.outer.find("#seller-details-btn").firstElement.setAttribute("seller-id", sellerId)
             plugin1.outer.find("#seller-details-btn").firstElement.innerHTML = sellerName
-        })
-
-        document.querySelector("#all-varoboba").addEventListener("click", async () => {
-            await navigation.push("all-varoboba",  {
-                publicationsList: publicationsList
-            })
         })
     }
 }
