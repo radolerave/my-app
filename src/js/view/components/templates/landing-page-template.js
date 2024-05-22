@@ -71,6 +71,10 @@ let landingPageTemplate = {
 
             #main-content .varoboba-seller-name {
                 position: absolute; 
+                text-align: left;
+                width: 130px;
+                height: 15px;
+                overflow: hidden;
                 bottom:0; 
                 left:0; 
                 margin: 5px; 
@@ -207,7 +211,7 @@ let landingPageTemplate = {
             varoboba.appendChild(swiperSlide)            
         }                      
 
-        const customButton = `<div><button id="seller-details-btn" class="lg-custom-button" style="padding: 0 5px; background: none; color: white; -webkit-text-stroke: 1px transparent; text-shadow: 0px 1px 4px black;">Seller details</button></div>`;
+        const customButton = `<div><button id="seller-details-btn" class="lg-custom-button" style="padding: 0 5px; background: none; color: white; text-align: left; display: block; max-width: 100%; height: 20px; overflow: hidden; -webkit-text-stroke: 1px transparent; text-shadow: 0px 1px 4px black;">Seller details</button></div>`;
 
         varoboba.addEventListener("lgInit", (event) => {
             const pluginInstance = event.detail.instance;

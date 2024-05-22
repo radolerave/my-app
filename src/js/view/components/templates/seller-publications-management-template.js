@@ -400,10 +400,13 @@ let sellerPublicationsManagementTemplate = {
                         fsPublicationMoreOptionsInformations.addEventListener("click", async () => {     
                             const dateAdd = new Date(value.date_add)      
                             const deadline = DateTime.fromJSDate(dateAdd).plus({ days: parseInt(value.validity) }).toFormat('yyyy-LL-dd HH:mm:ss');
+                            const typesList = ["Non défini", "Publication", "Annonce", "Actualité", "Varoboba"]
+
+                            console.log(value)
                             
                             await Dialog.alert({
                                 "title": `Informations`,
-                                "message": `Etat : ${value.published ? "publié" : "non publié"}\nDate d'ajout : ${myFormatter.dateFormatter(value.date_add, fsConfig.formats.dateFormat)}\nDate limite : ${myFormatter.dateFormatter(deadline, fsConfig.formats.dateFormat)}\nDernière mise à jour : ${myFormatter.dateFormatter(value.last_edit, fsConfig.formats.dateFormat)}`
+                                "message": `Etat : ${value.published ? "publié" : "non publié"}\nType : ${typesList[value.type]}\nDate d'ajout : ${myFormatter.dateFormatter(value.date_add, fsConfig.formats.dateFormat)}\nDate limite : ${myFormatter.dateFormatter(deadline, fsConfig.formats.dateFormat)}\nDernière mise à jour : ${myFormatter.dateFormatter(value.last_edit, fsConfig.formats.dateFormat)}`
                             })
 
                             fsPublicationMoreOptionsPopover.isOpen = false

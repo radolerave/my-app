@@ -214,6 +214,28 @@ let mainPage = {
       newsPage: 0,
       myAccountPage: 0,
     }
+
+    async function signSilently(params) {
+      const myFs = params.myFs
+      const apiUrl = params.apiUrl
+      const isConnected = await myFs.silentSignIn(apiUrl)
+
+      if(isConnected) {
+        const localCredentials = await myFs.getLocalCredentials()
+
+        if(localCredentials != undefined) {
+          fsGlobalVariable.session = localCredentials
+          
+          console.log("You are connected")
+        }
+        else {
+          console.log("You are not connected")
+        }
+      }
+      else {
+        console.log("You are not connected")
+      }
+    }
     
     try {      
       showBackdrop()
@@ -223,6 +245,8 @@ let mainPage = {
       console.log(myFs)
       
       args["myFs"] = myFs
+
+      await signSilently({myFs: myFs, apiUrl: apiUrl})
 
       const navigation = fsGlobalVariable.navigation
       const newPublicationBtn = document.querySelector("main-page #newPublication")

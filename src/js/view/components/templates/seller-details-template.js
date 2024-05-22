@@ -81,7 +81,7 @@ let sellerDetailsTemplate = {
       </ion-tab-bar>
     </ion-tabs>
 
-    <ion-fab vertical="top" horizontal="end" class="ion-hide">
+    <ion-fab vertical="top" horizontal="center" class="ion-hide">
         <ion-fab-button id="updateLocalSellerInfos">
             <ion-icon name="cloud-download-outline"></ion-icon>
         </ion-fab-button>

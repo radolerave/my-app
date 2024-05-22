@@ -111,11 +111,18 @@ let sellerPublicationCardTemplate = {
                 <ion-card class="publication">
                     <ion-card-header>
                         <ion-card-title>
-                            <button class="link-to-seller-details" style="background-color: inherit; font-weight: bold;">${theSellerName}</button>
-
-                            <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
-                                <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                            </ion-button>
+                            <ion-grid class="ion-no-padding ion-no-margin">
+                                <ion-row>
+                                    <ion-col class="ion-text-left" size="10">
+                                        <button class="link-to-seller-details ion-text-left" style="background-color: inherit; display: block; max-width: 100%; height: 20px; overflow: hidden; font-weight: bold;">${theSellerName}</button>
+                                    </ion-col>
+                                    <ion-col class="ion-text-center" size="2">
+                                        <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
+                                            <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                                        </ion-button>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>                                            
                         </ion-card-title>
 
                         <ion-card-subtitle>${myFormatter.dateFormatter(data.date_add, fsConfig.formats.dateFormat)}</ion-card-subtitle>

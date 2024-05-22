@@ -277,9 +277,7 @@ let mediaPublicationTemplate = {
                 
                 publicationSettings.removeAttribute("disabled")
                 
-                publicationType.querySelectorAll("ion-radio").forEach((value, key) => {
-                    value.setAttribute("disabled", "true")
-                })                
+                publicationType.setAttribute("disabled", "true")
 
                 publicationValidityPeriod.setAttribute("value", 1)
 

@@ -136,7 +136,7 @@ let allVarobobaTemplate = {
             varoboba.appendChild(oneVaroboba)            
         }                      
 
-        const customButton = `<div><button id="seller-details-btn" class="lg-custom-button" style="padding: 0 5px; background: none; color: white; -webkit-text-stroke: 1px transparent; text-shadow: 0px 1px 4px black;">Seller details</button></div>`;
+        const customButton = `<div><button id="seller-details-btn" class="lg-custom-button" style="padding: 0 5px; background: none; color: white; text-align: left; display: block; max-width: 100%; height: 20px; overflow: hidden; -webkit-text-stroke: 1px transparent; text-shadow: 0px 1px 4px black;">Seller details</button></div>`;
 
         varoboba.addEventListener("lgInit", (event) => {
             const pluginInstance = event.detail.instance;
