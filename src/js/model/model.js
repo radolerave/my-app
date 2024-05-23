@@ -879,7 +879,7 @@ export default class FsDb {
                     return false
                 }
                 else {                
-                    return ((params.where.country.length > 0 && seller.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
+                    return ((params.where.country.length > 0 && seller.country != null && seller.country.toLowerCase().indexOf(params.where.country.toLowerCase()) > -1 || params.where.country.length == 0)
                         &&
                         (params.where.search.length > 0 && ((((seller.name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 || seller.trade_name.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1))) || (seller.keywords.some((item) => { return item.keyword.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 })) || (seller.activities.some((item) => { return item.activity.toLowerCase().indexOf(params.where.search.toLowerCase()) > -1 }))) || params.where.search.length == 0)
                         && 
