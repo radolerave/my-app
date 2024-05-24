@@ -1,5 +1,7 @@
 import { Grid } from 'ag-grid-community'
 import { enums } from "../../../helpers/enums-for-json-editor.js"
+import Formatter from "../../../helpers/formatter.js"
+import { fsConfig } from './../../../config/fsConfig.js';
 
 let sellerSearchTemplate = {
   name: "seller-search-template",
@@ -24,6 +26,7 @@ let sellerSearchTemplate = {
   `,
   logic: async (args) => {
     let myFs = args.myFs
+    let myFormatter = new Formatter()
 
     console.log(enums)
 
@@ -129,11 +132,20 @@ let sellerSearchTemplate = {
 
     // Define the custom full-width cell renderer
     function fullWidthCellRenderer(params) {
+        const sellerPhotoId = params.data.photo_id != null ? `${fsConfig.filesUrl}/${params.data.id}/${params.data.photo_id}` : `${fsConfig.filesUrl}/default/img/thumbnail.svg`
+
         return /*html*/`
             <div class="full-width-row">
-                <span>${params.data.name}</span>
-                <p>${params.data.country}</p>
-                <p>${params.data.last_edit}</p>
+                <ion-item>
+                    <ion-thumbnail slot="start">
+                        <img alt="Seller photo id" src="${sellerPhotoId}" />
+                    </ion-thumbnail>
+                    <ion-label>
+                        <h2>${params.data.name}</h2>
+                        <p><ion-icon name="globe-outline"></ion-icon>&nbsp;${params.data.country}</p>
+                        <p><ion-icon name="time-outline"></ion-icon>&nbsp;${myFormatter.dateFormatter(params.data.last_edit, fsConfig.formats.dateFormat)}</p>
+                    </ion-label>
+                </ion-item>               
             </div>`;
     }
 

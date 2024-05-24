@@ -1,5 +1,8 @@
-import { mediaActionsTemplate } from './../templates/media-actions-template.js'
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
+import { Dexie } from 'dexie'
 import { fsConfig } from './../../../config/fsConfig.js';
+import { mediaActionsTemplate } from './../templates/media-actions-template.js'
 import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
 import FsImageManipulations from './../../../helpers/imageManipulations.js'
 
@@ -66,6 +69,8 @@ let sellerMediasManagement = {
     </style>
   `,
   logic: async () => {
+    const apiUrl = fsConfig.apiUrl  
+    let myFs = new Fs(FsDb, Dexie)
     let fileTypeIdentifier = new FileTypeIdentifier()
     // let fsImageManipulations = new FsImageManipulations()    
     
@@ -170,6 +175,57 @@ let sellerMediasManagement = {
 
         document.querySelector("#sellerMediaManagementContent").appendChild(document.createElement("br"))
       }
+
+      const customButton = `<button id="set-seller-photo-id" class="lg-custom-button lg-icon" style="background: none; color: #999999;"><ion-icon name="id-card-outline"></ion-icon></button>`;
+
+      imagesContainer.addEventListener("lgInit", (event) => {
+          const pluginInstance = event.detail.instance;
+
+          // Note append and find are not jQuery methods
+          // These are utility methods provided by lightGallery
+          const $toolbar = pluginInstance.outer.find(".lg-toolbar");
+          $toolbar.append(customButton);
+
+          console.log(pluginInstance.outer.find("#set-seller-photo-id").firstElement);
+
+          pluginInstance.outer.find("#set-seller-photo-id").firstElement.addEventListener("click", async (e) => {
+              const { galleryItems, index } = pluginInstance
+              const sellerPhotoId = galleryItems[index].src
+              console.log(sellerPhotoId)
+
+              var getFilename = function (str) {
+                return str.split('/').pop();
+              }
+              
+              var fileName = getFilename(sellerPhotoId);
+              console.log("FileName:",fileName);
+
+              let finalData = {
+                "updatedData": {
+                  "photo_id": fileName
+                }
+              }
+
+              finalData["credentials"] = {
+                "sellerId" : fsGlobalVariable.session.seller_id,
+                "email": fsGlobalVariable.session.email,
+                "password": fsGlobalVariable.session.password,
+                "accountId": fsGlobalVariable.session.id
+              }
+
+              const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
+                    
+              if(response.ok) {
+                  console.log("Seller photo id updated successfully")
+              }
+              else {
+                  await Dialog.alert({
+                      "title": `Erreur`,
+                      "message": `${response.errorText}`
+                  })
+              }
+          });
+      });
 
       lightGalleryForImages = lightGallery(imagesContainer, {
         plugins: [lgZoom, lgThumbnail],

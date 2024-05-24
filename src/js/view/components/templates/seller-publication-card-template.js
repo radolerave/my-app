@@ -106,6 +106,10 @@ let sellerPublicationCardTemplate = {
             shortText = myFormatter.htmlStripTag(textToPublish, " ").substring(0, 100) + "..."
         }
 
+        console.log(data)
+
+        const sellerPhotoId = data.photo_id != null ? `${fsConfig.filesUrl}/${data.seller_id}/${data.photo_id}` : `${fsConfig.filesUrl}/default/img/thumbnail.svg`
+
         return {
             html: /*html*/`
                 <ion-card class="publication">
@@ -114,7 +118,17 @@ let sellerPublicationCardTemplate = {
                             <ion-grid class="ion-no-padding ion-no-margin">
                                 <ion-row>
                                     <ion-col class="ion-text-left" size="10">
-                                        <button class="link-to-seller-details ion-text-left" style="background-color: inherit; display: block; max-width: 100%; height: 20px; overflow: hidden; font-weight: bold;">${theSellerName}</button>
+                                        <button class="link-to-seller-details ion-text-left" style="background-color: inherit; display: block; width: 100%;">
+                                            <ion-item class="ion-no-padding" lines="none">
+                                                <ion-thumbnail slot="start">
+                                                    <img alt="Silhouette of mountains" src="${sellerPhotoId}" />
+                                                </ion-thumbnail>
+                                                <ion-label>
+                                                    <h2>${theSellerName}</h2>
+                                                    <p>${myFormatter.dateFormatter(data.date_add, fsConfig.formats.dateFormat)}</p>
+                                                </ion-label>
+                                            </ion-item>
+                                        </button>
                                     </ion-col>
                                     <ion-col class="ion-text-center" size="2">
                                         <ion-button class="fsPublicationMoreOptions" color="dark" fill="none">
@@ -123,9 +137,7 @@ let sellerPublicationCardTemplate = {
                                     </ion-col>
                                 </ion-row>
                             </ion-grid>                                            
-                        </ion-card-title>
-
-                        <ion-card-subtitle>${myFormatter.dateFormatter(data.date_add, fsConfig.formats.dateFormat)}</ion-card-subtitle>
+                        </ion-card-title>                    
 
                         <ion-popover class="fsPublicationMoreOptionsPopover">
                             <ion-content class="ion-padding">
