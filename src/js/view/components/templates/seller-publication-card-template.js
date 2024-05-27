@@ -121,10 +121,10 @@ let sellerPublicationCardTemplate = {
                                         <button class="link-to-seller-details ion-text-left" style="background-color: inherit; display: block; width: 100%;">
                                             <ion-item class="ion-no-padding" lines="none">
                                                 <ion-thumbnail slot="start">
-                                                    <img alt="Silhouette of mountains" src="${sellerPhotoId}" />
+                                                    <img alt="Seller photo id" src="${sellerPhotoId}" />
                                                 </ion-thumbnail>
                                                 <ion-label>
-                                                    <h2>${theSellerName}</h2>
+                                                    <h2 style="font-weight: bold;">${theSellerName}</h2>
                                                     <p>${myFormatter.dateFormatter(data.date_add, fsConfig.formats.dateFormat)}</p>
                                                 </ion-label>
                                             </ion-item>

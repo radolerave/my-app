@@ -63,7 +63,13 @@ let sellerPublicationsManagement = {
       sellerId : fsGlobalVariable.session.seller_id
     })
 
-    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsManagementContent")
+    let sellerInfos = await myFs.getSellerInfos(apiUrl, fsGlobalVariable.session.seller_id)
+
+    sellerInfos = sellerInfos.sellerInfos
+
+    // console.log(sellerInfos)
+
+    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsManagementContent", sellerInfos.name, sellerInfos)
   }
 }
 

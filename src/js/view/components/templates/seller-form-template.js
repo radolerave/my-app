@@ -632,9 +632,11 @@ let sellerFormTemplate = {
 
                     const lastEdit = sellerInfos.last_edit
                     const dateAdd = sellerInfos.date_add
+                    const photoId = sellerInfos.photo_id
 
                     delete sellerInfos.last_edit
                     delete sellerInfos.date_add
+                    delete sellerInfos.photo_id
         
                     form.setValue(sellerInfos)
 

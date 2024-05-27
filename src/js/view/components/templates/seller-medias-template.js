@@ -25,7 +25,7 @@ let sellerMediasTemplate = {
 
     console.log(response)
 
-    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsList", data.name)
+    sellerPublicationsManagementTemplate.logic(response, "#sellerPublicationsList", data.name, data)
   }
 }
 

@@ -44,6 +44,10 @@ let sellerDetailsTemplate = {
         <ion-nav id="medias-nav"></ion-nav>
         <div id="medias-page">      
           <ion-content>
+            <ion-refresher slot="fixed">
+              <ion-refresher-content></ion-refresher-content>
+            </ion-refresher>
+
             <div id="mediasDetails"></div>
           </ion-content>
         </div>
@@ -242,6 +246,7 @@ let sellerDetailsTemplate = {
 
     const mediasNav = document.querySelector('#medias-nav');
     const mediasPage = document.querySelector('#medias-page');
+    const mediasPRefresher = mediasPage.querySelector("ion-refresher")
     mediasNav.root = mediasPage;
   
     const localitiesNav = document.querySelector('#localities-nav');
@@ -259,6 +264,19 @@ let sellerDetailsTemplate = {
 
     document.querySelector("#mediasDetails").innerHTML = sellerMediasTemplate.content
     await sellerMediasTemplate.logic(data)
+
+    mediasPRefresher.addEventListener('ionRefresh', async () => {   
+      try {     
+        document.querySelector("#mediasDetails").innerHTML = sellerMediasTemplate.content
+        await sellerMediasTemplate.logic(data)
+      }
+      catch(err) {
+        console.log(err)
+      }
+      finally {
+        mediasPRefresher.complete();
+      }
+    });
 
     document.querySelector("#localitiesDetails").innerHTML = sellerLocalitiesTemplate.content
     sellerLocalitiesTemplate.logic(data)    

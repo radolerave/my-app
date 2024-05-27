@@ -31,9 +31,10 @@ let sellerPublicationsManagementTemplate = {
             <ion-infinite-scroll-content></ion-infinite-scroll-content>
         </ion-infinite-scroll>
     `,  
-    logic: async (args, containerId, sellerName = undefined) => {
+    logic: async (args, containerId, sellerName = undefined, sellerInfos = undefined) => {
         let response = args
         console.log(response)
+        console.log(sellerInfos)
 
         let myFormatter = new Formatter()  
 
@@ -79,7 +80,11 @@ let sellerPublicationsManagementTemplate = {
             const records = rec.slice(startAt, endAt)
 
             for(let i=0; i<records.length; i++) {
-                const value = records[i]
+                let value = records[i]
+
+                if(typeof value.photo_id == "undefined" && sellerInfos != undefined && typeof sellerInfos.photo_id != "undefined") {
+                    value.photo_id = sellerInfos.photo_id
+                }
 
                 const card = document.createElement("div")
 
