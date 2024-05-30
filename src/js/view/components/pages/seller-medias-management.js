@@ -6,6 +6,9 @@ import { mediaActionsTemplate } from './../templates/media-actions-template.js'
 import FileTypeIdentifier from './../../../helpers/fileTypeIdentifier.js'
 import FsImageManipulations from './../../../helpers/imageManipulations.js'
 
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
+
 import "lightgallery/css/lightGallery-bundle.css"
 
 import lightGallery from 'lightgallery';
@@ -189,6 +192,14 @@ let sellerMediasManagement = {
           console.log(pluginInstance.outer.find("#set-seller-photo-id").firstElement);
 
           pluginInstance.outer.find("#set-seller-photo-id").firstElement.addEventListener("click", async (e) => {
+            const confirmation = await Dialog.confirm({
+              title: 'Photo d\'identification',
+              message: `Voulez-vous mettre à jour la photo d'identification pour "${fsGlobalVariable.sellerInfos.name}" ?`,
+              okButtonTitle: "oui",
+              cancelButtonTitle: "non",
+            })
+
+            if(confirmation.value) {
               const { galleryItems, index } = pluginInstance
               const sellerPhotoId = galleryItems[index].src
               console.log(sellerPhotoId)
@@ -216,14 +227,19 @@ let sellerMediasManagement = {
               const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
                     
               if(response.ok) {
-                  console.log("Seller photo id updated successfully")
+                  // console.log("Seller photo id updated successfully")
+                  await Dialog.alert({
+                    "title": `Information`,
+                    "message": `La photo d'identification a été mise à jour avec succès.`
+                  })
               }
               else {
                   await Dialog.alert({
-                      "title": `Erreur`,
-                      "message": `${response.errorText}`
+                    "title": `Erreur`,
+                    "message": `${response.errorText}`
                   })
               }
+            }              
           });
       });
 

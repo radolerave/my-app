@@ -10,7 +10,11 @@ let sellerDetails = {
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title>
+                <ion-thumbnail id="photo-id" slot="start">
+                    <img alt="Seller photo id" src="">
+                </ion-thumbnail>
+
+                <ion-title class="ion-no-padding ion-padding-start">
                     <ion-label>
                         <h2 id="title"></h2>
                         <p id="tab-title"></p>
@@ -28,6 +32,17 @@ let sellerDetails = {
 
         <style>
             seller-details #seller-details-last-edit {
+                /* border: solid red 1px; */
+                font-size: 0.6em;
+                /* position: absolute; */
+            }
+
+            seller-details ion-title #title {
+                color: black;
+                font-weight: bold;
+            }
+
+            seller-details ion-title #tab-title {
                 /* border: solid red 1px; */
                 font-size: 0.6em;
                 /* position: absolute; */

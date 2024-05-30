@@ -119,6 +119,13 @@ let sellerDetailsTemplate = {
 
     const localSellerInfos = await myFs.getLocalSellerInfos(data.id)
 
+    if(typeof data.photo_id != "undefined" && data.photo_id != null) {
+      document.querySelector("seller-details ion-toolbar ion-thumbnail#photo-id img").setAttribute("src", `${fsConfig.filesUrl}/${data.id}/${data.photo_id}`)
+    }
+    else {
+      document.querySelector("seller-details ion-toolbar ion-thumbnail#photo-id img").setAttribute("src", fsConfig.filesUrl + "/default/img/thumbnail.svg")
+    }
+
     document.querySelector("seller-details ion-title #title").innerHTML = data.name
     document.querySelector("seller-details #seller-details-last-edit").innerHTML = /*html*/`
       <div id="warn-last-edit" class="ion-hide">

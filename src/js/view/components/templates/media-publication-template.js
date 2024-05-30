@@ -62,8 +62,8 @@ let mediaPublicationTemplate = {
         <div id="text-editor"></div>
 
         <div id="addMedias">
-            <ion-button id="addMediasBtn" expand="block">
-                [<ion-icon name="add-circle-outline"></ion-icon> Ajouter | <ion-icon name="close-circle-outline"></ion-icon> enlever] médias
+            <ion-button id="addMediasBtn" expand="block" color="primary" fill="outline">
+                <ion-icon name="images-outline"></ion-icon>&nbsp;médias&nbsp;<ion-icon name="film-outline"></ion-icon>
             </ion-button>
         </div>
         
