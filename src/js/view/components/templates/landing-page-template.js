@@ -106,6 +106,12 @@ let landingPageTemplate = {
                 <div class="swiper-wrapper" id="swiper-wrapper-varoboba"></div>
             </div>
         </div>
+
+        <ion-content>
+            <div class="ion-margin">
+                Bienvenue sur Find Seller !
+            </div>
+        </ion-content>
     `,
     logic: async () => {        
         let myFs = new Fs(FsDb, Dexie)
