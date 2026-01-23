@@ -3,6 +3,26 @@ html, body {
   margin: 0;
 }
 
+ion-backdrop {
+  background: white;
+  opacity: 0.3;
+}
+
+#fs-backdrop-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-background-color, #fff);
+  width: 90%;
+  height: 100px;
+  border-radius: 10px;
+}
+
 .choices > * {
   box-sizing: border-box;
 }
@@ -28,4 +48,62 @@ html, body {
   /* border: 1px solid #ccc; */
   /* padding: 5px 10px; */
   cursor: pointer;
+}
+
+.full-width-row {
+  color: red;
+  /* height: 150px !important; */
+  /* border: solid red 1px; */
+}
+
+#publicationsList {
+  /* border: solid red 1px; */
+  background-color: #C1C3CB;
+}
+
+#publicationsList ion-card {
+  margin: 5px 0;
+}
+
+.fsMediasList {
+  display: grid;
+
+  /* define the number of grid columns */
+  grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+}
+
+#publicationsList ion-card ion-card-content media {
+  /*display: inline-flex;*/
+  margin: 1%;
+  /*vertical-align: top;*/
+  /* border: solid grey 1px; */
+  /* border-radius: 5px; */
+  max-width: 100%;
+}
+
+#publicationsList ion-card ion-card-content media video,
+#publicationsList ion-card ion-card-content media img 
+{
+  /* border: solid transparent 1px; */
+  width: 100%;
+  /* border-radius: 5px; */
+}
+
+#publicationsList .fsPublicationMoreOptions {
+  position: absolute;
+  right: 0;
+}
+
+#publicationsList .publication-card-more-medias {
+  font-weight: bold;
+  /* position: absolute; */
+  width: 100%;
+  font-size: large;
+  display: block;
+  text-align: right;
+  /* border: solid red 1px; */
+}
+
+.fsUsersInterations {
+  border-top: solid grey 1px;
 }

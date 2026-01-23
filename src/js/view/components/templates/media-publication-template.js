@@ -1,0 +1,744 @@
+import { Dexie } from 'dexie'
+import FsDb from './../../../model/transaction-model.js'
+import Fs from './../../../controller/transaction-controller.js'
+import { fsConfig } from './../../../config/fsConfig.js'
+import FsHelper from "../../../helpers/fsHelper.js"
+import { advertisementsTemplate } from './advertisements-template.js'
+import { newsTemplate } from './news-template.js'
+
+import { Maskito, maskitoTransform } from '@maskito/core';
+import { maskitoNumberOptionsGenerator, maskitoParseNumber } from '@maskito/kit';
+
+import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast'
+
+let mediaPublicationTemplate = {
+    name: "media-publication-template",
+    content: /*html*/`
+        <ion-card id="publication-settings" disabled="true">
+            <ion-card-content>
+                <ion-item class="ion-no-padding ion-no-margin">
+                    <ion-select id="publication-type" value="1" label="Type de publication" placeholder="Choix du type de publication">
+                        <ion-select-option value="1">Publication</ion-select-option>
+                        <ion-select-option value="2">Annonce</ion-select-option>
+                        <ion-select-option value="3">Actualité</ion-select-option>
+                        <ion-select-option value="4">Varoboba</ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <ion-item>
+                    <ion-input id="publication-validity-period" label="Validité : " placeholder="1" value="1"></ion-input>&nbsp;jours
+                </ion-item>
+
+                <ion-item>
+                    <ion-text>Coût : <span id="cost-of-publication">1 FST</span></ion-text>
+                </ion-item>
+            </ion-card-content>
+        </ion-card>
+
+        <div id="additional-validity" class="text-success ion-hide"><h3>Validité supplémentaire</h3></div>
+
+        <div id="text-editor-toolbar">
+            <button class="ql-header" value="1"></button>
+            <button class="ql-header" value="2"></button>
+            <!-- Add font size dropdown -->
+            <select class="ql-size">
+                <option value="small"></option>
+                <!-- Note a missing, thus falsy value, is used to reset to default -->
+                <option selected></option>
+                <!--<option value="large"></option>
+                <option value="huge"></option>-->
+            </select>
+            <!-- Add a bold button -->
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+            <!-- Add subscript and superscript buttons -->
+            <button class="ql-script" value="sub"></button>
+            <button class="ql-script" value="super"></button>
+            <button class="ql-clean"></button>
+        </div>
+        <div id="text-editor"></div>
+
+        <div id="addMedias">
+            <ion-button id="addMediasBtn" expand="block" color="primary" fill="outline">
+                <ion-icon name="images-outline"></ion-icon>&nbsp;médias&nbsp;<ion-icon name="film-outline"></ion-icon>
+            </ion-button>
+        </div>
+        
+        <div id="media-list"></div>        
+
+        <style>
+            #text-editor {
+                border: solid grey 1px;
+                height: 40vh;
+            }
+        </style>
+    `,  
+    logic: async (args) => {
+        const apiUrl = fsConfig.apiUrl
+        const serverUrl = fsConfig.serverUrl
+        let myFs = new Fs(FsDb, Dexie)
+        let myFsHelper = new FsHelper()
+        let finalTextToPublish = { "ops": [{ insert: '\n' }] }
+
+        console.log(args)    
+
+        const navigation = fsGlobalVariable.navigation
+        navigation.removeEventListener("ionNavDidChange", args.listener)
+
+        fsGlobalVariable.quill = new Quill('#text-editor', {
+            modules: {
+                toolbar: {
+                    container: "#text-editor-toolbar",
+                }
+            },
+            theme: 'snow'
+        })
+
+        if(typeof args.currentPage.params == "undefined") {
+            args.currentPage.params = {}
+            args.currentPage.params.selectedMedias = []
+        }
+        
+        const publish = document.querySelector("media-publication #publish")
+        const publicationSettings = document.querySelector("#publication-settings")
+        const publicationType = document.querySelector("#publication-type")
+        const publicationValidityPeriod = document.querySelector("#publication-validity-period")
+        const costOfPublication = document.querySelector("#cost-of-publication")
+
+        const publicationValidityPeriodNativeEl = await publicationValidityPeriod.getInputElement()
+
+        new Maskito(publicationValidityPeriodNativeEl, maskitoNumberOptionsGenerator({
+            decimalSeparator: '.',
+            thousandSeparator: ' ',
+            precision: 0,
+            max: 3650,
+            min: 1,
+        }))
+
+        // Call this function when the element is detached from DOM
+	    // maskedInput.destroy();
+
+        const publicationRateInfos = await myFs.getPublicationRate(apiUrl)
+        const costs = publicationRateInfos.publicationRate
+
+        console.log(costs)
+
+        const fromPage = typeof args.currentPage.params != "undefined" && typeof args.currentPage.params.fromPage != "undefined" ? args.currentPage.params.fromPage : undefined//from which page posts are displayed and actions are executed
+
+        fsGlobalVariable.selectedMedias = args.currentPage.params.selectedMedias
+        const publicationId = typeof args.currentPage.params.publicationId != "undefined" ? args.currentPage.params.publicationId : ""
+        const operationType = typeof args.currentPage.params.operationType != "undefined" ? args.currentPage.params.operationType : ""
+        const publicationTypeValue = typeof args.currentPage.params.publicationType != "undefined" ? args.currentPage.params.publicationType : 1
+        const publicationValidityValue = typeof args.currentPage.params.publicationValidity != "undefined" ? args.currentPage.params.publicationValidity : 1
+        const modified_x_times = typeof args.currentPage.params.modified_x_times != "undefined" ? args.currentPage.params.modified_x_times : 0
+        let selectedMedias = fsGlobalVariable.selectedMedias
+        const mediaList = document.querySelector("#media-list")
+        let nbrOfSelectedMedias = selectedMedias.length
+
+        const showHidePublishBtn = () => {
+            if(publicationType.value == 4) {//varoboba
+                if(fsGlobalVariable.selectedMedias.length < 1) {
+                    if(!publish.classList.contains("ion-hide")) {
+                        publish.classList.add("ion-hide")
+                    }
+                }
+                else {
+                    if(publish.classList.contains("ion-hide")) {
+                        publish.classList.remove("ion-hide")
+                    }                               
+                }
+            }
+            else {
+                if(fsGlobalVariable.quill.getText() === "\n" && fsGlobalVariable.quill.getLength() == 1 && fsGlobalVariable.selectedMedias.length == 0) {
+                    if(!publish.classList.contains("ion-hide")) {
+                        publish.classList.add("ion-hide")
+                    }
+                }
+                else {
+                    if(publish.classList.contains("ion-hide")) {
+                        publish.classList.remove("ion-hide")
+                    }                               
+                }
+            }
+        }
+
+        async function goTo() {
+            const tab = document.querySelector("main-page ion-tabs#main-page-tab")
+            const currentTab = await tab.getSelected()
+
+            if(typeof fromPage != "undefined" && fromPage.component == "main-page") {
+                await navigation.popToRoot()
+
+                switch(currentTab) {
+                    case "advertisement": 
+                            await advertisementsTemplate.logic()  
+                        break
+            
+                    case "news": 
+                            await newsTemplate.logic()  
+                        break
+            
+                    default:
+                        break
+                }
+            }
+            else {
+                await navigation.popToRoot()
+                await navigation.push("seller-publications-management")
+            }            
+        }
+
+        function costCalculation() {
+            let validity = publicationValidityPeriod.value
+
+            validity = maskitoParseNumber(validity, '.')
+
+            console.log(validity)
+
+            if(isNaN(validity) || validity <= 0) {
+                validity = 1
+            }
+            else {
+                validity = parseInt(validity)
+            }
+            
+            const rate = costs.find(element => element.id === parseInt(publicationType.value))
+            const unitPrice = rate.unit_price
+            const cost = unitPrice * validity
+
+            costOfPublication.textContent = maskitoTransform((cost).toString(), maskitoNumberOptionsGenerator({ 
+                decimalSeparator: '.',
+                thousandSeparator: ' ',
+                decimalZeroPadding: true,
+                precision: 2, 
+                postfix: ' FST',
+            }))
+
+            // showHidePublishBtn()
+
+            return cost
+        }
+
+        publicationType.addEventListener("ionChange", (e) => {
+            if(publicationType.value == 4) {
+                if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
+                if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
+
+                try {
+                    while(mediaList.childNodes.length > 1) {//just one media allowed
+                        mediaList.removeChild(mediaList.lastChild)
+                    }
+    
+                    fsGlobalVariable.selectedMedias = mediaList.querySelectorAll("media")
+                }
+                catch(err) {
+                    console.error(err)
+                }
+            }
+            else {
+                document.querySelector("#text-editor").classList.remove('ion-hide')
+                document.querySelector("#text-editor").previousElementSibling.classList.remove('ion-hide')//toolbar
+            }
+
+            fsGlobalVariable.publicationTypeValue = publicationType.value
+
+            costCalculation()
+            showHidePublishBtn()
+        })
+
+        publicationValidityPeriod.addEventListener("ionInput", (e) => {
+            costCalculation()
+        })                
+
+        switch(operationType) {
+            case "update": 
+                if(publicationTypeValue == 4) {
+                    if(!document.querySelector("#text-editor").classList.contains("ion-hide")) document.querySelector("#text-editor").classList.add('ion-hide')
+                    if(!document.querySelector("#text-editor").previousElementSibling.classList.contains("ion-hide")) document.querySelector("#text-editor").previousElementSibling.classList.add('ion-hide')//toolbar
+                }
+                // else {
+                //     document.querySelector("#text-editor").classList.remove('ion-hide')
+                //     document.querySelector("#text-editor").previousElementSibling.classList.remove('ion-hide')//toolbar
+                // }
+
+                publicationType.setAttribute("value", publicationTypeValue)
+                publicationValidityPeriod.setAttribute("value", publicationValidityValue)
+                
+                costCalculation()
+
+                console.log(publicationTypeValue)
+                break
+
+            case "extendValidity": 
+                publicationType.setAttribute("value", publicationTypeValue)
+                
+                publicationSettings.removeAttribute("disabled")
+                
+                publicationType.setAttribute("disabled", "true")
+
+                publicationValidityPeriod.setAttribute("value", 1)
+
+                document.querySelector("#additional-validity").classList.remove('ion-hide')
+                document.querySelector("#text-editor").classList.add('ion-hide')
+                document.querySelector("#addMedias").classList.add('ion-hide')
+                document.querySelector("#media-list").classList.add('ion-hide')
+                document.querySelector("media-publication .ql-toolbar").classList.add("ion-hide")
+                publish.innerHTML = /*html*/`<ion-icon name="hourglass-outline"></ion-icon> étendre`
+                publish.classList.remove("ion-hide")
+                
+                costCalculation()
+
+                console.log(publicationTypeValue)
+                break
+
+            default: 
+                publicationValidityPeriod.setAttribute("value", publicationValidityValue)
+                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft
+                publicationSettings.removeAttribute("disabled")
+                costCalculation()
+                break
+        }
+
+        selectedMedias.forEach((element, key) => {
+            console.log(element, selectedMedias)
+            const copyOfTheElement = document.importNode(element, true)
+
+            copyOfTheElement.classList.remove("ion-hide")
+
+            if(copyOfTheElement.querySelector(".publication-card-more-medias") != null) {
+                copyOfTheElement.querySelector(".publication-card-more-medias").classList.add("ion-hide")
+            }
+
+            const deleteBtn = document.createElement("ion-button")
+            deleteBtn.innerHTML = `<ion-icon name="close-outline"></ion-icon> enlever`
+            deleteBtn.setAttribute("color", "warning")
+            copyOfTheElement.appendChild(deleteBtn)
+
+            deleteBtn.addEventListener("click", () => {
+                try {
+                    document.querySelector(`seller-medias-management #sellerMediaManagementContent media[uid="${copyOfTheElement.getAttribute("uid")}"]`).classList.remove("media-selected")
+                    nbrOfSelectedMedias -= 1
+                    document.querySelector("#number-of-selected-media").textContent = nbrOfSelectedMedias                    
+                }
+                catch(err) {
+                    // console.log(err)
+                }
+
+                deleteBtn.parentElement.remove()
+
+                fsGlobalVariable.selectedMedias = document.querySelectorAll("media-publication #media-publication-content #media-list media")
+
+                console.log(fsGlobalVariable)
+
+                showHidePublishBtn()
+            })
+
+            mediaList.appendChild(copyOfTheElement)
+        })                
+
+        async function publishFn() {
+            let sMedias = []
+console.log(fsGlobalVariable.selectedMedias)
+            fsGlobalVariable.selectedMedias.forEach((element, index) => {
+                sMedias.push({
+                    mediaType: element.getAttribute("media-type"),
+                    publicId: element.getAttribute("public_id"),
+                    src: element.getAttribute("public_id"),
+                    format: element.getAttribute("format")
+                })
+            })
+
+            const validity = isNaN(maskitoParseNumber(publicationValidityPeriod.value, '.')) ? 1 : maskitoParseNumber(publicationValidityPeriod.value, '.')
+
+            if(operationType == "update") { 
+                finalTextToPublish = typeof fsGlobalVariable.textToPublish == "undefined" ? { "ops": [{ insert: '\n' }] } : fsGlobalVariable.textToPublish
+            }
+            else {
+                finalTextToPublish = typeof fsGlobalVariable.textToPublishDraft == "undefined" ? { "ops": [{ insert: '\n' }] } : fsGlobalVariable.textToPublishDraft
+            }
+
+            let finalData = {
+                credentials: {
+                    "sellerId" : fsGlobalVariable.session.seller_id,
+                    "email": fsGlobalVariable.session.email,
+                    "password": fsGlobalVariable.session.password,
+                    "accountId": fsGlobalVariable.session.id
+                },
+                updatedData: {
+                    seller_id: fsGlobalVariable.session.seller_id,
+                    publication: JSON.stringify({
+                        textToPublish: publicationType.value == 4/*varoboba*/ ? { "ops": [{ insert: '\n' }] } : finalTextToPublish,
+                        selectedMedias: sMedias
+                    }),
+                    type: publicationType.value,
+                    validity: validity
+                },
+                publicationId: publicationId
+            }
+
+            console.log(finalData)
+
+            // console.log(fsGlobalVariable)
+
+            let response
+
+            switch(operationType) {
+                case "update":
+                    delete finalData.updatedData.type//will not be considered
+                    delete finalData.updatedData.validity//will not be considered
+
+                    finalData.updatedData.modified_x_times = modified_x_times + 1
+
+                    response = await myFs.updatePublication(apiUrl, finalData)
+                    break;
+
+                case "extendValidity":
+                    delete finalData.updatedData.type//will not be considered
+                    delete finalData.updatedData.publication//will not be considered
+
+                    finalData.updatedData.validity = publicationValidityValue + validity
+                    
+                    response = await myFs.updatePublication(apiUrl, finalData)
+                    break
+
+                default:
+                    response = await myFs.newPublication(apiUrl, finalData)
+                    break;
+            }
+
+            if(response.ok) {
+                fsGlobalVariable.textToPublish = fsGlobalVariable.textToPublishDraft = { "ops": [{ insert: '\n' }] }
+                await goTo()
+            }
+            else {
+                throw new Error(response.errorText)                
+            }
+        }
+
+        async function rollBack(paymentDetails) {//set credit_tokens to the previous value
+            const resp = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+
+            // console.log(resp)
+
+            if(parseFloat(resp.creditTokens) != parseFloat(paymentDetails.credit)) {
+                let finalData = {
+                    credentials: {
+                        "sellerId" : fsGlobalVariable.session.seller_id,
+                        "email": fsGlobalVariable.session.email,
+                        "password": fsGlobalVariable.session.password,
+                        "accountId": fsGlobalVariable.session.id
+                    },
+                    updatedData: {
+                        credit_tokens: paymentDetails.credit
+                    }
+                }                
+    
+                // console.log(finalData)            
+    
+                const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
+                
+                if(!response.ok) {
+                    await Dialog.alert({
+                        "title": `Erreur`,
+                        "message": `${response.errorText}`
+                    })
+                }
+            }                        
+        }
+
+        let createTransaction = (transactionDetails) => {
+            return new Promise(async (resolve, reject) => {
+                let response = await myFs.newTransaction(apiUrl, transactionDetails)          
+        
+                if(response.ok) {
+                    resolve(response.pk)
+                }
+                else {
+                    reject(response.errorText)
+                }   
+            })
+        }
+
+        let confirmTransaction = (pk, status) => {
+            return new Promise(async (resolve, reject) => {
+                let response = await myFs.updateTransaction(apiUrl, {
+                    transactionId: pk,
+                    updatedData: { status: status }
+                })
+                            
+                if(response.ok) {
+                    resolve(response.nbrOfRows)
+                }
+                else {
+                    reject(response.errorText)
+                }   
+            })
+        }
+
+        async function backendPaymentOperation(paymentDetails) {
+            console.log(paymentDetails)
+            
+            let paymentOk = false
+
+            let formData = new FormData()
+
+            formData.append("payment_details", JSON.stringify({
+                "supposed_credit_tokens_value": paymentDetails.credit,
+                "pub_cost": paymentDetails.pubCost,
+                "id": fsGlobalVariable.session.seller_id
+            }))
+            
+            try {
+                const response = await fetch(`${serverUrl}/payment.php`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if(response.ok) {
+                    // console.log(response)
+                    const result = await response.json();
+                    // console.log(result);
+
+                    if(result.ok) {
+                        paymentOk = true
+                    }
+                    else {
+                        throw new Error(result.message)
+                    }
+                }
+                else {
+                    throw new Error(response.message)
+                }                                    
+            } catch (error) {
+                throw new Error(error)
+            }
+
+            return paymentOk
+        }
+
+        async function publishWithPayment(publishBtn, paymentDetails) {
+            if(parseFloat(paymentDetails.credit) < parseFloat(paymentDetails.pubCost)) {
+                await Dialog.alert({
+                    title: "Avertissement",
+                    message: "Vous n'avez pas assez de crédits pour cette publication."
+                }) 
+
+                const confirmation = await Dialog.confirm({
+                    title: 'Achat de crédits',
+                    message: `Voulez-vous créditer votre compte ?`,
+                    okButtonTitle: "oui",
+                    cancelButtonTitle: "non",
+                })
+    
+                if(confirmation.value) {
+                    await navigation.push("buy-fs-tokens")
+                }
+
+                publishBtn.classList.remove("ion-hide")
+            }
+            else {
+                const confirmation = await Dialog.confirm({
+                    title: 'Confirmation de paiement',
+                    message: `Votre solde de crédit actuel est de : ${paymentDetails.credit} FST.\nLe coût de cette publication/opération est de : ${paymentDetails.pubCost} FST.\n\nVoulez-vous confirmer cette action ?`,
+                    okButtonTitle: "oui",
+                    cancelButtonTitle: "non",
+                })
+    
+                if(confirmation.value) {
+                    try {
+                        const pk = await createTransaction({//initialize the transaction
+                            newData: {
+                                seller_id: fsGlobalVariable.session.seller_id,
+                                transaction_type: 0,//debit
+                                amount_in_fst: paymentDetails.pubCost,
+                                means_of_payment: 4,//credit tokens
+                            }
+                        })
+
+                        if(await backendPaymentOperation(paymentDetails)) {
+                            try {
+                                await confirmTransaction(pk, 2)//a pending transaction
+
+                                await publishFn()
+
+                                try {
+                                    await confirmTransaction(pk, 1)//a successfull transaction
+                                }
+                                catch(err) {
+                                    console.error(err)
+                                }
+                            }
+                            catch(err) {
+                                //rollback ......
+                                await rollBack(paymentDetails)
+
+                                await confirmTransaction(pk, 0)//a failed transaction
+                                console.error(err)
+                                await Dialog.alert({
+                                    title: "Erreur",
+                                    message: "Une erreur s'est produite!\nLe paiement a été annulé."
+                                })                                    
+                            }
+                        }
+                        else {
+                            await confirmTransaction(pk, 0)//a failed transaction
+
+                            await Dialog.alert({
+                                title: "Erreur",
+                                message: "Une erreur s'est produite!\nLa publication est annulée."
+                            })                                
+                        }
+                    }
+                    catch(err) {
+                        await Dialog.alert({
+                            title: "Erreur",
+                            message: err
+                        }) 
+                    }
+                }
+                else {
+                    publishBtn.classList.remove("ion-hide")
+                    
+                    await Toast.show({
+                        text: `Action annulée!`
+                    })
+                }
+            }
+        }
+
+        async function publishWithoutPayment(publishBtn) {
+            const confirmation = await Dialog.confirm({
+                title: 'Modification',
+                message: `Voulez-vous confirmer cette action ?`,
+                okButtonTitle: "oui",
+                cancelButtonTitle: "non",
+            })
+
+            if(confirmation.value) {
+                try {
+                    await publishFn()
+                }
+                catch(err) {//no need to rollback
+                    await Dialog.alert({
+                        title: "Erreur",
+                        message: err
+                    }) 
+                }
+            }
+            else {
+                publishBtn.classList.remove("ion-hide")
+            } 
+        }
+
+        publish.addEventListener("click", async () => {
+            try {
+                showBackdrop()
+                publish.classList.add("ion-hide")
+
+                const ct = await myFs.getCreditTokensValue(apiUrl, fsGlobalVariable.session.seller_id)
+                let myCreditTokens = undefined
+
+                if(typeof ct.creditTokens == "number") {
+                    myCreditTokens = ct.creditTokens
+                }
+
+                const cost = costCalculation()
+
+                const paymentDetails = {
+                    "credit" : myCreditTokens,
+                    "pubCost" : cost
+                }         
+                
+                if(operationType != "update") {//new publication or validity extension
+                    await publishWithPayment(publish, paymentDetails)
+                }
+                else {                
+                    if(modified_x_times >= 5) {//modifying the publication more than 5 times is a paid operation - the cost is the unit price of the publication according to its type
+                        const confirmation = await Dialog.confirm({
+                            title: 'Modification',
+                            message: `Vous avez épuisé vos droits de modification. Désormais, chaque mise à jour sur cette publication sera payante.\n\nVoulez-vous continuer ?`,
+                            okButtonTitle: "oui",
+                            cancelButtonTitle: "non",
+                        })
+            
+                        if(confirmation.value) {
+                            const rate = costs.find(element => element.id === parseInt(publicationType.value))
+                            const cost = rate.unit_price
+
+                            paymentDetails.pubCost = cost
+
+                            await publishWithPayment(publish, paymentDetails)
+                        }
+                        else {
+                            publish.classList.remove("ion-hide")
+                        }
+                    }
+                    else {
+                        await publishWithoutPayment(publish)
+                    }
+                }
+            }
+            catch(err) {
+                await Dialog.alert({
+                    title: "Erreur",
+                    message: err
+                })
+            }
+            finally {
+                hideBackdrop()
+            }
+        })        
+
+        if(operationType == "update" || operationType == "extendValidity") { 
+            fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublish)
+        }
+        else {
+            fsGlobalVariable.quill.setContents(fsGlobalVariable.textToPublishDraft)
+            showHidePublishBtn() 
+        }
+
+        fsGlobalVariable.quill.on('editor-change', function(eventName, ...args) {
+            // if (eventName === 'text-change') {
+            //   console.log('text-change', args)
+            // } else if (eventName === 'selection-change') {
+            //     console.log('selection-change', args)
+            // }
+
+            const content = fsGlobalVariable.quill.getContents()            
+
+            if(eventName === 'text-change') { 
+                console.log(content)
+                if(operationType == "update") { 
+                    finalTextToPublish = fsGlobalVariable.textToPublish = content
+                }
+                else {
+                    finalTextToPublish = fsGlobalVariable.textToPublishDraft = content
+                }
+                
+                showHidePublishBtn() 
+            }
+        })
+
+        const addMediasBtn = document.querySelector("#addMediasBtn")
+
+        addMediasBtn.addEventListener("click", async () => {
+            const previousPage = await navigation.getPrevious()
+            fsGlobalVariable.publicationTypeValue = publicationType.value
+            fsGlobalVariable.publicationValidity = publicationValidityPeriod.value
+
+            console.log(previousPage)
+
+            if(previousPage.component == "seller-medias-management") {
+                await navigation.pop()
+            }
+            else {
+                await navigation.push("seller-medias-management")
+            }            
+        })
+    }
+}
+
+export { mediaPublicationTemplate }

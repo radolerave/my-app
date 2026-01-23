@@ -1,24 +1,60 @@
 // import Choices from 'choices.js'
 // import { JSONEditor } from '@json-editor/json-editor'
+import { Dialog } from '@capacitor/dialog'
 import { hourly } from "../../../helpers/hourlyFltapickrTemplate.js";
 import { eventDate } from "../../../helpers/eventDateTemplate.js";
 import MyMap from "../../../helpers/map.js"
+import { sellerFormActionsTemplate } from './seller-form-actions-template.js';
+import Formatter from "../../../helpers/formatter.js"
+import { enums } from "../../../helpers/enums-for-json-editor.js"
 
-const apiUrl = 'https://server2.atria.local/findseller/api.php/records/sellers'
+import FsDb from './../../../model/model.js'
+import Fs from './../../../controller/controller.js'
+import { Dexie } from 'dexie'
+import { fsConfig } from './../../../config/fsConfig.js';
 
 let myMap = new MyMap()
 
-let sellerForm = {
-    name: "seller-form",
+let sellerFormTemplate = {
+    name: "seller-form-template",
     content: /*html*/`
+        ${sellerFormActionsTemplate.content}
+
         <div id="sellerForm"></div>
 
         ${myMap.content} 
-    `,
-    logic: () => {       
-        
 
-        const element = document.querySelector('#sellerForm');        
+        <style>                        
+            #seller-form-actions {
+                border-bottom: solid grey 1px;
+                box-shadow: 0 0 0.5em grey;
+                border-width: 0;
+                padding: 10px 0 10px 0;
+                position: fixed;
+                float: inline-end;
+                width: 100%;
+                background-color: white;
+                z-index: 2;
+            }
+        </style>
+    `,
+    logic: (session) => {     
+        const apiUrl = fsConfig.apiUrl  
+        let myFs = new Fs(FsDb, Dexie)
+        let myFormatter = new Formatter()
+
+        console.log(enums)
+
+        sellerFormActionsTemplate.logic()
+
+        const myAccountContent = document.querySelector("#my-account-template-content")
+
+        if(!myAccountContent.classList.contains("ion-hide")) {
+            myAccountContent.classList.add("ion-hide")
+        }
+
+        const element = document.querySelector('#sellerForm');   
+        let sellerInfos     
 
         if(element != null) {
             let startVal = { "country":"","name":"","who_what":"", "activity":"","keywords":"" }
@@ -33,7 +69,7 @@ let sellerForm = {
                 // remove_button_labels: true,
                 // startVal: startVal,
                 schema: {
-                    'title': 'Title : -Seller Name-',
+                    'title': 'Mon compte',
                     'type': 'object',
                     // 'required': [
                     //     'country',
@@ -44,48 +80,40 @@ let sellerForm = {
                     'properties': {    
                         'country': {
                             'type': 'string',
-                            'format': 'choices',
+                            // 'format': 'choices',
+                            'format': 'select',
                             'title': 'Pays',
-                            'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
+                            'enum': enums.countriesList.keys,
                             'default': '',
                             'options': {
-                                'enum_titles': [
-                                    "Madagascar",
-                                    "France",
-                                    "Espagne",
-                                    "États-Unis",
-                                    "Chine",
-                                    "Royaume-Uni",
-                                    "Allemagne",
-                                    "Japon",
-                                    "Je ne sais pas"
-                                ],
-                                'choices': {
-                                    shouldSort: false,
-                                    allowHTML: true
-                                }
+                                'enum_titles': enums.countriesList.values,
+                                // 'choices': {
+                                //     shouldSort: false,
+                                //     allowHTML: true
+                                // }
                             }
                         },                    
                         'name': {
                             'type': 'string',
                             'title': 'Nom ou Raison sociale'
                         },                    
-                        'tradeName': {
+                        'trade_name': {
                             'type': 'string',
                             'title': 'Nom Commercial'
                         },
                         'who_what': {
                             'type': 'integer',
-                            "format": "choices",
+                            // 'format': 'choices',
+                            'format': 'select',
                             'title': 'Société ou individu ?',
-                            'enum': [0,1,2],
+                            'enum': enums.whoWhat.keys,
                             'default': 0,
                             'options': {
-                                'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
-                                'choices': {
-                                    shouldSort: false,
-                                    allowHTML: true
-                                }
+                                'enum_titles': enums.whoWhat.values,
+                                // 'choices': {
+                                //     shouldSort: false,
+                                //     allowHTML: true
+                                // }
                             }
                         },                    
                         'nif': {
@@ -108,6 +136,11 @@ let sellerForm = {
                                     "root.who_what": 2
                                 }
                             }
+                        },
+                        "about": {
+                            "type": "string",
+                            "format": "textarea",
+                            "title": "à propos"
                         },
                         'activities': {
                             'type': 'array',
@@ -145,7 +178,7 @@ let sellerForm = {
                         },
                         "sectors": {
                             "type": "array",
-                            "format": "tabs",
+                            "format": "tabs-top",
                             // "maxItems": 10,
                             "title": "Secteurs",
                             "uniqueItems": true,
@@ -156,38 +189,16 @@ let sellerForm = {
                                     "sector": {
                                         "type": "integer",
                                         "title": "secteur",
-                                        "format": "choices",
-                                        "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+                                        // 'format': 'choices',
+                                        'format': 'select',
+                                        "enum": enums.sectors.keys,
                                         // "default": "",
                                         "options": {
-                                            "enum_titles": [
-                                                "Agriculture, Pêche et Élevage",
-                                                "Alimentation et Restauration",
-                                                "Art et Culture",
-                                                "Automobile",
-                                                "BTP (Bâtiment et Travaux Publics)",
-                                                "Agroalimentaire",
-                                                "Commerce",
-                                                "Divertissement et Médias",
-                                                "Éducation",
-                                                "Énergie et Environnement",
-                                                "Finance et Assurances",
-                                                "Immobilier",
-                                                "Industrie manufacturière",
-                                                "Ingénierie",
-                                                "Mode et Esthétique",
-                                                "Publicité et Marketing",
-                                                "Santé et Pharmaceutique",
-                                                "Services Financiers et Bancaires",
-                                                "Services Professionnels",
-                                                "Technologie, Informatique et Télécommunications",
-                                                "Tourisme et Hôtellerie",
-                                                "Transport et Logistique"
-                                            ],
-                                            'choices': {
-                                                shouldSort: false,
-                                                allowHTML: true
-                                            }
+                                            "enum_titles": enums.sectors.values,
+                                            // 'choices': {
+                                            //     shouldSort: false,
+                                            //     allowHTML: true
+                                            // }
                                         }
                                     }
                                 }
@@ -235,6 +246,7 @@ let sellerForm = {
                                             },
                                             "mapAddressWording": {
                                                 "type": "string",
+                                                "format": "textarea",
                                                 "title": "adresse Map",
                                                 "template": "mapAddressCallbackFunction",
                                                 "watch": {
@@ -253,7 +265,7 @@ let sellerForm = {
                         },
                         "hourly": {
                             "type": "object",
-                            "title": "Horaires d'ouverture",
+                            "title": "Horaires",
                             "properties": hourly
                         },
                         "calendar": {
@@ -315,16 +327,17 @@ let sellerForm = {
                                             },
                                             "phoneType": {
                                                 'type': 'integer',
-                                                "format": "choices",
+                                                // 'format': 'choices',
+                                                'format': 'select',
                                                 'title': 'Type de tél',
-                                                'enum': [0,1,2,3,4],
+                                                'enum': enums.phoneType.keys,
                                                 'default': 0,
                                                 'options': {
-                                                    'enum_titles': ['Mobile', 'Fixe', 'WhatsApp', 'Viber', 'Skype'],
-                                                    'choices': {
-                                                        shouldSort: false,
-                                                        allowHTML: true
-                                                    }
+                                                    'enum_titles': enums.phoneType.values,
+                                                    // 'choices': {
+                                                    //     shouldSort: false,
+                                                    //     allowHTML: true
+                                                    // }
                                                 }
                                             },
                                             "phone": {
@@ -371,16 +384,17 @@ let sellerForm = {
                                             },
                                             "linkType": {
                                                 'type': 'integer',
-                                                "format": "choices",
+                                                // 'format': 'choices',
+                                                'format': 'select',
                                                 'title': 'Type de lien',
-                                                'enum': [0,1,2,3,4],
+                                                'enum': enums.linkType.keys,
                                                 'default': 0,
                                                 'options': {
-                                                    'enum_titles': ['Site WEB', 'Facebook', 'Instagram', 'Linkedin', 'Twitter'],
-                                                    'choices': {
-                                                        shouldSort: false,
-                                                        allowHTML: true
-                                                    }
+                                                    'enum_titles': enums.linkType.values,
+                                                    // 'choices': {
+                                                    //     shouldSort: false,
+                                                    //     allowHTML: true
+                                                    // }
                                                 }
                                             },
                                             "link": {
@@ -396,53 +410,155 @@ let sellerForm = {
                             "type": "object",
                             "title": "Mon espace",
                             "properties": {
-                                "enable_space": {
-                                    "type": "object",
-                                    "title": "statut de cet espace",
-                                    "properties": {
-                                        "enabled": {
-                                            "type": "boolean",
-                                            "format": "checkbox",
-                                            "title": "activé"
-                                        }
-                                    }
-                                },
                                 "wording": {
                                     "type": "string",
                                     "title": "Nom de mon espace"
                                 },
                                 "medias": {
                                     "type": "object",
-                                    "title": "Médias",
+                                    "title": "Médias & publications",
                                     "properties": {
                                         "information": {
-                                            "type": "info",
+                                            "format": "info",
                                             "title": "Information",
-                                            "description": "Pour gérer vos médias, veuillez cliquer sur le bouton ci-après."
+                                            "description": "Pour gérer vos médias et vos publications, veuillez appuyer sur le bouton ci-après."
                                         },
                                         "mediaButton": {
-                                            "type": "button",
+                                            "format": "button",
                                             "title": "Gérer",
                                             "options": {
                                                 "button": {
                                                     "icon": "collection-play-fill",
                                                     "action": "manageSellerMedia",
-                                                    "validated": "manageSellerMedia"
+                                                    "validated": false
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
+                        },
+                        "credit_tokens": {
+                            "type": "number",
+                            "title": "Jetons de crédit",
+                            "options": {
+                                "containerAttributes": {
+                                    "class": "ion-hide"
+                                }
+                            }
+                        },
+                        "tokens": {
+                            "type": "object",
+                            "title": "Mes jetons",
+                            "properties": {
+                                "my_fs_tokens": {
+                                    "type": "string",
+                                    "title": "Jetons de crédit",
+                                    "template": "creditTokensCallbackFunction",
+                                    "watch": {
+                                        "tkn": "credit_tokens"
+                                    }
+                                },
+                                "refresh": {
+                                    "format": "info",
+                                    "title": "Rafraîchir",
+                                    "description": "Pour rafraîchir la quantité de vos jetons de crédit, veuillez appuyer sur le bouton ci-après."
+                                },
+                                "refreshFsTokensButton": {
+                                    "format": "button",
+                                    "title": "Rafraîchir",
+                                    "options": {
+                                        "button": {
+                                            "icon": "arrow-clockwise",
+                                            "action": "refreshFsTokens",
+                                            "validated": false
+                                        },
+                                        "containerAttributes": {
+                                            "class": "ion-margin-bottom"
+                                        }
+                                    }
+                                },
+                                "add": {
+                                    "format": "info",
+                                    "title": "Rajouter",
+                                    "description": "Pour rajouter des jetons à votre crédit, veuillez appuyer sur le bouton ci-après."
+                                },
+                                "addFsTokensButton": {
+                                    "format": "button",
+                                    "title": "Rajouter",
+                                    "options": {
+                                        "button": {
+                                            "icon": "cash-coin",
+                                            "action": "addFsTokens",
+                                            "validated": false
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
                     },
                     "format": "categories",
                     "basicCategoryTitle": "Informations",
                     // "remove_empty_properties": true
                 }
             });           
+
+            JSONEditor.defaults.callbacks = {
+                "button" : {
+                    "manageSellerMedia" : async function (jseditor, e) {
+                        const navigation = fsGlobalVariable.navigation 
+                        await navigation.push("medias-or-publications-choice")
+
+                        fsGlobalVariable.sellerInfos = form.getValue()
+                    },
+                    "refreshFsTokens" : async function (jseditor, e) {
+                        // Get a reference to a node within the editor
+                        const creditTokens = form.getEditor('root.credit_tokens');
+
+                        const sellerFormActions = document.querySelector("#seller-form-actions")
+
+                        sellerFormActions.classList.add("ion-hide")
+
+                        // `getEditor` will return null if the path is invalid
+                        if (creditTokens) {
+                            let response = await myFs.getCreditTokensValue(apiUrl, session.seller_id)
+
+                            // console.log(response)
+
+                            if(response.ok) {
+                                undoBtn.click()
+                                
+                                creditTokens.setValue(response.creditTokens);
+
+                                console.log(creditTokens.getValue());
+
+                                setTimeout(() => {
+                                    editBtn.classList.remove("ion-hide")
+                                    undoBtn.classList.add("ion-hide")
+                                    saveBtn.classList.add("ion-hide")
+                                    lockBtn.classList.add("ion-hide")
+
+                                    sellerFormActions.classList.remove("ion-hide")
+                                }, 100)
+                            }
+                            else {
+                                await Dialog.alert({
+                                    "title": `Erreur`,
+                                    "message": `${response.error}`
+                                })
+                            }
+                        }
+                    },
+                    "addFsTokens" : async function (jseditor, e) {
+                        const navigation = fsGlobalVariable.navigation
+                        await navigation.push("buy-fs-tokens")
+
+                        fsGlobalVariable.sellerInfos = form.getValue()
+                    }
+                }
+            }
             
-            window.JSONEditor.defaults.callbacks.template = {               
+            JSONEditor.defaults.callbacks.template = {               
                 "mapAddressCallbackFunction": (jseditor,e) => {
                     let latLng
 
@@ -456,52 +572,25 @@ let sellerForm = {
                     }
                     
                     return latLng
-                }
-            }
+                },
+                "creditTokensCallbackFunction": (jseditor,e) => {
+                    let fst
 
-            JSONEditor.defaults.callbacks = {
-                "button" : {
-                    "manageSellerMedia" : function (jseditor, e) {
-                        const navigation = document.querySelector("ion-nav#navigation") 
-                        navigation.push("seller-media-management")
-                    }
+                    fst = `${e.tkn.toLocaleString()} FST`
+                    
+                    return fst
                 }
-            }
+            }            
 
             let changeCount = 0//ignore the first fired change event
             const editBtn = document.querySelector("#editMyAccountData")
-            const saveBtn = document.querySelector("#saveMyAccountData")       
+            const undoBtn = document.querySelector("#undoMyAccountData")
+            const saveBtn = document.querySelector("#saveMyAccountData")  
+            const lockBtn = document.querySelector("#lockMyAccountData")     
             let finalData = {
                 "updatedData": {},
                 "credentials": {}
-            }     
-
-            function accountInfosUpdate(url, args) {
-                // Construct the API endpoint URL for updating the item
-                const updateUrl = `${url}/${args.credentials.sellerId}`;
-                const updatedData = args.updatedData
-
-                //do a verification process before continuing*********** (credentials)
-
-                // Send a PUT request to update the item
-                fetch(updateUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Include any necessary authentication headers here
-                    },
-                    body: JSON.stringify(updatedData),
-                })
-                .then(response => response.json())
-                .then(updatedItem => {
-                    console.log('Updated item:', updatedItem);
-                    // Handle success or do something with the updated item data
-                })
-                .catch(error => {
-                    console.error('Error updating item:', error);
-                    // Handle error
-                });
-            }
+            }                 
 
             let mapInstance
 
@@ -528,22 +617,51 @@ let sellerForm = {
                 document.querySelector("#mapDescription").classList.add("ion-hide")
             }
             
-            form.on('ready', async () => {
-                //get the seller infos
-                const sellerId = 1
-                const columns = `activities,contacts,country,keywords,localities,name,sectors,space,who_what,hourly,calendar,nif,stat,rcs,cin,tradeName`
+            form.on('ready', async () => {                
+                //get the seller infos  
+                let response = await myFs.getSellerInfos(apiUrl, session.seller_id)
 
-                try {
-                    let sellerInfos = await fetch(`${apiUrl}/${sellerId}?include=${columns}`)
-                    sellerInfos = await sellerInfos.json()
-                    // sellerInfos = sellerInfos.records
+                if(typeof response.sellerInfos != "undefined") {
+                    response.sellerInfos.tokens = { "my_fs_tokens": "" }//juste pour la forme
+                }
+
+                if(response.ok) {                    
+                    sellerInfos = response.sellerInfos
         
                     console.log(sellerInfos)
+
+                    const lastEdit = sellerInfos.last_edit
+                    const dateAdd = sellerInfos.date_add
+                    const photoId = sellerInfos.photo_id
+
+                    delete sellerInfos.last_edit
+                    delete sellerInfos.date_add
+                    delete sellerInfos.photo_id
         
                     form.setValue(sellerInfos)
+
+                    myAccountContent.classList.remove("ion-hide")
+
+                    const lastModificationDate = myFormatter.dateFormatter(lastEdit.replace(" ", "T"), fsConfig.formats.dateFormat)
+
+                    console.log(lastModificationDate)
+
+                    document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
                 }
-                catch(err) {
-                    console.log(err)
+                else 
+                {
+                    console.log(response.error)                    
+
+                    if(!myAccountContent.classList.contains("notConnected")) myAccountContent.classList.add("notConnected") 
+
+                    myAccountContent.innerHTML = /*html*/`
+                        <div>
+                            <ion-icon name="cloud-offline-outline" color="medium" style="font-size: 128px;"></ion-icon>
+                            <div>Vérifiez votre connexion!</div>
+                        </div>
+                    `
+
+                    myAccountContent.classList.remove("ion-hide")
                 }
                 //////////////////////////////
 
@@ -562,7 +680,7 @@ let sellerForm = {
                 
                 const watcherCallback = function (path) {
                     try {
-                        console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
+                        // console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
 
                         let fieldName = path.replace(/root\./g, "").replace(/\..*/g, "")                        
                         
@@ -597,7 +715,7 @@ let sellerForm = {
                             finalData["updatedData"][fieldName] = this.getEditor(`root.${fieldName}`).getValue()
                         }
 
-                        console.log("finalData", finalData)
+                        // console.log("finalData", finalData)
                     }
                     catch(err) {
                         console.log("misy error fa alefa ihany aloha")
@@ -636,6 +754,7 @@ let sellerForm = {
                 form.on('change', async (e) => {
                     if(changeCount > 0) {                    
                         saveBtn.classList.remove("ion-hide")
+                        undoBtn.classList.remove("ion-hide")
                         console.log(form.getValue())
 
                         try {
@@ -676,10 +795,10 @@ let sellerForm = {
                         }
                         catch(err) {
                             console.log("map not yet initialized: ", /*err*/)
-                        }
+                        }                        
                     }
     
-                    changeCount++                    
+                    changeCount++                                  
                 })
     
                 editBtn.addEventListener("click", () => {
@@ -700,25 +819,83 @@ let sellerForm = {
                     }
                     
                     !editBtn.classList.contains("ion-hide") ? editBtn.classList.add("ion-hide") : null
+                    lockBtn.classList.remove("ion-hide")
                 }) 
 
-                saveBtn.addEventListener("click", () => {
-                    //supposed been connected with: sellerId : 1 & sellerUniqueId : pim ...
+                undoBtn.addEventListener("click", () => {
+                    changeCount = 0//important!!!
+
+                    console.log(sellerInfos)
+        
+                    form.setValue(sellerInfos)
+
+                    form.disable()
+                    hideMaps(form)
+
+                    const enableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                    enableTheseInputs.forEach((el) => {
+                        el.setAttribute("disabled", "true")
+                    })
+
+
+                    editBtn.classList.remove("ion-hide")
+                    undoBtn.classList.add("ion-hide")
+                    saveBtn.classList.add("ion-hide")
+                    lockBtn.classList.add("ion-hide")
+                })
+
+                saveBtn.addEventListener("click", async () => {
                     finalData["credentials"] = {
-                        "sellerId" : 1,
-                        "sellerUniqueId" : "pim",
-                        "email": "radolerave@gmail.com",
-                        "password": "password",
-                        "accountId": 1
+                        "sellerId" : session.seller_id,
+                        "email": session.email,
+                        "password": session.password,
+                        "accountId": session.id
                     }                 
 
                     // console.log(finalData)
 
-                    accountInfosUpdate(apiUrl, finalData)                    
+                    const response = await myFs.accountInfosUpdate(apiUrl, finalData) 
+                    
+                    if(response.ok) {
+                        sellerInfos = form.getValue()
+
+                        const lastModificationDate = myFormatter.dateFormatter(response.date, fsConfig.formats.dateFormat)
+
+                        document.querySelector("#seller-form-actions #last_edit").textContent = lastModificationDate
+
+                        if(form.isEnabled()) form.disable()
+                        hideMaps(form)
+                        
+                        editBtn.classList.remove("ion-hide")
+                        undoBtn.classList.add("ion-hide")
+                        saveBtn.classList.add("ion-hide")
+                        lockBtn.classList.add("ion-hide")
+                    }
+                    else {
+                        await Dialog.alert({
+                            "title": `Erreur`,
+                            "message": `${response.errorText}`
+                        })
+                    }
+                })
+
+                lockBtn.addEventListener("click", async () => {
+                    if(form.isEnabled()) form.disable()
+                    hideMaps(form)
+
+                    const enableTheseInputs = document.querySelectorAll(".disableThisAltInputFirst")
+
+                    enableTheseInputs.forEach((el) => {
+                        el.setAttribute("disabled", "true")
+                    })
+
+                    lockBtn.classList.add("ion-hide")
+                    editBtn.classList.remove("ion-hide")
                 })
             })                       
         }
     }
 }
 
-export { sellerForm }
+export { sellerFormTemplate }

@@ -8,22 +8,30 @@ export default class FsView {
     generateThisComponent(component) {
         //rendering the content
         customElements.define(component.name, class extends HTMLElement {
-            connectedCallback() {
+            async connectedCallback() {
                 this.innerHTML = component.content
 
-                component.logic()
+                await component.logic()
             }
         })        
     }
 
-    async generateView(component = undefined) {
+    generateView() {
         this.generateThisComponent(this.components.mainPage)
-        this.generateThisComponent(this.components.myAccount)  
+        // this.generateThisComponent(this.components.myAccount)  
         this.generateThisComponent(this.components.signInOrSignUp)      
         this.generateThisComponent(this.components.signIn)  
         this.generateThisComponent(this.components.signUp)  
         this.generateThisComponent(this.components.sellerDetails) 
-        this.generateThisComponent(this.components.sellerMediaManagement) 
+        this.generateThisComponent(this.components.mediasOrPublicationsChoice)
+        this.generateThisComponent(this.components.sellerMediasManagement) 
+        this.generateThisComponent(this.components.sellerPublicationsManagement) 
+        this.generateThisComponent(this.components.mediaPublication) 
+        this.generateThisComponent(this.components.sellerSettings) 
+        this.generateThisComponent(this.components.sellerPreferences) 
+        this.generateThisComponent(this.components.sellerSearch) 
+        this.generateThisComponent(this.components.buyFsTokens) 
+        this.generateThisComponent(this.components.varoboba) 
     }
 
     async skeleton() {

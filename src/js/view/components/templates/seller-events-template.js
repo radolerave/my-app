@@ -8,7 +8,7 @@ let sellerEventsTemplate = {
   `,
   logic: async (args) => {
     let data = args
-    const navigation = document.querySelector("ion-nav#navigation")
+    const navigation = fsGlobalVariable.navigation
     let currentPage = await navigation.getActive()
     const componentName = currentPage.component
     

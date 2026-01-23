@@ -10,34 +10,62 @@ let sellerDetails = {
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title>
+                <ion-thumbnail id="photo-id" slot="start">
+                    <img alt="Seller photo id" src="">
+                </ion-thumbnail>
+
+                <ion-title class="ion-no-padding ion-padding-start">
                     <ion-label>
                         <h2 id="title"></h2>
                         <p id="tab-title"></p>
+                        
                     </ion-label>
-                </ion-title>                      
+                </ion-title>
+
+                <ion-text id="seller-details-last-edit" slot="end" class="ion-margin"></ion-text>              
             </ion-toolbar>
         </ion-header>
 
         <ion-content class="ion-padding">
-            <div id="sellerDetailsContent">This is the content for seller details.</div>
+            <div id="sellerDetailsContent">This is the content for seller details.</div>                    
         </ion-content>
+
+        <style>
+            seller-details #seller-details-last-edit {
+                /* border: solid red 1px; */
+                font-size: 0.6em;
+                /* position: absolute; */
+            }
+
+            seller-details ion-title #title {
+                color: black;
+                font-weight: bold;
+            }
+
+            seller-details ion-title #tab-title {
+                /* border: solid red 1px; */
+                font-size: 0.6em;
+                /* position: absolute; */
+            }
+        </style>
     `,
     logic: async () => {
-        const navigation = document.querySelector("ion-nav#navigation")
+        const navigation = fsGlobalVariable.navigation
         const sellerDetailsContent = document.querySelector("#sellerDetailsContent")
 
         sellerDetailsContent.innerHTML = sellerDetailsTemplate.content
 
-        navigation.addEventListener('ionNavDidChange', async () => {
+        const listener = async () => {
             let currentPage = await navigation.getActive()
 
             // console.log(currentPage)
 
             if(currentPage.component == "seller-details") {
-                sellerDetailsTemplate.logic(currentPage)
+                sellerDetailsTemplate.logic({"currentPage": currentPage, "listener": listener})
             }
-        })
+        }        
+
+        navigation.addEventListener('ionNavDidChange', listener)
     }
 }
 

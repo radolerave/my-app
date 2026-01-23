@@ -1,12 +1,23 @@
 import { Grid } from 'ag-grid-community'
+import { enums } from "../../../helpers/enums-for-json-editor.js"
+import Formatter from "../../../helpers/formatter.js"
+import { fsConfig } from './../../../config/fsConfig.js';
 
-let sellerSearch = {
+let sellerSearchTemplate = {
   name: "seller-search-template",
   content: /*html*/`
     <div id="criteria"></div>
 
+    <ion-button id="bigSearchBtn" class="ion-hide" disabled="true" expand="block">
+        <ion-icon name="search" slot="start" size="large"></ion-icon>
+        FIND SELLER
+    </ion-button>
+
     <ion-button id="validateCriteria" class="ion-hide" disabled="true">Allons-y !</ion-button>
     <ion-button id="resetCriteria" class="ion-hide" color="danger" disabled="true">Réinitialiser</ion-button>
+    <ion-button id="collapseCriteria" color="dark" disabled="false">
+        <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-button>
 
     <!-- <div id="criteria_value"></div> -->
     
@@ -15,9 +26,14 @@ let sellerSearch = {
   `,
   logic: async (args) => {
     let myFs = args.myFs
+    let myFormatter = new Formatter()
+
+    console.log(enums)
 
     const element = document.querySelector('#criteria');
-    let startVal = { "country":"","name":"","who_what":"", "activity":"", "sector":0, "keyword":"" }
+    let startVal = { "country":"","search":"","who_what":""/*, "activity":""*/, "sector":0, /*"keyword":""*/ }
+
+    // element.innerHTML = ``
 
     let criteria = new JSONEditor(element, {
         use_name_attributes: false,
@@ -33,117 +49,103 @@ let sellerSearch = {
             'type': 'object',
             // 'required': [
             //     'country',
-            //     'name',
+            //     'search',
             //     'who_what',
             //     'keyword'
             // ],
             'properties': {
+                'search': {
+                    'type': 'string',
+                    'title': 'Recherche',
+                    'options': {
+                        'inputAttributes': {
+                            // 'placeholder': "Recherche"
+                        }
+                    }
+                },
                 'country': {
                     'type': 'string',
                     "format": "choices",
                     'title': 'Pays',
-                    'enum': ["MG", "FR", "ESP", "US", "CN", "GB", "DE", "JP", ""],
+                    'enum': enums.countriesList.keys,
                     'default': '',
                     'options': {
-                        'enum_titles': [
-                            "Madagascar",
-                            "France",
-                            "Espagne",
-                            "États-Unis",
-                            "Chine",
-                            "Royaume-Uni",
-                            "Allemagne",
-                            "Japon",
-                            "Je ne sais pas"
-                        ],
+                        'enum_titles': enums.countriesList.values,
                         'choices': {
                             shouldSort: false,
-                            allowHTML: true
+                            allowHTML: true,
+                            position: "bottom"
                         }
                     }
-                },
-                'name': {
-                    'type': 'string',
-                    'title': 'Nom ou Raison sociale'
-                },
+                },                
                 'who_what': {
                     'type': 'integer',
                     "format": "choices",
                     'title': 'Vous recherchez qui/quoi ?',
-                    'enum': [0,1,2],
+                    'enum': enums.whoWhat.keys,
                     'default': 0,
                     'options': {
-                        'enum_titles': ['Je ne sais pas', 'Une société', 'Un individu'],
+                        'enum_titles': enums.whoWhat.values,
                         'choices': {
                             shouldSort: false,
                             allowHTML: true
                         }
                     }
                 },
-                'activity': {
-                    'type': 'string',
-                    'title': 'Activité'
-                },
+                // 'activity': {
+                //     'type': 'string',
+                //     'title': 'Activité'
+                // },
                 "sector": {
                   "type": "integer",
                   "title": "Secteur",
                   "format": "choices",
-                  "enum": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+                  "enum": enums.sectors.keys,
                   "default": 0,
                   "options": {
-                      "enum_titles": [
-                          "Je ne sais pas",
-                          "Agriculture, Pêche et Élevage",
-                          "Alimentation et Restauration",
-                          "Art et Culture",
-                          "Automobile",
-                          "BTP (Bâtiment et Travaux Publics)",
-                          "Agroalimentaire",
-                          "Commerce",
-                          "Divertissement et Médias",
-                          "Éducation",
-                          "Énergie et Environnement",
-                          "Finance et Assurances",
-                          "Immobilier",
-                          "Industrie manufacturière",
-                          "Ingénierie",
-                          "Mode et Esthétique",
-                          "Publicité et Marketing",
-                          "Santé et Pharmaceutique",
-                          "Services Financiers et Bancaires",
-                          "Services Professionnels",
-                          "Technologie, Informatique et Télécommunications",
-                          "Tourisme et Hôtellerie",
-                          "Transport et Logistique"
-                      ],
+                      "enum_titles": enums.sectors.values,
                       'choices': {
                           shouldSort: false,
                           allowHTML: true
                       }
                   }
               },
-                'keyword': {
-                    'type': 'string',
-                    'title': 'Mot clé',
-                    'description': 'Mot clé',
-                    // 'minLength': 2,
-                    // 'default': 'ordinateur'
-                }
+                // 'keyword': {
+                //     'type': 'string',
+                //     'title': 'Mot clé',
+                //     'description': 'Mot clé',
+                //     // 'minLength': 2,
+                //     // 'default': 'ordinateur'
+                // }
             }
         }
     });
 
     const results = document.querySelector('#results')
     const validateCriteria = document.querySelector('#validateCriteria')
+    const bigSearchBtn = document.querySelector('#bigSearchBtn')
     const resetCriteria = document.querySelector('#resetCriteria')
     const filterResults = document.querySelector('#filterResults')
+    const collapseCriteria = document.querySelector('#collapseCriteria')
+
+    results.innerHTML = ``
 
     // Define the custom full-width cell renderer
     function fullWidthCellRenderer(params) {
+        const sellerPhotoId = params.data.photo_id != null ? `${fsConfig.filesUrl}/${params.data.id}/${params.data.photo_id}` : `${fsConfig.filesUrl}/default/img/thumbnail.svg`
+
         return /*html*/`
             <div class="full-width-row">
-                <span>${params.data.name}</span>
-                <p>${params.data.country}</p>
+                <ion-item>
+                    <ion-thumbnail slot="start">
+                        <img alt="Seller photo id" src="${sellerPhotoId}" />
+                    </ion-thumbnail>
+                    <ion-label>
+                        <h2>${params.data.name}</h2>
+                        <p><ion-icon name="globe-outline"></ion-icon>&nbsp;${params.data.country}</p>
+                        <p><ion-icon name="time-outline"></ion-icon>&nbsp;${myFormatter.dateFormatter(params.data.last_edit, fsConfig.formats.dateFormat)}</p>
+                    </ion-label>
+                </ion-item>               
             </div>`;
     }
 
@@ -160,6 +162,7 @@ let sellerSearch = {
         pagination: true,
         paginationPageSize: 5,
         rowData: [],
+        getRowHeight: (params) => {return 100},//100px
         isFullWidthRow: function (rowNode) {
             // Return true for rows that should be full-width
             return true;
@@ -168,7 +171,7 @@ let sellerSearch = {
         includeHiddenColumnsInQuickFilter: true,
         onRowClicked: (e) => {
           // console.log(e)
-          const navigation = document.querySelector("ion-nav#navigation")
+          const navigation = fsGlobalVariable.navigation;
         
           navigation.push('seller-details', e)  
         }
@@ -183,11 +186,11 @@ let sellerSearch = {
 
         if(
             findCriteria.country == "" 
-            && findCriteria.name == "" 
+            && findCriteria.search == "" 
             && findCriteria.who_what == 0 
-            && findCriteria.activity == "" 
+            // && findCriteria.activity == "" 
             && findCriteria.sector == 0 
-            && findCriteria.keyword == "" 
+            // && findCriteria.keyword == "" 
         ) {
             if(!validateCriteria.classList.contains('ion-hide')) {
                 validateCriteria.classList.add('ion-hide')
@@ -253,6 +256,23 @@ let sellerSearch = {
                 ev.target.dispatchEvent(changeEvent);
             })
         });    
+
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').addEventListener('click', (ev) => {        
+            if(!bigSearchBtn.classList.contains('ion-hide')) {
+                bigSearchBtn.classList.add('ion-hide')
+                bigSearchBtn.setAttribute("disabled", "true")
+
+                collapseCriteria.classList.remove('ion-hide')
+                collapseCriteria.removeAttribute("disabled")
+            }
+            else {
+                bigSearchBtn.classList.remove('ion-hide')
+                bigSearchBtn.removeAttribute("disabled")
+
+                collapseCriteria.classList.add('ion-hide')
+                collapseCriteria.setAttribute("disabled", "true")                
+            }
+        })
     })
 
     criteria.on('change', async () => {    
@@ -273,11 +293,11 @@ let sellerSearch = {
         const params = {
             'where': {
                 'country': findCriteria.country,
-                'name': findCriteria.name,
+                'search': findCriteria.search,
                 'who_what': findCriteria.who_what,
-                'activity': findCriteria.activity,
+                // 'activity': findCriteria.activity,
                 'sector': findCriteria.sector,
-                'keyword': findCriteria.keyword
+                // 'keyword': findCriteria.keyword
             }
         }   
 
@@ -332,9 +352,19 @@ let sellerSearch = {
             results.classList.add('ion-hide')
         }
 
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()
+
         filterResults.value = ""
         gridOptions.api.setQuickFilter("")
         gridOptions.api.resetQuickFilter()
+    })
+
+    bigSearchBtn.addEventListener('click', (ev) => {        
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()        
+    })   
+    
+    collapseCriteria.addEventListener('click', (ev) => {
+        document.querySelector('#criteria h3 button.json-editor-btn-collapse').click()
     })
 
     document.querySelector('#filterResults').addEventListener("ionInput", (ev) => {
@@ -344,4 +374,4 @@ let sellerSearch = {
   }
 }
 
-  export { sellerSearch }
+  export { sellerSearchTemplate }
